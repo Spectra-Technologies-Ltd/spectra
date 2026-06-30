@@ -13,9 +13,10 @@ async function main() {
     update: {},
     create: {
       email: 'ceo@spectra.com',
-      password: hashedPassword,
+      passwordHash: hashedPassword,
       firstName: 'Executive',
       lastName: 'Director',
+      phone: '+2340000000000',
       role: 'CEO',
       isActive: true,
     },
@@ -99,6 +100,7 @@ async function main() {
     await prisma.guard.create({
       data: {
         fullName: g.name,
+        photoUrl: 'https://via.placeholder.com/150',
         phone: '+2348000000000',
         address: 'Lagos, Nigeria',
         emergencyContact: '+2348000000001',
