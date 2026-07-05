@@ -12,6 +12,7 @@ import { PatrolModule } from './modules/patrol/patrol.module';
 import { IncidentModule } from './modules/incident/incident.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -21,16 +22,17 @@ import { ReportsModule } from './modules/reports/reports.module';
         port: parseInt(process.env.REDIS_PORT || '6379'),
       },
     }),
-    DatabaseModule, 
-    AuthModule, 
-    GuardModule, 
-    ClientModule, 
-    SiteModule, 
-    AttendanceModule, 
-    PatrolModule, 
+    DatabaseModule,
+    AuthModule,
+    GuardModule,
+    ClientModule,
+    SiteModule,
+    AttendanceModule,
+    PatrolModule,
     IncidentModule,
     NotificationsModule,
-    ReportsModule
+    ReportsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
