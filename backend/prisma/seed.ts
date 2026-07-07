@@ -5,6 +5,14 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding database...');
+  const organization = await prisma.organization.upsert({
+    where: { id: 'default-organization' },
+    update: {},
+    create: {
+      id: 'default-organization',
+      name: 'Spectra Operations',
+    },
+  });
 
   // 1. Create Admin/CEO User
   const hashedPassword = await bcrypt.hash('Password123!', 10);
@@ -13,6 +21,7 @@ async function main() {
     update: {},
     create: {
       email: 'ceo@spectra.com',
+      organizationId: organization.id,
       passwordHash: hashedPassword,
       firstName: 'Executive',
       lastName: 'Director',
@@ -27,6 +36,7 @@ async function main() {
   const client1 = await prisma.client.create({
     data: {
       companyName: 'Chevron Nigeria',
+      organizationId: organization.id,
       estateName: 'Chevron Alternative Estate',
       contactPerson: 'Mr. Olamide',
       phone: '+2348012345678',
@@ -42,6 +52,7 @@ async function main() {
   const client2 = await prisma.client.create({
     data: {
       companyName: 'Pinnacle Estates',
+      organizationId: organization.id,
       estateName: 'Banana Island Plot A',
       contactPerson: 'Mrs. Folake',
       phone: '+2348087654321',
@@ -59,6 +70,7 @@ async function main() {
   const site1 = await prisma.site.create({
     data: {
       name: 'Chevron Main Gate',
+      organizationId: organization.id,
       address: 'Lekki-Epe Expressway, Lagos',
       latitude: 6.4385,
       longitude: 3.5352,
@@ -74,6 +86,7 @@ async function main() {
   const site2 = await prisma.site.create({
     data: {
       name: 'Banana Island Alpha Zone',
+      organizationId: organization.id,
       address: 'Banana Island, Ikoyi, Lagos',
       latitude: 6.4531,
       longitude: 3.4447,
@@ -100,6 +113,7 @@ async function main() {
     await prisma.guard.create({
       data: {
         fullName: g.name,
+        organizationId: organization.id,
         photoUrl: 'https://via.placeholder.com/150',
         phone: '+2348000000000',
         address: 'Lagos, Nigeria',

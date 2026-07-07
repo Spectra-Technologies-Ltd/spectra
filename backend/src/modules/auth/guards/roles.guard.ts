@@ -6,6 +6,16 @@ import { ROLES_KEY } from '../decorators/roles.decorator';
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
+  private normalizeRole(role: string): 'ADMIN' | 'EMPLOYEE' | string {
+    if (['ADMIN', 'CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR'].includes(role)) {
+      return 'ADMIN';
+    }
+    if (['EMPLOYEE', 'GUARD'].includes(role)) {
+      return 'EMPLOYEE';
+    }
+    return role;
+  }
+
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
       context.getHandler(),
@@ -18,7 +28,9 @@ export class RolesGuard implements CanActivate {
     if (!user || !user.role) {
       throw new ForbiddenException('User session does not have access permissions');
     }
-    const hasRole = requiredRoles.includes(user.role);
+    const normalizedUserRole = this.normalizeRole(user.role);
+    const normalizedRequiredRoles = requiredRoles.map((role) => this.normalizeRole(role));
+    const hasRole = normalizedRequiredRoles.includes(normalizedUserRole);
     if (!hasRole) {
       throw new ForbiddenException(`Access denied. Required roles: ${requiredRoles.join(', ')}`);
     }

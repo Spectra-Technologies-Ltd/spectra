@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CheckInDto, CheckOutDto } from './dto/attendance.dto';
 
@@ -22,13 +22,39 @@ export class AttendanceService {
     return R * c; // in metres
   }
 
-  async checkIn(dto: CheckInDto) {
-    // 1. Verify site and guard exist
-    const site = await this.prisma.site.findUnique({ where: { id: dto.siteId } });
+  private async resolveGuardAndSite(
+    dto: { guardId?: string; siteId?: string },
+    user: { id: string; role: string; organizationId: string },
+  ) {
+    const guardId = dto.guardId ?? (await this.prisma.guard.findUnique({
+      where: { userId: user.id },
+      select: { id: true },
+    }))?.id;
+    if (!guardId) throw new NotFoundException('Guard profile not found for this employee');
+
+    const guard = await this.prisma.guard.findFirst({
+      where: { id: guardId, organizationId: user.organizationId },
+    });
+    if (!guard) throw new NotFoundException('Guard not found');
+
+    const siteId = dto.siteId ?? guard.assignedSiteId;
+    if (!siteId) throw new BadRequestException('Guard is not assigned to a site');
+
+    const site = await this.prisma.site.findFirst({
+      where: { id: siteId, organizationId: user.organizationId },
+    });
     if (!site) throw new NotFoundException('Site not found');
 
-    const guard = await this.prisma.guard.findUnique({ where: { id: dto.guardId } });
-    if (!guard) throw new NotFoundException('Guard not found');
+    if (guard.assignedSiteId && guard.assignedSiteId !== site.id) {
+      throw new ForbiddenException('Guard is not assigned to this site');
+    }
+
+    return { guard, site };
+  }
+
+  async checkIn(dto: CheckInDto, user: { id: string; role: string; organizationId: string }) {
+    // 1. Verify site and guard exist
+    const { guard, site } = await this.resolveGuardAndSite(dto, user);
 
     // 2. Check if guard is already checked in today without checking out
     const today = new Date();
@@ -36,7 +62,7 @@ export class AttendanceService {
 
     const existingRecord = await this.prisma.attendance.findFirst({
       where: {
-        guardId: dto.guardId,
+        guardId: guard.id,
         createdAt: { gte: today },
         checkOutTime: null,
       },
@@ -53,8 +79,8 @@ export class AttendanceService {
     // 4. Create attendance record
     return this.prisma.attendance.create({
       data: {
-        guardId: dto.guardId,
-        siteId: dto.siteId,
+        guardId: guard.id,
+        siteId: site.id,
         checkInTime: new Date(),
         checkInLatitude: dto.latitude,
         checkInLongitude: dto.longitude,
@@ -67,13 +93,15 @@ export class AttendanceService {
     });
   }
 
-  async checkOut(dto: CheckOutDto) {
+  async checkOut(dto: CheckOutDto, user: { id: string; role: string; organizationId: string }) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const { guard } = await this.resolveGuardAndSite(dto, user);
+
     const record = await this.prisma.attendance.findFirst({
       where: {
-        guardId: dto.guardId,
+        guardId: guard.id,
         createdAt: { gte: today },
         checkOutTime: null,
       },
@@ -92,12 +120,12 @@ export class AttendanceService {
     });
   }
 
-  async getAttendanceHistory(query: { page?: number; limit?: number; siteId?: string; date?: string }) {
+  async getAttendanceHistory(query: { page?: number; limit?: number; siteId?: string; date?: string; organizationId: string }) {
     const page = query.page || 1;
     const limit = query.limit || 20;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: any = { guard: { organizationId: query.organizationId } };
     if (query.siteId) where.siteId = query.siteId;
     if (query.date) {
       const startOfDay = new Date(query.date);

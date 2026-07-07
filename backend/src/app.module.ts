@@ -13,6 +13,7 @@ import { IncidentModule } from './modules/incident/incident.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     NotificationsModule,
     ReportsModule,
     DashboardModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

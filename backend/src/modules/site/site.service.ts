@@ -6,12 +6,19 @@ import { CreateSiteDto, UpdateSiteDto } from './dto/site.dto';
 export class SiteService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(query: { page?: number; limit?: number; search?: string; riskLevel?: string; clientId?: string }) {
+  async findAll(query: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    riskLevel?: string;
+    clientId?: string;
+    organizationId: string;
+  }) {
     const page = query.page || 1;
     const limit = query.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: any = { organizationId: query.organizationId };
     if (query.riskLevel) where.riskLevel = query.riskLevel;
     if (query.clientId) where.clientId = query.clientId;
     if (query.search) {
@@ -23,7 +30,10 @@ export class SiteService {
 
     const [data, total] = await Promise.all([
       this.prisma.site.findMany({
-        where, skip, take: limit, orderBy: { createdAt: 'desc' },
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
         include: {
           client: { select: { id: true, companyName: true } },
           _count: { select: { guards: true, incidents: true } },
@@ -32,15 +42,27 @@ export class SiteService {
       this.prisma.site.count({ where }),
     ]);
 
-    return { data, meta: { total, page, limit, pages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, pages: Math.ceil(total / limit) },
+    };
   }
 
-  async findOne(id: string) {
-    const site = await this.prisma.site.findUnique({
-      where: { id },
+  async findOne(id: string, organizationId?: string) {
+    const where: any = { id };
+    if (organizationId) where.organizationId = organizationId;
+    const site = await this.prisma.site.findFirst({
+      where,
       include: {
         client: true,
-        guards: { select: { id: true, fullName: true, status: true, currentShift: true } },
+        guards: {
+          select: {
+            id: true,
+            fullName: true,
+            status: true,
+            currentShift: true,
+          },
+        },
         incidents: { take: 5, orderBy: { createdAt: 'desc' } },
       },
     });
@@ -48,9 +70,10 @@ export class SiteService {
     return site;
   }
 
-  async create(dto: CreateSiteDto) {
+  async create(dto: CreateSiteDto, organizationId: string) {
     return this.prisma.site.create({
       data: {
+        organizationId,
         name: dto.name,
         address: dto.address,
         latitude: dto.latitude,
@@ -66,13 +89,13 @@ export class SiteService {
     });
   }
 
-  async update(id: string, dto: UpdateSiteDto) {
-    await this.findOne(id);
+  async update(id: string, dto: UpdateSiteDto, organizationId: string) {
+    await this.findOne(id, organizationId);
     return this.prisma.site.update({ where: { id }, data: dto as any });
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
+  async remove(id: string, organizationId: string) {
+    await this.findOne(id, organizationId);
     return this.prisma.site.delete({ where: { id } });
   }
 }
