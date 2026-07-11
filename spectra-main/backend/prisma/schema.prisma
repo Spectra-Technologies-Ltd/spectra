@@ -1,0 +1,297 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  String         @id @default(uuid())
+  organizationId      String
+  organization        Organization   @relation(fields: [organizationId], references: [id])
+  email               String         @unique
+  passwordHash        String
+  firstName           String
+  lastName            String
+  phone               String
+  role                String         // "CEO", "OPERATIONS_MANAGER", "HR", "SUPERVISOR", "GUARD", "CLIENT"
+  isActive            Boolean        @default(true)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  guardProfile        Guard?
+  clientProfile       Client?
+
+  supervisedGuards    Guard[]        @relation("SupervisorGuards")
+  supervisedClients   Client[]       @relation("ClientSupervisor")
+  supervisedSites     Site[]         @relation("SiteSupervisor")
+  approvedAttendances Attendance[]   @relation("AttendanceApprover")
+  reportedIncidents   Incident[]     @relation("IncidentReporter")
+
+  auditLogs           AuditLog[]
+  notifications       Notification[]
+  refreshTokens       RefreshToken[]
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  guards    Guard[]
+  clients   Client[]
+  sites     Site[]
+}
+
+model Guard {
+  id                     String      @id @default(uuid())
+  organizationId         String
+  organization           Organization @relation(fields: [organizationId], references: [id])
+  userId                 String?     @unique
+  user                   User?       @relation(fields: [userId], references: [id])
+  fullName               String
+  photoUrl               String?
+  phone                  String
+  address                String
+  emergencyContact       String
+  nin                    String      @unique
+  bvn                    String?     @unique
+  guarantorDetails       String
+  employmentDate         DateTime
+  status                 String      // "ACTIVE", "INACTIVE", "SUSPENDED", "ON_LEAVE"
+  trainingRecords        String      // Store as JSON string or text
+  certificates           String      // Store as JSON string or text
+  backgroundVerification String      // Store as JSON string {"status": "VERIFIED", "date": "..."}
+  disciplinaryHistory    String      // Store as JSON string
+  performanceScore       Float       @default(100.0)
+
+  assignedSiteId         String?
+  assignedSite           Site?       @relation("SiteGuards", fields: [assignedSiteId], references: [id])
+
+  assignedSupervisorId   String?
+  assignedSupervisor     User?       @relation("SupervisorGuards", fields: [assignedSupervisorId], references: [id])
+
+  currentShift           String      // "DAY", "NIGHT", "OFF"
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+
+  attendances            Attendance[]
+  patrolLogs             PatrolLog[]
+  patrolRoutes           PatrolRoute[]
+  patrolRecords          PatrolRecord[]
+}
+
+model Client {
+  id                       String    @id @default(uuid())
+  organizationId           String
+  organization             Organization @relation(fields: [organizationId], references: [id])
+  userId                   String?   @unique
+  user                     User?     @relation(fields: [userId], references: [id])
+  companyName              String
+  estateName               String
+  contactPerson            String
+  phone                    String
+  email                    String    @unique
+  contractStart            DateTime
+  contractEnd              DateTime
+  monthlyFee               Float
+  numberOfGuardsAllocated  Int
+
+  assignedSupervisorId     String?
+  assignedSupervisor       User?     @relation("ClientSupervisor", fields: [assignedSupervisorId], references: [id])
+
+  billingStatus            String    // "PAID", "UNPAID", "OVERDUE"
+  outstandingBalance       Float     @default(0.0)
+  notes                    String?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  sites                    Site[]
+}
+
+model Site {
+  id                String             @id @default(uuid())
+  organizationId    String
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  name              String
+  address           String
+  latitude          Float
+  longitude         Float
+  clientId          String
+  client            Client             @relation(fields: [clientId], references: [id])
+  riskLevel         String             // "LOW", "MEDIUM", "HIGH", "CRITICAL"
+  targetGuards      Int
+
+  supervisorId      String?
+  supervisor        User?              @relation("SiteSupervisor", fields: [supervisorId], references: [id])
+
+  sitePhotos        String             // Comma-separated or JSON string
+  emergencyContacts String             // JSON string
+  assets            String             // JSON string
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  guards            Guard[]            @relation("SiteGuards")
+  attendances       Attendance[]
+  patrolRoutes      PatrolRoute[]
+  incidents         Incident[]
+}
+
+model Attendance {
+  id                     String    @id @default(uuid())
+  guardId                String
+  guard                  Guard     @relation(fields: [guardId], references: [id])
+  siteId                 String
+  site                   Site      @relation(fields: [siteId], references: [id])
+  checkInTime            DateTime
+  checkOutTime           DateTime?
+  checkInLatitude        Float
+  checkInLongitude       Float
+  checkOutLatitude       Float?
+  checkOutLongitude      Float?
+  checkInMethod          String    // "GPS", "QR", "SUPERVISOR_APPROVAL"
+  checkOutMethod         String?   // "GPS", "QR", "SUPERVISOR_APPROVAL"
+  checkInLocation        String?
+  checkOutLocation       String?
+  photoUrl               String?   // Verification selfie url
+  status                 String    @default("ON_TIME")
+  verifiedStatus         Boolean   @default(false)
+  isLate                 Boolean   @default(false)
+  isAbsent               Boolean   @default(false)
+
+  approvedBySupervisorId String?
+  approvedBySupervisor   User?     @relation("AttendanceApprover", fields: [approvedBySupervisorId], references: [id])
+
+  createdAt              DateTime  @default(now())
+}
+
+model PatrolRoute {
+  id              String             @id @default(uuid())
+  name            String
+  siteId          String
+  site            Site               @relation(fields: [siteId], references: [id])
+  assignedGuardId String?
+  assignedGuard   Guard?             @relation(fields: [assignedGuardId], references: [id])
+  scheduledStart  DateTime
+  scheduledEnd    DateTime
+  frequency       String             // "ONCE", "HOURLY", "DAILY", "WEEKLY"
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+
+  checkpoints     PatrolCheckpoint[]
+  patrolLogs      PatrolLog[]
+  patrolRecords   PatrolRecord[]
+}
+
+model PatrolRecord {
+  id                     String      @id @default(uuid())
+  routeId                String
+  route                  PatrolRoute @relation(fields: [routeId], references: [id])
+  guardId                String
+  guard                  Guard       @relation(fields: [guardId], references: [id])
+  startTime              DateTime
+  endTime                DateTime?
+  status                 String
+  scannedCheckpoints     String      @default("[]")
+  missedCheckpoints      String      @default("[]")
+  completionPercentage   Float       @default(0)
+  incidentReportId       String?
+  generalNotes           String?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+}
+
+model PatrolCheckpoint {
+  id             String      @id @default(uuid())
+  patrolRouteId  String
+  patrolRoute    PatrolRoute @relation(fields: [patrolRouteId], references: [id])
+  name           String
+  qrCodeToken    String      @unique
+  sequenceOrder  Int
+  expectedLatitude Float
+  expectedLongitude Float
+  createdAt      DateTime    @default(now())
+
+  patrolLogs     PatrolLog[]
+}
+
+model PatrolLog {
+  id             String           @id @default(uuid())
+  patrolRouteId  String
+  patrolRoute    PatrolRoute      @relation(fields: [patrolRouteId], references: [id])
+  checkpointId   String
+  checkpoint     PatrolCheckpoint @relation(fields: [checkpointId], references: [id])
+  guardId        String
+  guard          Guard            @relation(fields: [guardId], references: [id])
+  scannedAt      DateTime         @default(now())
+  latitude       Float
+  longitude      Float
+  photoUrl       String?
+  notes          String?
+  isLate         Boolean          @default(false)
+  isMissed       Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+}
+
+model Incident {
+  id                     String    @id @default(uuid())
+  title                  String
+  incidentType           String    // "THEFT", "TRESPASS", "ASSAULT", "FIRE", "MEDICAL", "ASSET_DAMAGE", "OTHER"
+  occurrenceTime         DateTime
+  status                 String    @default("OPEN")
+  reportedAt             DateTime  @default(now())
+  siteId                 String
+  site                   Site      @relation(fields: [siteId], references: [id])
+  reporterId             String
+  reporter               User      @relation("IncidentReporter", fields: [reporterId], references: [id])
+  guardsInvolved         String    // Comma-separated names or guard ids
+  description            String
+  severity               String    // "LOW", "MEDIUM", "HIGH", "CRITICAL"
+  photos                 String    // Comma-separated URLs or JSON
+  videos                 String    // Comma-separated URLs or JSON
+  voiceNotes             String    // Comma-separated URLs or JSON
+  witnesses              String    // JSON string
+  actionsTaken           String
+  investigationStatus    String    @default("OPEN") // "OPEN", "UNDER_INVESTIGATION", "RESOLVED", "CLOSED"
+  resolutionNotes        String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String
+  oldValues String?  // JSON string
+  newValues String?  // JSON string
+  ipAddress String
+  userAgent String
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  type      String   // "EMAIL", "SMS", "IN_APP"
+  status    String   // "UNREAD", "READ", "FAILED"
+  createdAt DateTime @default(now())
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
