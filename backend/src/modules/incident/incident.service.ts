@@ -6,12 +6,15 @@ import { ReportIncidentDto, UpdateIncidentStatusDto } from './dto/incident.dto';
 export class IncidentService {
   constructor(private prisma: PrismaService) {}
 
-  async reportIncident(dto: ReportIncidentDto) {
-    const site = await this.prisma.site.findUnique({ where: { id: dto.siteId } });
-    if (!site) throw new NotFoundException('Site not found');
-
-    const reporter = await this.prisma.user.findUnique({ where: { id: dto.reporterId } });
-    if (!reporter) throw new NotFoundException('Reporter not found');
+  async reportIncident(
+    dto: ReportIncidentDto,
+    user: { id: string; organizationId: string },
+  ) {
+    const site = await this.prisma.site.findFirst({
+      where: { id: dto.siteId, organizationId: user.organizationId },
+    });
+    if (!site)
+      throw new NotFoundException('Site not found in your organization');
 
     return this.prisma.incident.create({
       data: {
@@ -22,7 +25,7 @@ export class IncidentService {
         status: 'OPEN',
         occurrenceTime: new Date(),
         siteId: dto.siteId,
-        reporterId: dto.reporterId,
+        reporterId: user.id,
         reportedAt: new Date(),
         guardsInvolved: JSON.stringify(dto.involvedParties || []),
         photos: JSON.stringify(dto.mediaUrls || []),
@@ -35,8 +38,14 @@ export class IncidentService {
     });
   }
 
-  async updateStatus(id: string, dto: UpdateIncidentStatusDto) {
-    const incident = await this.prisma.incident.findUnique({ where: { id } });
+  async updateStatus(
+    id: string,
+    dto: UpdateIncidentStatusDto,
+    organizationId: string,
+  ) {
+    const incident = await this.prisma.incident.findFirst({
+      where: { id, site: { organizationId } },
+    });
     if (!incident) throw new NotFoundException('Incident not found');
 
     return this.prisma.incident.update({
@@ -48,28 +57,47 @@ export class IncidentService {
     });
   }
 
-  async findAll(query: { page?: number; limit?: number; siteId?: string; status?: string; type?: string }) {
+  async findAll(query: {
+    page?: number;
+    limit?: number;
+    siteId?: string;
+    status?: string;
+    type?: string;
+    organizationId: string;
+  }) {
     const page = query.page || 1;
     const limit = query.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: any = { site: { organizationId: query.organizationId } };
     if (query.siteId) where.siteId = query.siteId;
     if (query.status) where.status = query.status;
     if (query.type) where.incidentType = query.type;
 
     const [data, total] = await Promise.all([
       this.prisma.incident.findMany({
-        where, skip, take: limit, orderBy: { reportedAt: 'desc' },
+        where,
+        skip,
+        take: limit,
+        orderBy: { reportedAt: 'desc' },
         include: {
-          site: { select: { id: true, name: true, client: { select: { companyName: true } } } },
+          site: {
+            select: {
+              id: true,
+              name: true,
+              client: { select: { companyName: true } },
+            },
+          },
           reporter: { select: { id: true, firstName: true, lastName: true } },
         },
       }),
       this.prisma.incident.count({ where }),
     ]);
 
-    return { data, meta: { total, page, limit, pages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, pages: Math.ceil(total / limit) },
+    };
   }
 
   async findOne(id: string) {

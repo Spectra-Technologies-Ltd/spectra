@@ -3,6 +3,7 @@ import { DashboardService } from './dashboard.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('dashboard')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -10,32 +11,32 @@ export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('stats')
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR')
-  getStats() {
-    return this.dashboardService.getStats();
+  @Roles('ADMIN', 'EMPLOYEE')
+  getStats(@CurrentUser() user: any) {
+    return this.dashboardService.getStats(user.organizationId);
   }
 
   @Get('incidents-by-type')
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR')
-  getIncidentsByType() {
-    return this.dashboardService.getIncidentsByType();
+  @Roles('ADMIN', 'EMPLOYEE')
+  getIncidentsByType(@CurrentUser() user: any) {
+    return this.dashboardService.getIncidentsByType(user.organizationId);
   }
 
   @Get('site-risk-distribution')
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR')
-  getSiteRiskDistribution() {
-    return this.dashboardService.getSiteRiskDistribution();
+  @Roles('ADMIN', 'EMPLOYEE')
+  getSiteRiskDistribution(@CurrentUser() user: any) {
+    return this.dashboardService.getSiteRiskDistribution(user.organizationId);
   }
 
   @Get('attendance-trend')
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR')
-  getAttendanceTrend() {
-    return this.dashboardService.getAttendanceTrend();
+  @Roles('ADMIN', 'EMPLOYEE')
+  getAttendanceTrend(@CurrentUser() user: any) {
+    return this.dashboardService.getAttendanceTrend(user.organizationId);
   }
 
   @Get('recent-activities')
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR')
-  getRecentActivities() {
-    return this.dashboardService.getRecentActivities();
+  @Roles('ADMIN', 'EMPLOYEE')
+  getRecentActivities(@CurrentUser() user: any) {
+    return this.dashboardService.getRecentActivities(user.organizationId);
   }
 }

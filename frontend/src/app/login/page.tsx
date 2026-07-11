@@ -1,16 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Shield, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
-import { useAuth } from '@/providers/AuthProvider';
-import api from '@/lib/api';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Shield, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { useAuth } from "@/providers/AuthProvider";
+import api from "@/lib/api";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -33,14 +35,13 @@ export default function LoginPage() {
     setError(null);
     setIsSubmitting(true);
     try {
-      const response = await api.post('/auth/login', data);
-      const { accessToken, user } = response.data;
-      login(accessToken, user);
+      const response = await api.post("/auth/login", data);
+      const { user } = response.data;
+      login(user);
     } catch (err: any) {
-      console.error(err);
       setError(
-        err.response?.data?.message || 
-        'Unable to connect to security servers. Please verify credentials.'
+        err.response?.data?.message ||
+          "Unable to connect to security servers. Please verify credentials.",
       );
     } finally {
       setIsSubmitting(false);
@@ -77,7 +78,10 @@ export default function LoginPage() {
         {/* Login Form */}
         <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label
+              htmlFor="email"
+              className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5"
+            >
               Security Email Address
             </label>
             <input
@@ -85,29 +89,34 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               placeholder="operator@spectra.com"
-              {...register('email')}
+              {...register("email")}
               className={`w-full rounded-lg bg-secondary/50 border ${
-                errors.email ? 'border-destructive' : 'border-border'
+                errors.email ? "border-destructive" : "border-border"
               } px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
             />
             {errors.email && (
-              <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>
+              <p className="mt-1 text-xs text-destructive">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+            <label
+              htmlFor="password"
+              className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5"
+            >
               Secure PIN / Password
             </label>
             <div className="relative">
               <input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 placeholder="••••••••"
-                {...register('password')}
+                {...register("password")}
                 className={`w-full rounded-lg bg-secondary/50 border ${
-                  errors.password ? 'border-destructive' : 'border-border'
+                  errors.password ? "border-destructive" : "border-border"
                 } px-3.5 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
               />
               <button
@@ -115,11 +124,17 @@ export default function LoginPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground focus:outline-none"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.password && (
-              <p className="mt-1 text-xs text-destructive">{errors.password.message}</p>
+              <p className="mt-1 text-xs text-destructive">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -130,10 +145,11 @@ export default function LoginPage() {
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Authenticating Security ID...
+                <Loader2 className="h-4 w-4 animate-spin" /> Authenticating
+                Security ID...
               </>
             ) : (
-              'Enter Security Dashboard'
+              "Enter Security Dashboard"
             )}
           </button>
         </form>

@@ -6,6 +6,7 @@ import { CheckInDto, CheckOutDto } from './dto/attendance.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('attendance')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -13,22 +14,23 @@ export class AttendanceController {
   constructor(private attendanceService: AttendanceService) {}
 
   @Post('check-in')
-  @Roles('GUARD', 'SUPERVISOR')
+  @Roles('EMPLOYEE')
   @HttpCode(HttpStatus.CREATED)
-  async checkIn(@Body() dto: CheckInDto) {
-    return this.attendanceService.checkIn(dto);
+  async checkIn(@Body() dto: CheckInDto, @CurrentUser() user: any) {
+    return this.attendanceService.checkIn(dto, user);
   }
 
   @Post('check-out')
-  @Roles('GUARD', 'SUPERVISOR')
+  @Roles('EMPLOYEE')
   @HttpCode(HttpStatus.OK)
-  async checkOut(@Body() dto: CheckOutDto) {
-    return this.attendanceService.checkOut(dto);
+  async checkOut(@Body() dto: CheckOutDto, @CurrentUser() user: any) {
+    return this.attendanceService.checkOut(dto, user);
   }
 
   @Get('history')
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR', 'CLIENT')
+  @Roles('ADMIN')
   async getHistory(
+    @CurrentUser() user: any,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('siteId') siteId?: string,
@@ -37,7 +39,7 @@ export class AttendanceController {
     return this.attendanceService.getAttendanceHistory({
       page: page ? parseInt(page) : undefined,
       limit: limit ? parseInt(limit) : undefined,
-      siteId, date,
+      siteId, date, organizationId: user.organizationId,
     });
   }
 }

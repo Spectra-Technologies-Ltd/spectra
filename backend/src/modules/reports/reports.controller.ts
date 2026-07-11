@@ -11,8 +11,11 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get('site/:siteId/daily/pdf')
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'CLIENT')
-  async getDailySiteReportPdf(@Param('siteId') siteId: string, @Res() res: Response) {
+  @Roles('ADMIN')
+  async getDailySiteReportPdf(
+    @Param('siteId') siteId: string,
+    @Res() res: Response,
+  ) {
     const buffer = await this.reportsService.generateDailySiteReport(siteId);
 
     res.set({

@@ -1,15 +1,15 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CheckInDto {
-  @IsString() @IsNotEmpty() guardId: string;
-  @IsString() @IsNotEmpty() siteId: string;
+  @IsString() @IsOptional() guardId?: string;
+  @IsString() @IsOptional() siteId?: string;
   @IsNumber() latitude: number;
   @IsNumber() longitude: number;
   @IsString() @IsOptional() photoUrl?: string;
 }
 
 export class CheckOutDto {
-  @IsString() @IsNotEmpty() guardId: string;
+  @IsString() @IsOptional() guardId?: string;
   @IsNumber() latitude: number;
   @IsNumber() longitude: number;
   @IsString() @IsOptional() report?: string;

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import axios from 'axios';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import api from "@/lib/api";
 
 interface User {
   id: string;
@@ -14,75 +14,75 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
-  login: (token: string, user: User) => void;
+  login: (user: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
+export default function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('spectra_token');
-    const storedUser = localStorage.getItem('spectra_user');
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      // Setup global Axios defaults
-      axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-    }
-    setIsLoading(false);
+    // Try to fetch current user — httpOnly cookie is sent automatically
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        setUser(res.data);
+      } catch {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUser();
   }, []);
 
   useEffect(() => {
     if (isLoading) return;
 
-    const publicPaths = ['/login', '/register'];
-    const isPublicPath = publicPaths.includes(pathname || '');
+    const publicPaths = ["/login", "/register"];
+    const isPublicPath = publicPaths.includes(pathname || "");
 
-    if (!token && !isPublicPath) {
-      router.push('/login');
-    } else if (token && isPublicPath) {
-      router.push('/');
+    if (!user && !isPublicPath) {
+      router.push("/login");
+    } else if (user && isPublicPath) {
+      router.push("/");
     }
-  }, [token, pathname, isLoading, router]);
+  }, [user, pathname, isLoading, router]);
 
-  const login = (newToken: string, newUser: User) => {
-    setToken(newToken);
+  const login = (newUser: User) => {
     setUser(newUser);
-    localStorage.setItem('spectra_token', newToken);
-    localStorage.setItem('spectra_user', JSON.stringify(newUser));
-    axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-    router.push('/');
+    router.push("/");
   };
 
-  const logout = () => {
-    setToken(null);
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // Even if logout API fails, clear local state
+    }
     setUser(null);
-    localStorage.removeItem('spectra_token');
-    localStorage.removeItem('spectra_user');
-    delete axios.defaults.headers.common['Authorization'];
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
         isLoading,
         login,
         logout,
-        isAuthenticated: !!token,
+        isAuthenticated: !!user,
       }}
     >
       {children}
@@ -93,7 +93,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

@@ -21,8 +21,13 @@ export class RegisterDto {
   phone: string;
 
   @IsString()
-  @IsIn(['CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR', 'GUARD', 'CLIENT'], {
-    message: 'Role must be one of: CEO, OPERATIONS_MANAGER, HR, SUPERVISOR, GUARD, CLIENT',
+  @IsOptional()
+  @IsIn(['ADMIN', 'EMPLOYEE'], {
+    message: 'Role must be one of: ADMIN, EMPLOYEE',
   })
-  role: string;
+  role?: string;
+
+  @IsString()
+  @IsOptional()
+  organizationName?: string;
 }

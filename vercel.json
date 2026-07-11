@@ -1,5 +1,17 @@
 {
-    "rootDirectory": "frontend",
-    "buildCommand": "npm run build",
-    "installCommand": "npm install"
+  "services": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "nextjs"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "type": "service",
+        "service": "frontend"
+      }
+    }
+  ]
 }

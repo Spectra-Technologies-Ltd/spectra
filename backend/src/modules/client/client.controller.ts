@@ -1,11 +1,22 @@
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, HttpCode, HttpStatus,
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto, UpdateClientDto } from './dto/client.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('clients')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -13,40 +24,49 @@ export class ClientController {
   constructor(private clientService: ClientService) {}
 
   @Get()
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'HR')
+  @Roles('ADMIN')
   async findAll(
-    @Query('page') page?: string, @Query('limit') limit?: string,
-    @Query('search') search?: string, @Query('billingStatus') billingStatus?: string,
+    @CurrentUser() user: any,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('billingStatus') billingStatus?: string,
   ) {
     return this.clientService.findAll({
       page: page ? parseInt(page) : undefined,
       limit: limit ? parseInt(limit) : undefined,
-      search, billingStatus,
+      search,
+      billingStatus,
+      organizationId: user.organizationId,
     });
   }
 
   @Get(':id')
-  @Roles('CEO', 'OPERATIONS_MANAGER', 'HR', 'CLIENT')
-  async findOne(@Param('id') id: string) {
-    return this.clientService.findOne(id);
+  @Roles('ADMIN', 'EMPLOYEE')
+  async findOne(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.clientService.findOne(id, user.organizationId);
   }
 
   @Post()
-  @Roles('CEO', 'OPERATIONS_MANAGER')
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() dto: CreateClientDto) {
-    return this.clientService.create(dto);
+  async create(@Body() dto: CreateClientDto, @CurrentUser() user: any) {
+    return this.clientService.create(dto, user.organizationId);
   }
 
   @Patch(':id')
-  @Roles('CEO', 'OPERATIONS_MANAGER')
-  async update(@Param('id') id: string, @Body() dto: UpdateClientDto) {
-    return this.clientService.update(id, dto);
+  @Roles('ADMIN')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateClientDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.clientService.update(id, dto, user.organizationId);
   }
 
   @Delete(':id')
-  @Roles('CEO')
-  async remove(@Param('id') id: string) {
-    return this.clientService.remove(id);
+  @Roles('ADMIN')
+  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.clientService.remove(id, user.organizationId);
   }
 }

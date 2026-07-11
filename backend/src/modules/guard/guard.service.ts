@@ -1,20 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
-import { CreateGuardDto, UpdateGuardDto, TransferGuardDto } from './dto/guard.dto';
+import {
+  CreateGuardDto,
+  UpdateGuardDto,
+  TransferGuardDto,
+} from './dto/guard.dto';
 
 @Injectable()
 export class GuardService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(query: {
-    page?: number; limit?: number; status?: string;
-    siteId?: string; search?: string; sortBy?: string; sortOrder?: string;
+    page?: number;
+    limit?: number;
+    status?: string;
+    siteId?: string;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    organizationId: string;
   }) {
     const page = query.page || 1;
     const limit = query.limit || 10;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: any = { organizationId: query.organizationId };
     if (query.status) where.status = query.status;
     if (query.siteId) where.assignedSiteId = query.siteId;
     if (query.search) {
@@ -34,7 +44,10 @@ export class GuardService {
 
     const [data, total] = await Promise.all([
       this.prisma.guard.findMany({
-        where, skip, take: limit, orderBy,
+        where,
+        skip,
+        take: limit,
+        orderBy,
         include: { assignedSite: { select: { id: true, name: true } } },
       }),
       this.prisma.guard.count({ where }),
@@ -46,9 +59,11 @@ export class GuardService {
     };
   }
 
-  async findOne(id: string) {
-    const guard = await this.prisma.guard.findUnique({
-      where: { id },
+  async findOne(id: string, organizationId?: string) {
+    const where: any = { id };
+    if (organizationId) where.organizationId = organizationId;
+    const guard = await this.prisma.guard.findFirst({
+      where,
       include: {
         assignedSite: true,
         attendances: { take: 10, orderBy: { createdAt: 'desc' } },
@@ -58,9 +73,10 @@ export class GuardService {
     return guard;
   }
 
-  async create(dto: CreateGuardDto) {
+  async create(dto: CreateGuardDto, organizationId: string) {
     return this.prisma.guard.create({
       data: {
+        organizationId,
         fullName: dto.fullName,
         photoUrl: dto.photoUrl || '',
         phone: dto.phone,
@@ -82,13 +98,13 @@ export class GuardService {
     });
   }
 
-  async update(id: string, dto: UpdateGuardDto) {
-    await this.findOne(id);
+  async update(id: string, dto: UpdateGuardDto, organizationId: string) {
+    await this.findOne(id, organizationId);
     return this.prisma.guard.update({ where: { id }, data: dto as any });
   }
 
-  async transfer(id: string, dto: TransferGuardDto) {
-    await this.findOne(id);
+  async transfer(id: string, dto: TransferGuardDto, organizationId: string) {
+    await this.findOne(id, organizationId);
     return this.prisma.guard.update({
       where: { id },
       data: {
@@ -98,21 +114,31 @@ export class GuardService {
     });
   }
 
-  async deactivate(id: string) {
-    await this.findOne(id);
+  async deactivate(id: string, organizationId: string) {
+    await this.findOne(id, organizationId);
     return this.prisma.guard.update({
       where: { id },
       data: { status: 'INACTIVE' },
     });
   }
 
-  async getStats() {
+  async getStats(organizationId: string) {
     const [total, active, onLeave, suspended] = await Promise.all([
-      this.prisma.guard.count(),
-      this.prisma.guard.count({ where: { status: 'ACTIVE' } }),
-      this.prisma.guard.count({ where: { status: 'ON_LEAVE' } }),
-      this.prisma.guard.count({ where: { status: 'SUSPENDED' } }),
+      this.prisma.guard.count({ where: { organizationId } }),
+      this.prisma.guard.count({ where: { organizationId, status: 'ACTIVE' } }),
+      this.prisma.guard.count({
+        where: { organizationId, status: 'ON_LEAVE' },
+      }),
+      this.prisma.guard.count({
+        where: { organizationId, status: 'SUSPENDED' },
+      }),
     ]);
-    return { total, active, onLeave, suspended, inactive: total - active - onLeave - suspended };
+    return {
+      total,
+      active,
+      onLeave,
+      suspended,
+      inactive: total - active - onLeave - suspended,
+    };
   }
 }

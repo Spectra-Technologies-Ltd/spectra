@@ -9,6 +9,8 @@ generator client {
 
 model User {
   id                  String         @id @default(uuid())
+  organizationId      String
+  organization        Organization   @relation(fields: [organizationId], references: [id])
   email               String         @unique
   passwordHash        String
   firstName           String
@@ -27,13 +29,28 @@ model User {
   supervisedSites     Site[]         @relation("SiteSupervisor")
   approvedAttendances Attendance[]   @relation("AttendanceApprover")
   reportedIncidents   Incident[]     @relation("IncidentReporter")
-  
+
   auditLogs           AuditLog[]
   notifications       Notification[]
+  refreshTokens       RefreshToken[]
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  guards    Guard[]
+  clients   Client[]
+  sites     Site[]
 }
 
 model Guard {
   id                     String      @id @default(uuid())
+  organizationId         String
+  organization           Organization @relation(fields: [organizationId], references: [id])
   userId                 String?     @unique
   user                   User?       @relation(fields: [userId], references: [id])
   fullName               String
@@ -51,13 +68,13 @@ model Guard {
   backgroundVerification String      // Store as JSON string {"status": "VERIFIED", "date": "..."}
   disciplinaryHistory    String      // Store as JSON string
   performanceScore       Float       @default(100.0)
-  
+
   assignedSiteId         String?
   assignedSite           Site?       @relation("SiteGuards", fields: [assignedSiteId], references: [id])
-  
+
   assignedSupervisorId   String?
   assignedSupervisor     User?       @relation("SupervisorGuards", fields: [assignedSupervisorId], references: [id])
-  
+
   currentShift           String      // "DAY", "NIGHT", "OFF"
   createdAt              DateTime    @default(now())
   updatedAt              DateTime    @updatedAt
@@ -70,6 +87,8 @@ model Guard {
 
 model Client {
   id                       String    @id @default(uuid())
+  organizationId           String
+  organization             Organization @relation(fields: [organizationId], references: [id])
   userId                   String?   @unique
   user                     User?     @relation(fields: [userId], references: [id])
   companyName              String
@@ -81,10 +100,10 @@ model Client {
   contractEnd              DateTime
   monthlyFee               Float
   numberOfGuardsAllocated  Int
-  
+
   assignedSupervisorId     String?
   assignedSupervisor       User?     @relation("ClientSupervisor", fields: [assignedSupervisorId], references: [id])
-  
+
   billingStatus            String    // "PAID", "UNPAID", "OVERDUE"
   outstandingBalance       Float     @default(0.0)
   notes                    String?
@@ -96,6 +115,8 @@ model Client {
 
 model Site {
   id                String             @id @default(uuid())
+  organizationId    String
+  organization      Organization       @relation(fields: [organizationId], references: [id])
   name              String
   address           String
   latitude          Float
@@ -104,10 +125,10 @@ model Site {
   client            Client             @relation(fields: [clientId], references: [id])
   riskLevel         String             // "LOW", "MEDIUM", "HIGH", "CRITICAL"
   targetGuards      Int
-  
+
   supervisorId      String?
   supervisor        User?              @relation("SiteSupervisor", fields: [supervisorId], references: [id])
-  
+
   sitePhotos        String             // Comma-separated or JSON string
   emergencyContacts String             // JSON string
   assets            String             // JSON string
@@ -141,10 +162,10 @@ model Attendance {
   verifiedStatus         Boolean   @default(false)
   isLate                 Boolean   @default(false)
   isAbsent               Boolean   @default(false)
-  
+
   approvedBySupervisorId String?
   approvedBySupervisor   User?     @relation("AttendanceApprover", fields: [approvedBySupervisorId], references: [id])
-  
+
   createdAt              DateTime  @default(now())
 }
 
@@ -263,5 +284,14 @@ model Notification {
   message   String
   type      String   // "EMAIL", "SMS", "IN_APP"
   status    String   // "UNREAD", "READ", "FAILED"
+  createdAt DateTime @default(now())
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
   createdAt DateTime @default(now())
 }
