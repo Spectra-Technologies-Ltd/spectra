@@ -21,6 +21,12 @@ import { UploadsModule } from './modules/uploads/uploads.module';
       connection: {
         host: process.env.REDIS_HOST || 'localhost',
         port: parseInt(process.env.REDIS_PORT || '6379'),
+        retryStrategy: (times: number) => {
+          if (times > 3) return null; // stop retrying after 3 attempts
+          return Math.min(times * 1000, 5000);
+        },
+        maxRetriesPerRequest: null,
+        enableReadyCheck: false,
       },
     }),
     DatabaseModule,
