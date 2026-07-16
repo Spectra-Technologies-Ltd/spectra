@@ -6,7 +6,7 @@ config({ path: resolve(__dirname, '..', '..', '.env'), override: true });
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
@@ -16,9 +16,27 @@ async function bootstrap() {
     throw new Error('JWT_SECRET is required');
   }
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  });
 
   app.use(cookieParser());
+
+  // Log all requests and errors
+  const httpLogger = new Logger('HTTP');
+  app.use((req: any, res: any, next: any) => {
+    const start = Date.now();
+    res.on('finish', () => {
+      const { statusCode } = res;
+      const ms = Date.now() - start;
+      if (statusCode >= 400) {
+        httpLogger.error(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)`);
+      } else {
+        httpLogger.log(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)`);
+      }
+    });
+    next();
+  });
 
   // Serve uploaded media files statically
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
