@@ -4,7 +4,7 @@ services:
     runtime: node
     rootDir: backend
     plan: free
-    region: frankfurt
+    region: oregon
     buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npx prisma db push --accept-data-loss && npx prisma db seed && node dist/src/main
     envVars:
@@ -29,9 +29,9 @@ services:
       - key: CLOUDINARY_API_SECRET
         sync: false
       - key: API_URL
-        value: https://spectra-hfx4.onrender.com
+        value: https://spectra-api-wq5x.onrender.com
 
 databases:
   - name: spectra-db
     plan: free
-    region: frankfurt
+    region: oregon
