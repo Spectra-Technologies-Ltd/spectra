@@ -126,7 +126,7 @@ async function main() {
       create: {
         fullName: g.name,
         organizationId: organization.id,
-        photoUrl: 'https://via.placeholder.com/150',
+        photoUrl: '',
         phone: '+2348000000000',
         address: 'Lagos, Nigeria',
         emergencyContact: '+2348000000001',

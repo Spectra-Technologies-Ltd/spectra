@@ -22,15 +22,30 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  // Log all requests and errors
+  // Log all requests with full error details
   const httpLogger = new Logger('HTTP');
   app.use((req: any, res: any, next: any) => {
     const start = Date.now();
+    const originalJson = res.json.bind(res);
+    let responseBody: any = null;
+
+    // Intercept JSON responses to capture error details
+    res.json = (body: any) => {
+      responseBody = body;
+      return originalJson(body);
+    };
+
     res.on('finish', () => {
       const { statusCode } = res;
       const ms = Date.now() - start;
-      if (statusCode >= 400) {
-        httpLogger.error(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)`);
+      const details = statusCode >= 400 && responseBody
+        ? ` | ${JSON.stringify(responseBody).substring(0, 200)}`
+        : '';
+
+      if (statusCode >= 500) {
+        httpLogger.error(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)${details}`, statusCode >= 500 ? (responseBody as any)?.stack : undefined);
+      } else if (statusCode >= 400) {
+        httpLogger.warn(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)${details}`);
       } else {
         httpLogger.log(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)`);
       }
