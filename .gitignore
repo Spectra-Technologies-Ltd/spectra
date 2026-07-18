@@ -1,7 +1,9 @@
 node_modules/
 dist/
 .env
+.env.*
 .next/
 *.log
 .DS_Store
 SECURITY_AUDIT.md
+uploads/

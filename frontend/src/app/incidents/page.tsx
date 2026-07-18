@@ -33,11 +33,12 @@ interface IncidentsResponse {
 
 export default function IncidentsPage() {
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
 
   const { data, isLoading } = useQuery<IncidentsResponse>({
-    queryKey: ['incidents', page],
+    queryKey: ['incidents', page, search],
     queryFn: async () => {
-      const res = await api.get('/incidents', { params: { page, limit: 20 } });
+      const res = await api.get('/incidents', { params: { page, limit: 20, search } });
       return res.data;
     },
   });
@@ -73,6 +74,8 @@ export default function IncidentsPage() {
             <input
               type="text"
               placeholder="Search incidents..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="w-full bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
           </div>

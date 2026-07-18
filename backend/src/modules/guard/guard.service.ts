@@ -29,9 +29,9 @@ export class GuardService {
     if (query.siteId) where.assignedSiteId = query.siteId;
     if (query.search) {
       where.OR = [
-        { fullName: { contains: query.search } },
-        { nin: { contains: query.search } },
-        { phone: { contains: query.search } },
+        { fullName: { contains: query.search, mode: 'insensitive' } },
+        { nin: { contains: query.search, mode: 'insensitive' } },
+        { phone: { contains: query.search, mode: 'insensitive' } },
       ];
     }
 

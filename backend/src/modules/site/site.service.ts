@@ -23,8 +23,8 @@ export class SiteService {
     if (query.clientId) where.clientId = query.clientId;
     if (query.search) {
       where.OR = [
-        { name: { contains: query.search } },
-        { address: { contains: query.search } },
+        { name: { contains: query.search, mode: 'insensitive' } },
+        { address: { contains: query.search, mode: 'insensitive' } },
       ];
     }
 

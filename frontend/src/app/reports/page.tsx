@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { FileText, Download, MapPin, Building2 } from 'lucide-react';
+import { FileText, Download, MapPin, Building2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Site {
@@ -14,8 +14,6 @@ interface Site {
   riskLevel: string;
   client: { companyName: string };
 }
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
 
 const getRiskLevelColor = (level: string) => {
   switch (level) {
@@ -28,6 +26,8 @@ const getRiskLevelColor = (level: string) => {
 };
 
 export default function ReportsPage() {
+  const [downloading, setDownloading] = useState<string | null>(null);
+
   const { data, isLoading } = useQuery({
     queryKey: ['reports-sites'],
     queryFn: async () => {
@@ -36,7 +36,29 @@ export default function ReportsPage() {
     },
   });
 
+  const downloadPdf = async (siteId: string, siteName: string) => {
+    setDownloading(siteId);
+    try {
+      const res = await api.get(`/reports/site/${siteId}/daily/pdf`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Spectra_Report_${siteName}_${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Failed to download report. Please try again.');
+    } finally {
+      setDownloading(null);
+    }
+  };
+
   const sites: Site[] = data?.data ?? [];
+  const isDownloading = (id: string) => downloading === id;
 
   return (
     <DashboardLayout>
@@ -95,15 +117,18 @@ export default function ReportsPage() {
                   {site.riskLevel}
                 </span>
 
-                <a
-                  href={`${API_BASE}/reports/site/${site.id}/daily/pdf`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+                <button
+                  onClick={() => downloadPdf(site.id, site.name)}
+                  disabled={isDownloading(site.id)}
+                  className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(139,92,246,0.3)] disabled:opacity-50"
                 >
-                  <Download className="h-3.5 w-3.5" />
+                  {isDownloading(site.id) ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
                   Download Daily PDF
-                </a>
+                </button>
               </div>
             </div>
           ))}

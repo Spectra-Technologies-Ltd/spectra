@@ -1,10 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { ReportIncidentDto, UpdateIncidentStatusDto } from './dto/incident.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class IncidentService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(IncidentService.name);
+
+  constructor(
+    private prisma: PrismaService,
+    private notifications: NotificationsService,
+  ) {}
 
   async reportIncident(
     dto: ReportIncidentDto,
@@ -16,7 +22,7 @@ export class IncidentService {
     if (!site)
       throw new NotFoundException('Site not found in your organization');
 
-    return this.prisma.incident.create({
+    const incident = await this.prisma.incident.create({
       data: {
         title: dto.title,
         description: dto.description,
@@ -36,6 +42,31 @@ export class IncidentService {
         investigationStatus: 'OPEN',
       },
     });
+
+    // Trigger notification (fire-and-forget, don't block response)
+    this.notifications.sendIncidentAlert({
+      incidentId: incident.id,
+      type: dto.type,
+      severity: dto.severity,
+      siteId: dto.siteId,
+      siteName: site.name,
+      description: dto.description,
+    }).catch((err) => this.logger.warn('Notification failed:', err.message));
+
+    // Write audit log (fire-and-forget)
+    this.prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: 'INCIDENT_CREATED',
+        entity: 'Incident',
+        entityId: incident.id,
+        newValues: JSON.stringify({ type: dto.type, severity: dto.severity }),
+        ipAddress: '',
+        userAgent: '',
+      },
+    }).catch((err) => this.logger.warn('Audit log failed:', err.message));
+
+    return incident;
   }
 
   async updateStatus(
@@ -63,6 +94,7 @@ export class IncidentService {
     siteId?: string;
     status?: string;
     type?: string;
+    search?: string;
     organizationId: string;
   }) {
     const page = query.page || 1;
@@ -73,6 +105,13 @@ export class IncidentService {
     if (query.siteId) where.siteId = query.siteId;
     if (query.status) where.status = query.status;
     if (query.type) where.incidentType = query.type;
+    if (query.search) {
+      where.OR = [
+        { title: { contains: query.search, mode: 'insensitive' } },
+        { description: { contains: query.search, mode: 'insensitive' } },
+        { incidentType: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
 
     const [data, total] = await Promise.all([
       this.prisma.incident.findMany({

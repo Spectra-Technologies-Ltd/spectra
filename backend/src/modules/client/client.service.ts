@@ -21,9 +21,9 @@ export class ClientService {
     if (query.billingStatus) where.billingStatus = query.billingStatus;
     if (query.search) {
       where.OR = [
-        { companyName: { contains: query.search } },
-        { estateName: { contains: query.search } },
-        { contactPerson: { contains: query.search } },
+        { companyName: { contains: query.search, mode: 'insensitive' } },
+        { estateName: { contains: query.search, mode: 'insensitive' } },
+        { contactPerson: { contains: query.search, mode: 'insensitive' } },
       ];
     }
 

@@ -1,15 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/providers/AuthProvider';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Shield, Home, Map, AlertTriangle, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Shield, Home, Map, AlertTriangle, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, logout, user } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   if (isLoading) {
     return <div className="flex h-screen items-center justify-center bg-background"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
@@ -27,9 +38,30 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           <Shield className="h-5 w-5 text-primary" />
           <span className="font-bold text-sm tracking-wide">SPECTRA OPS</span>
         </div>
-        <button className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
-          <User className="h-4 w-4 text-foreground" />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center"
+          >
+            <User className="h-4 w-4 text-foreground" />
+          </button>
+          {showMenu && (
+            <div ref={menuRef} className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-border bg-card shadow-xl z-50 py-1">
+              <div className="px-3 py-2 border-b border-border">
+                <p className="text-sm font-medium text-foreground">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                <p className="text-xs text-muted-foreground">{user?.role}</p>
+              </div>
+              <button
+                onClick={() => { logout(); setShowMenu(false); }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
+              >
+                <LogOut className="h-4 w-4" /> Logout
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Main Content Area */}

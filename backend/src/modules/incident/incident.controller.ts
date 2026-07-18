@@ -51,6 +51,7 @@ export class IncidentController {
     @Query('siteId') siteId?: string,
     @Query('status') status?: string,
     @Query('type') type?: string,
+    @Query('search') search?: string,
   ) {
     return this.incidentService.findAll({
       page: page ? parseInt(page) : undefined,
@@ -58,6 +59,7 @@ export class IncidentController {
       siteId,
       status,
       type,
+      search,
       organizationId: user.organizationId,
     });
   }
