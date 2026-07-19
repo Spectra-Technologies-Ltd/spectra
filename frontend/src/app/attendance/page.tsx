@@ -4,8 +4,11 @@ import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { ClipboardCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ClipboardCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/Badge';
+import { Pagination } from '@/components/ui/Pagination';
+import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
 
 interface AttendanceRecord {
   id: string;
@@ -69,107 +72,91 @@ export default function AttendancePage() {
       </div>
 
       <div className="rounded-xl border border-border bg-card overflow-hidden flex flex-col">
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
-              <tr>
-                <th className="px-6 py-4 font-medium tracking-wider">Guard Name</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Site</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Check-in Time</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Check-out Time</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Status</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Method</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      Loading attendance records...
-                    </div>
-                  </td>
-                </tr>
-              ) : data?.data?.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
-                    <ClipboardCheck className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    <p>No attendance records found.</p>
-                  </td>
-                </tr>
-              ) : (
-                data?.data?.map((record: AttendanceRecord) => (
-                  <tr key={record.id} className="hover:bg-secondary/30 transition-colors group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                          {record.guard.fullName.substring(0, 2).toUpperCase()}
-                        </div>
-                        <span className="font-medium text-foreground">
-                          {record.guard.fullName}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-foreground">{record.site.name}</td>
-                    <td className="px-6 py-4 text-foreground font-mono text-xs">
-                      {formatDateTime(record.checkInTime)}
-                    </td>
-                    <td className="px-6 py-4 text-foreground font-mono text-xs">
-                      {formatDateTime(record.checkOutTime)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={cn(
-                          'px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider',
-                          getStatusStyle(record.status),
-                        )}
-                      >
-                        {record.status.replace('_', ' ')}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
-                        {record.checkInMethod}
-                      </span>
-                    </td>
+        {isLoading ? (
+          <LoadingState label="Loading attendance records..." />
+        ) : data?.data?.length === 0 ? (
+          <EmptyState icon={ClipboardCheck} title="No attendance records found." />
+        ) : (
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
+                  <tr>
+                    <th className="px-6 py-4 font-medium tracking-wider">Guard Name</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Site</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Check-in Time</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Check-out Time</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Status</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Method</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {data?.meta && (
-          <div className="border-t border-border p-4 flex items-center justify-between bg-secondary/10">
-            <span className="text-xs text-muted-foreground">
-              Showing{' '}
-              <span className="font-medium text-foreground">{data.data.length}</span> of{' '}
-              <span className="font-medium text-foreground">{data.meta.total}</span>{' '}
-              entries
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <span className="text-xs font-medium px-2 text-foreground">
-                Page {page} of {data.meta.pages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(data.meta.pages, p + 1))}
-                disabled={page === data.meta.pages || data.meta.pages === 0}
-                className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {data?.data?.map((record: AttendanceRecord) => (
+                    <tr key={record.id} className="hover:bg-secondary/30 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                            {record.guard.fullName.substring(0, 2).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-foreground">
+                            {record.guard.fullName}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-foreground">{record.site.name}</td>
+                      <td className="px-6 py-4 text-foreground font-mono text-xs">
+                        {formatDateTime(record.checkInTime)}
+                      </td>
+                      <td className="px-6 py-4 text-foreground font-mono text-xs">
+                        {formatDateTime(record.checkOutTime)}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge colorClassName={getStatusStyle(record.status)}>{record.status.replace('_', ' ')}</Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+                          {record.checkInMethod}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
+
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-border">
+              {data?.data?.map((record: AttendanceRecord) => (
+                <div key={record.id} className="p-4 flex items-start gap-3">
+                  <div className="h-9 w-9 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                    {record.guard.fullName.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium text-foreground truncate">{record.guard.fullName}</span>
+                      <Badge colorClassName={getStatusStyle(record.status)}>{record.status.replace('_', ' ')}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{record.site.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1 font-mono">
+                      In {formatDateTime(record.checkInTime)} · Out {formatDateTime(record.checkOutTime)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">{record.checkInMethod}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {data?.meta && (
+          <Pagination
+            page={page}
+            totalPages={data.meta.pages}
+            currentCount={data.data.length}
+            totalCount={data.meta.total}
+            onPrev={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => setPage((p) => Math.min(data.meta.pages, p + 1))}
+          />
         )}
       </div>
     </DashboardLayout>

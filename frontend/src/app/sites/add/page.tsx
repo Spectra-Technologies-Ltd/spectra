@@ -95,7 +95,7 @@ export default function AddSitePage() {
               </div>
             ))}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Latitude *</label>
                 <input name="latitude" type="number" step="any" required value={form.latitude} onChange={handleChange} placeholder="6.4385"
@@ -119,7 +119,7 @@ export default function AddSitePage() {
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Risk Level *</label>
                 <select name="riskLevel" value={form.riskLevel} onChange={handleChange}
