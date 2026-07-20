@@ -5,10 +5,13 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
-  AlertTriangle, ChevronLeft, ChevronRight, Search,
+  AlertTriangle, Search,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { Badge } from '@/components/ui/Badge';
+import { Pagination } from '@/components/ui/Pagination';
+import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
 
 interface Incident {
   id: string;
@@ -81,102 +84,92 @@ export default function IncidentsPage() {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
-              <tr>
-                <th className="px-6 py-4 font-medium tracking-wider">Title</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Type</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Severity</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Site</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Reporter</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Status</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Reported At</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      Loading incidents...
-                    </div>
-                  </td>
-                </tr>
-              ) : data?.data?.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
-                    <AlertTriangle className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    <p>No incidents found.</p>
-                  </td>
-                </tr>
-              ) : (
-                data?.data?.map((incident: Incident) => (
-                  <tr key={incident.id} className="hover:bg-secondary/30 transition-colors group">
-                    <td className="px-6 py-4">
-                      <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
-                        {incident.title}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-foreground capitalize">{incident.incidentType}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={cn('px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider', getSeverityColor(incident.severity))}>
-                        {incident.severity}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-foreground">{incident.site.name}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-foreground">
-                        {incident.reporter.firstName} {incident.reporter.lastName}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-foreground capitalize">{incident.status}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-foreground text-sm">
-                        {format(new Date(incident.reportedAt), 'MMM dd, yyyy')}
-                      </span>
-                    </td>
+        {isLoading ? (
+          <LoadingState label="Loading incidents..." />
+        ) : data?.data?.length === 0 ? (
+          <EmptyState icon={AlertTriangle} title="No incidents found." />
+        ) : (
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
+                  <tr>
+                    <th className="px-6 py-4 font-medium tracking-wider">Title</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Type</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Severity</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Site</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Reporter</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Status</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Reported At</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {data?.meta && (
-          <div className="border-t border-border p-4 flex items-center justify-between bg-secondary/10">
-            <span className="text-xs text-muted-foreground">
-              Showing <span className="font-medium text-foreground">{data.data.length}</span> of <span className="font-medium text-foreground">{data.meta.total}</span> entries
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <span className="text-xs font-medium px-2 text-foreground">
-                Page {page} of {data.meta.pages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(data.meta.pages, p + 1))}
-                disabled={page === data.meta.pages || data.meta.pages === 0}
-                className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {data?.data?.map((incident: Incident) => (
+                    <tr key={incident.id} className="hover:bg-secondary/30 transition-colors group">
+                      <td className="px-6 py-4">
+                        <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
+                          {incident.title}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-foreground capitalize">{incident.incidentType}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge colorClassName={getSeverityColor(incident.severity)}>{incident.severity}</Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-foreground">{incident.site.name}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-foreground">
+                          {incident.reporter.firstName} {incident.reporter.lastName}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-foreground capitalize">{incident.status}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-foreground text-sm">
+                          {format(new Date(incident.reportedAt), 'MMM dd, yyyy')}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
+
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-border">
+              {data?.data?.map((incident: Incident) => (
+                <div key={incident.id} className="p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium text-foreground truncate">{incident.title}</span>
+                    <Badge colorClassName={getSeverityColor(incident.severity)}>{incident.severity}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1 capitalize">
+                    {incident.incidentType.toLowerCase()} · {incident.site.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Reported by {incident.reporter.firstName} {incident.reporter.lastName} on{' '}
+                    {format(new Date(incident.reportedAt), 'MMM dd, yyyy')}
+                  </p>
+                  <p className="text-xs text-foreground mt-1 capitalize">Status: {incident.status.toLowerCase()}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {data?.meta && (
+          <Pagination
+            page={page}
+            totalPages={data.meta.pages}
+            currentCount={data.data.length}
+            totalCount={data.meta.total}
+            onPrev={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => setPage((p) => Math.min(data.meta.pages, p + 1))}
+          />
         )}
       </div>
     </DashboardLayout>

@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { Route, ChevronLeft, ChevronRight } from "lucide-react";
+import { Route } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/Badge";
+import { Pagination } from "@/components/ui/Pagination";
+import { EmptyState, LoadingState } from "@/components/ui/EmptyState";
 
 interface PatrolRecord {
   id: string;
@@ -63,125 +66,108 @@ export default function PatrolsPage() {
       </div>
 
       <div className="rounded-xl border border-border bg-card overflow-hidden flex flex-col">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
-              <tr>
-                <th className="px-6 py-4 font-medium tracking-wider">Route</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Guard</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Site</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Started At</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Ended At</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Status</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Completion %</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      Loading patrol data...
-                    </div>
-                  </td>
-                </tr>
-              ) : data?.data?.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
-                    <Route className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    <p>No patrol records found.</p>
-                  </td>
-                </tr>
-              ) : (
-                data?.data?.map((record: PatrolRecord) => (
-                  <tr
-                    key={record.id}
-                    className="hover:bg-secondary/30 transition-colors group"
-                  >
-                    <td className="px-6 py-4 font-medium text-foreground">
-                      {record.route.name}
-                    </td>
-                    <td className="px-6 py-4 text-foreground">
-                      {record.guard.fullName}
-                    </td>
-                    <td className="px-6 py-4 text-foreground">
-                      {record.route.site.name}
-                    </td>
-                    <td className="px-6 py-4 text-muted-foreground text-xs">
-                      {formatDateTime(record.startTime)}
-                    </td>
-                    <td className="px-6 py-4 text-muted-foreground text-xs">
-                      {formatDateTime(record.endTime)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={cn(
-                          "px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider",
-                          getStatusBadge(record.status),
-                        )}
-                      >
-                        {record.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden max-w-[80px]">
-                          <div
-                            className="h-full rounded-full bg-primary transition-all"
-                            style={{ width: `${record.completionPercentage}%` }}
-                          />
-                        </div>
-                        <span className="text-xs font-medium text-foreground">
-                          {record.completionPercentage}%
-                        </span>
-                      </div>
-                    </td>
+        {isLoading ? (
+          <LoadingState label="Loading patrol data..." />
+        ) : data?.data?.length === 0 ? (
+          <EmptyState icon={Route} title="No patrol records found." />
+        ) : (
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
+                  <tr>
+                    <th className="px-6 py-4 font-medium tracking-wider">Route</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Guard</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Site</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Started At</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Ended At</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Status</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Completion %</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {data?.meta && (
-          <div className="border-t border-border p-4 flex items-center justify-between bg-secondary/10">
-            <span className="text-xs text-muted-foreground">
-              Showing{" "}
-              <span className="font-medium text-foreground">
-                {data.data.length}
-              </span>{" "}
-              of{" "}
-              <span className="font-medium text-foreground">
-                {data.meta.total}
-              </span>{" "}
-              entries
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <span className="text-xs font-medium px-2 text-foreground">
-                Page {page} of {data.meta.pages}
-              </span>
-              <button
-                onClick={() =>
-                  setPage((p) => Math.min(data.meta.pages, p + 1))
-                }
-                disabled={
-                  page === data.meta.pages || data.meta.pages === 0
-                }
-                className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {data?.data?.map((record: PatrolRecord) => (
+                    <tr
+                      key={record.id}
+                      className="hover:bg-secondary/30 transition-colors group"
+                    >
+                      <td className="px-6 py-4 font-medium text-foreground">
+                        {record.route.name}
+                      </td>
+                      <td className="px-6 py-4 text-foreground">
+                        {record.guard.fullName}
+                      </td>
+                      <td className="px-6 py-4 text-foreground">
+                        {record.route.site.name}
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground text-xs">
+                        {formatDateTime(record.startTime)}
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground text-xs">
+                        {formatDateTime(record.endTime)}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge colorClassName={getStatusBadge(record.status)}>{record.status}</Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden max-w-[80px]">
+                            <div
+                              className="h-full rounded-full bg-primary transition-all"
+                              style={{ width: `${record.completionPercentage}%` }}
+                            />
+                          </div>
+                          <span className="text-xs font-medium text-foreground">
+                            {record.completionPercentage}%
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
+
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-border">
+              {data?.data?.map((record: PatrolRecord) => (
+                <div key={record.id} className="p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium text-foreground truncate">{record.route.name}</span>
+                    <Badge colorClassName={getStatusBadge(record.status)}>{record.status}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {record.guard.fullName} · {record.route.site.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formatDateTime(record.startTime)} → {formatDateTime(record.endTime)}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{ width: `${record.completionPercentage}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-foreground shrink-0">
+                      {record.completionPercentage}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {data?.meta && (
+          <Pagination
+            page={page}
+            totalPages={data.meta.pages}
+            currentCount={data.data.length}
+            totalCount={data.meta.total}
+            onPrev={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => setPage((p) => Math.min(data.meta.pages, p + 1))}
+          />
         )}
       </div>
     </DashboardLayout>

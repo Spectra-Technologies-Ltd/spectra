@@ -33,7 +33,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   return (
     <div className="flex flex-col h-screen bg-background overflow-hidden md:hidden">
       {/* Mobile Header */}
-      <header className="flex items-center justify-between px-4 h-14 border-b border-border bg-card">
+      <header className="flex items-center justify-between px-4 h-14 border-b border-border bg-card pt-[env(safe-area-inset-top)]">
         <div className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-primary" />
           <span className="font-bold text-sm tracking-wide">SPECTRA OPS</span>
@@ -70,7 +70,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-card px-6 flex items-center justify-between z-50">
+      <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-card px-6 flex items-center justify-between z-50 pb-[env(safe-area-inset-bottom)]">
         <Link href="/mobile" className={cn("flex flex-col items-center gap-1", pathname === '/mobile' ? "text-primary" : "text-muted-foreground")}>
           <Home className="h-5 w-5" />
           <span className="text-[10px] font-medium">Home</span>

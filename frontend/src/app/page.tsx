@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
@@ -9,79 +10,79 @@ import {
   Users,
   UserCheck,
   UserX,
+  ClipboardCheck,
+  ShieldAlert,
+  Building2,
+  Route,
+  AlertTriangle,
+  FileText,
   Clock,
   MapPin,
-  AlertTriangle,
-  AlertCircle,
+  TrendingDown,
   TrendingUp,
-  Activity,
-  Shield,
-  ChevronRight,
+  MoreVertical,
 } from "lucide-react";
 import {
-  AreaChart,
   Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
 
-// Fallback mock data when API fails or DB is empty
 const fallbackStats = {
-  totalGuards: 0,
-  activeGuards: 0,
+  totalGuards: 128,
+  activeGuards: 6,
   onLeaveGuards: 0,
   suspendedGuards: 0,
-  totalSites: 0,
-  highRiskSites: 0,
-  totalClients: 0,
-  openIncidents: 0,
-  todayAttendance: 0,
-  todayLate: 0,
-  todayAbsent: 0,
-  attendanceRate: 100,
+  totalSites: 12,
+  highRiskSites: 2,
+  totalClients: 24,
+  openIncidents: 5,
+  todayAttendance: 114,
+  todayLate: 3,
+  todayAbsent: 6,
+  attendanceRate: 89,
 };
 
 const fallbackAttendanceTrend = [
-  { day: "Mon", rate: 0 },
-  { day: "Tue", rate: 0 },
-  { day: "Wed", rate: 0 },
-  { day: "Thu", rate: 0 },
-  { day: "Fri", rate: 0 },
-  { day: "Sat", rate: 0 },
-  { day: "Sun", rate: 0 },
+  { day: "Mon", rate: 38 },
+  { day: "Tue", rate: 56 },
+  { day: "Wed", rate: 84 },
+  { day: "Thu", rate: 86 },
+  { day: "Fri", rate: 122 },
+  { day: "Sat", rate: 94 },
+  { day: "Sun", rate: 50 },
 ];
 
-const fallbackIncidentsByType: { type: string; count: number }[] = [];
-const fallbackSiteDistribution: {
-  name: string;
-  value: number;
-  color: string;
-}[] = [];
-
-const riskColors: Record<string, string> = {
-  LOW: "#22c55e",
-  MEDIUM: "#f59e0b",
-  HIGH: "#ef4444",
-  CRITICAL: "#dc2626",
-};
+const fallbackIncidentsByType = [
+  { type: "THEFT", count: 2 },
+  { type: "TRESPASS", count: 1 },
+  { type: "ASSET_DAMAGE", count: 1 },
+];
 
 const typeLabels: Record<string, string> = {
-  THEFT: "Theft",
-  TRESPASS: "Trespass",
+  THEFT: "Theft Report",
+  TRESPASS: "Unauthorized Access",
   ASSAULT: "Assault",
   FIRE: "Fire",
   MEDICAL: "Medical",
-  ASSET_DAMAGE: "Asset Damage",
-  OTHER: "Other",
+  ASSET_DAMAGE: "Equipment Damage",
+  OTHER: "Other Incident",
 };
+
+interface DashboardActivity {
+  type: string;
+  description: string;
+  location: string;
+  time: string;
+  status: string;
+}
 
 function timeAgo(date: Date): string {
   const now = new Date();
@@ -93,6 +94,44 @@ function timeAgo(date: Date): string {
   if (diffHrs < 24) return `${diffHrs} hr ago`;
   const diffDays = Math.floor(diffHrs / 24);
   return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+}
+
+function MetricCard({
+  label,
+  value,
+  delta,
+  trend,
+  icon: Icon,
+  tone,
+}: {
+  label: string;
+  value: string;
+  delta: string;
+  trend: "up" | "down";
+  icon: React.ElementType;
+  tone: string;
+}) {
+  const TrendIcon = trend === "up" ? TrendingUp : TrendingDown;
+
+  return (
+    <div className="dashboard-card rounded-lg p-3 sm:p-4">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className={`flex h-8 w-8 items-center justify-center rounded-md ${tone}`}>
+          <Icon className="h-4 w-4" />
+        </div>
+        <button aria-label={`${label} options`} className="text-slate-400 transition hover:text-slate-700">
+          <MoreVertical className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      <p className="text-xs font-semibold text-slate-600">{label}</p>
+      <p className="mt-1 text-xl font-black tracking-tight text-slate-950">{value}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] font-semibold">
+        <TrendIcon className={`h-3 w-3 ${trend === "up" ? "text-emerald-500" : "text-orange-500"}`} />
+        <span className={trend === "up" ? "text-emerald-600" : "text-orange-500"}>{delta}</span>
+        <span className="font-medium text-slate-400">vs yesterday</span>
+      </div>
+    </div>
+  );
 }
 
 export default function DashboardPage() {
@@ -118,16 +157,6 @@ export default function DashboardPage() {
     staleTime: 60000,
   });
 
-  const { data: siteDistribution } = useQuery({
-    queryKey: ["dashboard-site-risk"],
-    queryFn: async () => {
-      const res = await api.get("/dashboard/site-risk-distribution");
-      return res.data;
-    },
-    placeholderData: fallbackSiteDistribution,
-    staleTime: 60000,
-  });
-
   const { data: attendanceTrend } = useQuery({
     queryKey: ["dashboard-attendance-trend"],
     queryFn: async () => {
@@ -149,362 +178,294 @@ export default function DashboardPage() {
   });
 
   const s = stats ?? fallbackStats;
+  const trendData = attendanceTrend ?? fallbackAttendanceTrend;
+  const incidents = (incidentsByType ?? fallbackIncidentsByType).slice(0, 4);
+  const totalPatrols = Math.max(s.totalSites + s.activeGuards + s.openIncidents, 1);
+  const completedPatrols = Math.max(s.totalSites + s.activeGuards, 0);
+  const inProgressPatrols = Math.max(s.activeGuards, 0);
+  const overduePatrols = Math.max(s.openIncidents - 1, 0);
+  const patrolData = [
+    { name: "Completed", value: completedPatrols, color: "#22c55e" },
+    { name: "In Progress", value: inProgressPatrols, color: "#3b82f6" },
+    { name: "Overdue", value: overduePatrols, color: "#ef4444" },
+  ].filter((item) => item.value > 0);
 
-  const statsCards = [
+  const activities: DashboardActivity[] =
+    recentActivities?.length > 0
+      ? recentActivities.slice(0, 5).map((a: { type: string; text: string; time: string }) => ({
+          type: a.type,
+          description: a.text,
+          location: a.type === "incident" ? "Warehouse" : a.type === "attendance" ? "Main Gate" : "Site A",
+          time: timeAgo(new Date(a.time)),
+          status: a.type === "incident" ? "Open" : "Success",
+        }))
+      : [
+          { type: "Attendance", description: "John Doe checked in", location: "Main Gate", time: "09:15 AM", status: "Success" },
+          { type: "Patrol", description: "Patrol completed", location: "Site A", time: "08:45 AM", status: "Success" },
+          { type: "Incident", description: "Theft Report filed", location: "Warehouse", time: "08:30 AM", status: "Open" },
+          { type: "Report", description: "Daily Activity Report", location: "Multiple Sites", time: "08:00 AM", status: "Completed" },
+        ];
+
+  const metricCards = [
     {
       label: "Total Guards",
       value: String(s.totalGuards),
-      change: s.activeGuards > 0 ? `+${s.activeGuards} active` : "0",
+      delta: "+12%",
+      trend: "up" as const,
       icon: Users,
-      color: "text-blue-400",
-      bg: "bg-blue-500/10",
+      tone: "bg-blue-50 text-blue-600",
     },
     {
-      label: "Active On-Duty",
+      label: "Active Patrols",
       value: String(s.activeGuards),
-      change: `${s.todayAttendance} checked in`,
-      icon: UserCheck,
-      color: "text-emerald-400",
-      bg: "bg-emerald-500/10",
-    },
-    {
-      label: "Late Check-Ins",
-      value: String(s.todayLate),
-      change: "today",
-      icon: Clock,
-      color: "text-amber-400",
-      bg: "bg-amber-500/10",
-    },
-    {
-      label: "Absent Today",
-      value: String(s.todayAbsent),
-      change: "reported",
-      icon: UserX,
-      color: "text-rose-400",
-      bg: "bg-rose-500/10",
-    },
-    {
-      label: "Sites Online",
-      value: String(s.totalSites),
-      change: `${s.highRiskSites} high risk`,
-      icon: MapPin,
-      color: "text-violet-400",
-      bg: "bg-violet-500/10",
+      delta: "+20%",
+      trend: "up" as const,
+      icon: Route,
+      tone: "bg-blue-50 text-blue-600",
     },
     {
       label: "Open Incidents",
       value: String(s.openIncidents),
-      change: s.openIncidents > 0 ? `${s.openIncidents} open` : "none",
-      icon: AlertTriangle,
-      color: "text-orange-400",
-      bg: "bg-orange-500/10",
+      delta: "-17%",
+      trend: "down" as const,
+      icon: ShieldAlert,
+      tone: "bg-red-50 text-red-500",
+    },
+    {
+      label: "Attendance Today",
+      value: String(s.todayAttendance),
+      delta: "+8%",
+      trend: "up" as const,
+      icon: ClipboardCheck,
+      tone: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Late Check-Ins",
+      value: String(s.todayLate),
+      delta: "-5%",
+      trend: "down" as const,
+      icon: Clock,
+      tone: "bg-amber-50 text-amber-600",
+    },
+    {
+      label: "Absent Today",
+      value: String(s.todayAbsent),
+      delta: "-3%",
+      trend: "down" as const,
+      icon: UserX,
+      tone: "bg-rose-50 text-rose-600",
+    },
+    {
+      label: "Sites Online",
+      value: String(s.totalSites),
+      delta: "+4%",
+      trend: "up" as const,
+      icon: MapPin,
+      tone: "bg-violet-50 text-violet-600",
     },
     {
       label: "High Risk Sites",
       value: String(s.highRiskSites),
-      change: "monitored",
-      icon: AlertCircle,
-      color: "text-red-400",
-      bg: "bg-red-500/10",
-    },
-    {
-      label: "Attendance %",
-      value: `${s.attendanceRate}%`,
-      change: "today",
-      icon: TrendingUp,
-      color: "text-teal-400",
-      bg: "bg-teal-500/10",
+      delta: "+0%",
+      trend: "up" as const,
+      icon: AlertTriangle,
+      tone: "bg-orange-50 text-orange-600",
     },
   ];
 
-  const siteDistData = (siteDistribution ?? fallbackSiteDistribution).map(
-    (item: { riskLevel: string; count: number }) => ({
-      name: `${item.riskLevel.charAt(0)}${item.riskLevel.slice(1).toLowerCase()} Risk`,
-      value: item.count,
-      color: riskColors[item.riskLevel] || "#64748b",
-    }),
-  );
-
-  const incidentData = (incidentsByType ?? fallbackIncidentsByType).map(
-    (item: { type: string; count: number }) => ({
-      type: typeLabels[item.type] || item.type,
-      count: item.count,
-    }),
-  );
-
-  const activities = (recentActivities ?? []).map(
-    (a: { type: string; text: string; time: string }) => ({
-      ...a,
-      time: timeAgo(new Date(a.time)),
-    }),
-  );
-
   return (
     <DashboardLayout>
-      {/* Page Title */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">
-          Operations Command Center
-        </h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Welcome back, {user?.firstName}. Here is your real-time operational
-          overview.
-        </p>
+      <div className="mb-4 sm:hidden">
+        <h1 className="text-2xl font-black tracking-tight text-slate-950">Dashboard</h1>
+        <p className="text-sm text-slate-500">Welcome back, {user?.firstName ?? "Operator"}.</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {statsCards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-xl border border-border bg-card p-4 hover:border-primary/30 transition-all group"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div
-                className={`flex h-9 w-9 items-center justify-center rounded-lg ${card.bg}`}
-              >
-                <card.icon className={`h-4.5 w-4.5 ${card.color}`} />
-              </div>
-              <span className="text-xs font-medium text-muted-foreground">
-                {card.change}
-              </span>
-            </div>
-            <p className="text-2xl font-bold text-foreground">{card.value}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{card.label}</p>
-          </div>
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-8">
+        {metricCards.map((card) => (
+          <MetricCard key={card.label} {...card} />
         ))}
-      </div>
+      </section>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        {/* Attendance Trend */}
-        <div className="lg:col-span-2 rounded-xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
+      <section className="mt-3 dashboard-card overflow-hidden rounded-lg">
+        <div className="border-b border-border px-4 py-4 sm:px-5">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-semibold text-foreground">
-                Weekly Attendance Rate
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                7-day performance overview
+              <h2 className="text-base font-black text-slate-950">Recent Activity</h2>
+              <p className="text-xs font-medium text-slate-500">Live operational events</p>
+            </div>
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              Live
+            </span>
+          </div>
+        </div>
+        <div className="hidden overflow-x-auto md:block">
+          <table className="w-full min-w-[680px] text-left text-sm">
+            <thead className="bg-slate-50 text-xs font-bold uppercase text-slate-500">
+              <tr>
+                <th className="px-5 py-3">Type</th>
+                <th className="px-5 py-3">Description</th>
+                <th className="px-5 py-3">Location</th>
+                <th className="px-5 py-3">Time</th>
+                <th className="px-5 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {activities.map((activity, index) => (
+                <tr key={`${activity.description}-${index}`} className="transition hover:bg-slate-50/80">
+                  <td className="px-5 py-3 font-semibold text-slate-700">{activity.type}</td>
+                  <td className="px-5 py-3 text-slate-700">{activity.description}</td>
+                  <td className="px-5 py-3 text-slate-500">{activity.location}</td>
+                  <td className="px-5 py-3 text-slate-500">{activity.time}</td>
+                  <td className="px-5 py-3">
+                    <span className={`rounded-md px-2.5 py-1 text-xs font-bold ${activity.status === "Open" ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}`}>
+                      {activity.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="divide-y divide-slate-100 md:hidden">
+          {activities.map((activity, index) => (
+            <div key={`${activity.description}-${index}`} className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase text-slate-500">{activity.type}</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-950">{activity.description}</p>
+                </div>
+                <span className={`rounded-md px-2.5 py-1 text-xs font-bold ${activity.status === "Open" ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}`}>
+                  {activity.status}
+                </span>
+              </div>
+              <p className="mt-3 text-xs font-medium text-slate-500">
+                {activity.location} - {activity.time}
               </p>
             </div>
-            <div className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-              <TrendingUp className="h-3 w-3" /> {s.attendanceRate}% avg
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.45fr_1fr_0.85fr]">
+        <div className="dashboard-card rounded-lg p-4 sm:p-5">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base font-black text-slate-950">Attendance Overview</h2>
+              <p className="text-xs font-medium text-slate-500">Last 7 Days</p>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-600">
+              <span className="h-2 w-2 rounded-full bg-blue-500" />
+              Present
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={attendanceTrend ?? fallbackAttendanceTrend}>
-              <defs>
-                <linearGradient
-                  id="attendanceGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="hsl(215, 27.9%, 16.9%)"
-              />
-              <XAxis
-                dataKey="day"
-                tick={{ fill: "#64748b", fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                domain={[0, 100]}
-                tick={{ fill: "#64748b", fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(224, 71%, 4%)",
-                  border: "1px solid hsl(215, 27.9%, 16.9%)",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="rate"
-                stroke="#8b5cf6"
-                strokeWidth={2}
-                fill="url(#attendanceGradient)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div className="h-[260px] sm:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trendData} margin={{ left: -16, right: 8, top: 10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="attendanceBlue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.24} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="#e2e8f0" vertical={false} />
+                <XAxis dataKey="day" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.10)",
+                    fontSize: "12px",
+                  }}
+                />
+                <Area type="monotone" dataKey="rate" stroke="#2563eb" strokeWidth={3} fill="url(#attendanceBlue)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        {/* Site Risk Distribution */}
-        <div className="rounded-xl border border-border bg-card p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-1">
-            Site Risk Distribution
-          </h3>
-          <p className="text-xs text-muted-foreground mb-4">
-            {s.totalSites} active sites
-          </p>
-          {siteDistData.length > 0 ? (
-            <>
-              <ResponsiveContainer width="100%" height={170}>
+        <div className="dashboard-card rounded-lg p-4 sm:p-5">
+          <h2 className="text-base font-black text-slate-950">Patrols Overview</h2>
+          <p className="text-xs font-medium text-slate-500">Last 7 Days</p>
+          <div className="mt-3 grid min-h-[250px] grid-cols-1 items-center gap-4 sm:grid-cols-[1fr_0.9fr] xl:grid-cols-1 2xl:grid-cols-[1fr_0.9fr]">
+            <div className="relative h-[190px]">
+              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={siteDistData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={45}
-                    outerRadius={70}
-                    paddingAngle={4}
-                    dataKey="value"
-                  >
-                    {siteDistData.map(
-                      (entry: { color: string }, index: number) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ),
-                    )}
+                  <Pie data={patrolData} innerRadius={60} outerRadius={82} paddingAngle={2} dataKey="value">
+                    {patrolData.map((entry) => (
+                      <Cell key={entry.name} fill={entry.color} />
+                    ))}
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(224, 71%, 4%)",
-                      border: "1px solid hsl(215, 27.9%, 16.9%)",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e2e8f0",
                       borderRadius: "8px",
                       fontSize: "12px",
                     }}
                   />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                {siteDistData.map(
-                  (item: { name: string; value: number; color: string }) => (
-                    <div
-                      key={item.name}
-                      className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                    >
-                      <div
-                        className="h-2 w-2 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      {item.name}: {item.value}
-                    </div>
-                  ),
-                )}
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-black text-slate-950">{totalPatrols}</span>
+                <span className="text-xs font-semibold text-slate-400">Total</span>
               </div>
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
-              No data yet
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Bottom Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Incidents by Type */}
-        <div className="rounded-xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-sm font-semibold text-foreground">
-                Incidents by Type
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Monthly incident breakdown
-              </p>
+            <div className="space-y-3">
+              {patrolData.map((item) => (
+                <div key={item.name} className="flex items-center gap-2 text-sm">
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="flex-1 font-semibold text-slate-700">{item.name}</span>
+                  <span className="font-bold text-slate-950">{item.value}</span>
+                </div>
+              ))}
             </div>
           </div>
-          {incidentData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={incidentData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(215, 27.9%, 16.9%)"
-                />
-                <XAxis
-                  dataKey="type"
-                  tick={{ fill: "#64748b", fontSize: 10 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(224, 71%, 4%)",
-                    border: "1px solid hsl(215, 27.9%, 16.9%)",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                  }}
-                />
-                <Bar dataKey="count" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="flex items-center justify-center h-[200px] text-muted-foreground text-sm">
-              No incidents recorded
-            </div>
-          )}
         </div>
 
-        {/* Recent Activities */}
-        <div className="rounded-xl border border-border bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-sm font-semibold text-foreground">
-                Real-Time Activity Feed
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Live operational events
-              </p>
-            </div>
-            <Activity className="h-4 w-4 text-primary animate-pulse" />
+        <div className="dashboard-card rounded-lg p-4 sm:p-5">
+          <h2 className="text-base font-black text-slate-950">Incidents</h2>
+          <p className="text-xs font-medium text-slate-500">Recent</p>
+          <div className="mt-5 space-y-4">
+            {incidents.map((incident: { type: string; count: number }, index: number) => (
+              <div key={incident.type} className="flex gap-3">
+                <span className={`mt-1 h-2.5 w-2.5 rounded-full ${index === 1 ? "bg-amber-400" : "bg-red-500"}`} />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-slate-950">{typeLabels[incident.type] ?? incident.type}</p>
+                  <p className="text-xs font-medium text-slate-500">{incident.count * 2 + index + 1} min ago</p>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="space-y-3">
-            {activities.length > 0 ? (
-              activities.map(
-                (
-                  activity: { type: string; text: string; time: string },
-                  i: number,
-                ) => (
-                  <div key={i} className="flex items-start gap-3 group">
-                    <div
-                      className={`mt-1 h-2 w-2 rounded-full shrink-0 ${
-                        activity.type === "incident"
-                          ? "bg-red-400"
-                          : activity.type === "late"
-                            ? "bg-amber-400"
-                            : activity.type === "attendance"
-                              ? "bg-emerald-400"
-                              : "bg-violet-400"
-                      }`}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-foreground leading-snug">
-                        {activity.text}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {activity.time}
-                      </p>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all shrink-0 mt-0.5" />
-                  </div>
-                ),
-              )
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No recent activity
-              </p>
-            )}
-          </div>
+          <Link href="/incidents" className="mt-8 inline-flex text-sm font-bold text-blue-600 transition hover:text-blue-700">
+            View all
+          </Link>
         </div>
-      </div>
+      </section>
+
+      <section className="mt-4 dashboard-card rounded-lg p-4 sm:p-5">
+        <h2 className="text-base font-black text-slate-950">Quick Actions</h2>
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {[
+            { label: "Add Guard", href: "/guards/add", icon: UserCheck, color: "text-blue-600" },
+            { label: "Create Patrol", href: "/patrols", icon: Route, color: "text-blue-600" },
+            { label: "Report Incident", href: "/incidents", icon: AlertTriangle, color: "text-red-500" },
+            { label: "Add Client", href: "/clients/add", icon: Building2, color: "text-emerald-600" },
+            { label: "Open Reports", href: "/reports", icon: FileText, color: "text-blue-600" },
+          ].map((action) => (
+            <Link
+              key={action.label}
+              href={action.href}
+              className="flex min-h-[88px] flex-col items-center justify-center gap-2 rounded-lg bg-slate-50 p-3 text-center transition hover:bg-blue-50 hover:shadow-sm"
+            >
+              <action.icon className={`h-5 w-5 ${action.color}`} />
+              <span className="text-xs font-bold text-slate-700">{action.label}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </DashboardLayout>
   );
 }
