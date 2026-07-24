@@ -6,10 +6,13 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
-  Users, Search, Plus, Filter, MoreVertical, Shield, ChevronLeft, ChevronRight,
+  Users, Search, Plus, Filter, MoreVertical, Shield,
   X, Edit, Trash2, ArrowRightLeft,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/Badge';
+import { Pagination } from '@/components/ui/Pagination';
+import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
 
 interface Guard {
   id: string;
@@ -80,7 +83,7 @@ export default function GuardsDirectoryPage() {
             Manage your security personnel, assignments, and statuses.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setShowFilter(!showFilter)}
             className={cn(
@@ -149,130 +152,162 @@ export default function GuardsDirectoryPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
-              <tr>
-                <th className="px-6 py-4 font-medium tracking-wider">Guard Name</th>
-                <th className="px-6 py-4 font-medium tracking-wider">National ID (NIN)</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Assigned Site</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Shift</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Status</th>
-                <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      Loading personnel data...
-                    </div>
-                  </td>
-                </tr>
-              ) : data?.data?.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
-                    <Shield className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    <p>No guards found matching your criteria.</p>
-                  </td>
-                </tr>
-              ) : (
-                data?.data?.map((guard: Guard) => (
-                  <tr key={guard.id} className="hover:bg-secondary/30 transition-colors group">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                          {guard.fullName.substring(0, 2).toUpperCase()}
+        {isLoading ? (
+          <LoadingState label="Loading personnel data..." />
+        ) : data?.data?.length === 0 ? (
+          <EmptyState icon={Shield} title="No guards found matching your criteria." />
+        ) : (
+          <>
+            {/* Desktop / tablet table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
+                  <tr>
+                    <th className="px-6 py-4 font-medium tracking-wider">Guard Name</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">National ID (NIN)</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Assigned Site</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Shift</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Status</th>
+                    <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {data?.data?.map((guard: Guard) => (
+                    <tr key={guard.id} className="hover:bg-secondary/30 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                            {guard.fullName.substring(0, 2).toUpperCase()}
+                          </div>
+                          <button
+                            onClick={() => router.push(`/guards/${guard.id}`)}
+                            className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer hover:underline text-left"
+                          >
+                            {guard.fullName}
+                          </button>
                         </div>
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground font-mono text-xs">{guard.nin}</td>
+                      <td className="px-6 py-4 text-foreground">
+                        {guard.assignedSite?.name || <span className="text-muted-foreground italic">Unassigned</span>}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+                          {guard.currentShift}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge colorClassName={getStatusColor(guard.status)}>{guard.status}</Badge>
+                      </td>
+                      <td className="px-6 py-4 text-right relative">
                         <button
-                          onClick={() => router.push(`/guards/${guard.id}`)}
-                          className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer hover:underline text-left"
+                          onClick={() => setOpenMenu(openMenu === guard.id ? null : guard.id)}
+                          className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
                         >
-                          {guard.fullName}
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+                        {openMenu === guard.id && (
+                          <div
+                            ref={menuRef}
+                            className="absolute right-0 top-full mt-1 w-44 rounded-lg border border-border bg-card shadow-xl z-50 py-1"
+                          >
+                            <button
+                              onClick={() => { router.push(`/guards/${guard.id}`); setOpenMenu(null); }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                            >
+                              <Edit className="h-4 w-4 text-muted-foreground" /> View Profile
+                            </button>
+                            <button
+                              onClick={() => { router.push(`/guards/${guard.id}#transfer`); setOpenMenu(null); }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                            >
+                              <ArrowRightLeft className="h-4 w-4 text-muted-foreground" /> Transfer
+                            </button>
+                            <button
+                              onClick={() => { if (confirm('Delete this guard?')) deleteMutation.mutate(guard.id); }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" /> Delete
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile card list — no horizontal scrolling required */}
+            <div className="md:hidden divide-y divide-border">
+              {data?.data?.map((guard: Guard) => (
+                <div key={guard.id} className="p-4 flex items-start gap-3 active:bg-secondary/30">
+                  <div className="h-10 w-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                    {guard.fullName.substring(0, 2).toUpperCase()}
+                  </div>
+                  <button
+                    onClick={() => router.push(`/guards/${guard.id}`)}
+                    className="flex-1 min-w-0 text-left"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-medium text-foreground truncate">{guard.fullName}</p>
+                      <Badge colorClassName={getStatusColor(guard.status)}>{guard.status}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 font-mono">{guard.nin}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {guard.assignedSite?.name || <span className="italic">Unassigned</span>}
+                      {' · '}
+                      <span className="uppercase tracking-wider">{guard.currentShift}</span>
+                    </p>
+                  </button>
+                  <div className="relative shrink-0">
+                    <button
+                      onClick={() => setOpenMenu(openMenu === guard.id ? null : guard.id)}
+                      className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </button>
+                    {openMenu === guard.id && (
+                      <div
+                        ref={menuRef}
+                        className="absolute right-0 top-full mt-1 w-44 rounded-lg border border-border bg-card shadow-xl z-50 py-1"
+                      >
+                        <button
+                          onClick={() => { router.push(`/guards/${guard.id}`); setOpenMenu(null); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                        >
+                          <Edit className="h-4 w-4 text-muted-foreground" /> View Profile
+                        </button>
+                        <button
+                          onClick={() => { router.push(`/guards/${guard.id}#transfer`); setOpenMenu(null); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                        >
+                          <ArrowRightLeft className="h-4 w-4 text-muted-foreground" /> Transfer
+                        </button>
+                        <button
+                          onClick={() => { if (confirm('Delete this guard?')) deleteMutation.mutate(guard.id); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete
                         </button>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 text-muted-foreground font-mono text-xs">{guard.nin}</td>
-                    <td className="px-6 py-4 text-foreground">
-                      {guard.assignedSite?.name || <span className="text-muted-foreground italic">Unassigned</span>}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
-                        {guard.currentShift}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={cn('px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider', getStatusColor(guard.status))}>
-                        {guard.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right relative">
-                      <button
-                        onClick={() => setOpenMenu(openMenu === guard.id ? null : guard.id)}
-                        className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </button>
-                      {openMenu === guard.id && (
-                        <div
-                          ref={menuRef}
-                          className="absolute right-0 top-full mt-1 w-44 rounded-lg border border-border bg-card shadow-xl z-50 py-1"
-                        >
-                          <button
-                            onClick={() => { router.push(`/guards/${guard.id}`); setOpenMenu(null); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
-                          >
-                            <Edit className="h-4 w-4 text-muted-foreground" /> View Profile
-                          </button>
-                          <button
-                            onClick={() => { router.push(`/guards/${guard.id}#transfer`); setOpenMenu(null); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
-                          >
-                            <ArrowRightLeft className="h-4 w-4 text-muted-foreground" /> Transfer
-                          </button>
-                          <button
-                            onClick={() => { if (confirm('Delete this guard?')) deleteMutation.mutate(guard.id); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4" /> Delete
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {data?.meta && (
-          <div className="border-t border-border p-4 flex items-center justify-between bg-secondary/10">
-            <span className="text-xs text-muted-foreground">
-              Showing <span className="font-medium text-foreground">{data.data.length}</span> of <span className="font-medium text-foreground">{data.meta.total}</span> entries
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <span className="text-xs font-medium px-2 text-foreground">
-                Page {page} of {data.meta.pages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(data.meta.pages, p + 1))}
-                disabled={page === data.meta.pages || data.meta.pages === 0}
-                className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            page={page}
+            totalPages={data.meta.pages}
+            currentCount={data.data.length}
+            totalCount={data.meta.total}
+            onPrev={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => setPage((p) => Math.min(data.meta.pages, p + 1))}
+          />
         )}
       </div>
     </DashboardLayout>

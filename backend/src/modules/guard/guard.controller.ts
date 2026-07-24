@@ -108,6 +108,16 @@ export class GuardController {
     return this.guardService.transfer(id, dto, user.organizationId);
   }
 
+  @Patch(':id/verification')
+  @Roles('ADMIN')
+  async updateVerification(
+    @Param('id') id: string,
+    @Body() dto: { status: string; verifiedBy?: string; date?: string },
+    @CurrentUser() user: any,
+  ) {
+    return this.guardService.updateVerification(id, dto, user.organizationId);
+  }
+
   @Delete(':id')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.NO_CONTENT)

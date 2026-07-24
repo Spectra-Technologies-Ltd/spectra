@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Param, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import { ReportsService } from './reports.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('reports')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -34,5 +35,22 @@ export class ReportsController {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=weekly-report-${siteId}.pdf`);
     res.send(pdf);
+  }
+
+  @Post('generate-all')
+  @Roles('ADMIN')
+  async generateAllDailyReports(@CurrentUser() user: any) {
+    return this.reportsService.generateAllDailyReports(user.organizationId);
+  }
+
+  @Get('guard/:guardId/daily')
+  @Roles('ADMIN')
+  async getGuardDailyReport(@Param('guardId') guardId: string, @Res() res: Response) {
+    const pdf = await this.reportsService.generateGuardDailyReport(guardId);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="guard-report-${guardId}.pdf"`,
+    });
+    res.end(pdf);
   }
 }

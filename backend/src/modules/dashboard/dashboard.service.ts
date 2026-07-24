@@ -243,4 +243,57 @@ export class DashboardService {
     activities.sort((a, b) => b.time.getTime() - a.time.getTime());
     return activities.slice(0, 10);
   }
+
+  async getGuardStats(organizationId: string) {
+    const guards = await this.prisma.guard.findMany({
+      where: { organizationId },
+      select: {
+        id: true,
+        fullName: true,
+        status: true,
+        currentShift: true,
+        performanceScore: true,
+        assignedSite: { select: { name: true } },
+        _count: {
+          select: {
+            attendances: true,
+            patrolRecords: true,
+          },
+        },
+      },
+    });
+
+    return guards.map(g => ({
+      id: g.id,
+      name: g.fullName,
+      status: g.status,
+      shift: g.currentShift,
+      performanceScore: g.performanceScore,
+      site: g.assignedSite?.name || 'Unassigned',
+      totalAttendances: g._count.attendances,
+      totalPatrols: g._count.patrolRecords,
+    }));
+  }
+
+  async getSiteComparison(organizationId: string) {
+    const sites = await this.prisma.site.findMany({
+      where: { organizationId },
+      include: {
+        _count: { select: { guards: true, incidents: true, attendances: true } },
+        client: { select: { companyName: true } },
+      },
+    });
+
+    return sites.map(s => ({
+      id: s.id,
+      name: s.name,
+      client: s.client.companyName,
+      riskLevel: s.riskLevel,
+      targetGuards: s.targetGuards,
+      assignedGuards: s._count.guards,
+      totalIncidents: s._count.incidents,
+      totalAttendances: s._count.attendances,
+      guardFillRate: s.targetGuards > 0 ? Math.round((s._count.guards / s.targetGuards) * 100) : 0,
+    }));
+  }
 }

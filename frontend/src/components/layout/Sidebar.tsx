@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -20,9 +20,11 @@ import {
   LogOut,
   Search,
   UserCircle,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/providers/AuthProvider';
+import { useSidebar } from './SidebarContext';
 
 const navItems = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -38,17 +40,17 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, toggleCollapsed, mobileOpen, closeMobile } = useSidebar();
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
-  return (
-    <aside
-      className={cn(
-        'fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-border bg-card transition-all duration-300',
-        collapsed ? 'w-[68px]' : 'w-[240px]'
-      )}
-    >
+  const handleNavClick = () => {
+    // Close mobile sidebar when navigating
+    if (mobileOpen) closeMobile();
+  };
+
+  const sidebarContent = (
+    <>
       {/* Logo */}
       <div className="flex h-16 items-center border-b border-border px-4">
         <div className="flex items-center gap-2.5 overflow-hidden">
@@ -61,6 +63,13 @@ export default function Sidebar() {
             </span>
           )}
         </div>
+        {/* Close button — visible on mobile only */}
+        <button
+          onClick={closeMobile}
+          className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-all md:hidden"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -74,6 +83,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={handleNavClick}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150',
                 isActive
@@ -116,13 +126,47 @@ export default function Sidebar() {
           {!collapsed && <span>Sign Out</span>}
         </button>
 
+        {/* Collapse toggle — hidden on mobile */}
         <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="flex w-full items-center justify-center rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
+          onClick={toggleCollapsed}
+          className="hidden md:flex w-full items-center justify-center rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile overlay backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={closeMobile}
+        />
+      )}
+
+      {/* Mobile sidebar (overlay) */}
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-40 flex h-dvh flex-col border-r border-border bg-card transition-transform duration-300 md:hidden',
+          collapsed ? 'w-[68px]' : 'w-[240px]',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full',
+        )}
+      >
+        {sidebarContent}
+      </aside>
+
+      {/* Desktop sidebar (always visible) */}
+      <aside
+        className={cn(
+          'fixed left-0 top-0 z-40 hidden h-dvh flex-col border-r border-border bg-card transition-all duration-300 md:flex',
+          collapsed ? 'w-[68px]' : 'w-[240px]'
+        )}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   );
 }
