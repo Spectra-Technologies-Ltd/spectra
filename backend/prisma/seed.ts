@@ -20,6 +20,7 @@ async function main() {
     where: { email: 'ceo@spectra.com' },
     update: {},
     create: {
+      id: 'seed-admin-user',
       email: 'ceo@spectra.com',
       organizationId: organization.id,
       passwordHash: hashedPassword,
@@ -37,6 +38,7 @@ async function main() {
     where: { email: 'olamide@chevron.com.ng' },
     update: {},
     create: {
+      id: 'seed-client-chevron',
       companyName: 'Chevron Nigeria',
       organizationId: organization.id,
       estateName: 'Chevron Alternative Estate',
@@ -55,6 +57,7 @@ async function main() {
     where: { email: 'folake@pinnacle.com' },
     update: {},
     create: {
+      id: 'seed-client-pinnacle',
       companyName: 'Pinnacle Estates',
       organizationId: organization.id,
       estateName: 'Banana Island Plot A',
@@ -70,7 +73,7 @@ async function main() {
   });
   console.log('Created Clients');
 
-  // 3. Create Sites (idempotent)
+  // 3. Create Sites
   const site1 = await prisma.site.upsert({
     where: { id: 'seed-site-chevron-main-gate' },
     update: {},
@@ -85,8 +88,8 @@ async function main() {
       riskLevel: 'MEDIUM',
       targetGuards: 15,
       sitePhotos: '[]',
-      emergencyContacts: '[]',
-      assets: '[]',
+      emergencyContacts: '[{"name":"Security Control Room","phone":"+2349011112222"},{"name":"Police Division","phone":"+2349022223333"}]',
+      assets: '[{"name":"Barrier Gate","type":"INFRASTRUCTURE"},{"name":"CCTV System","type":"ELECTRONICS"}]',
     },
   });
 
@@ -104,44 +107,246 @@ async function main() {
       riskLevel: 'HIGH',
       targetGuards: 30,
       sitePhotos: '[]',
-      emergencyContacts: '[]',
-      assets: '[]',
+      emergencyContacts: '[{"name":"Estate Security Desk","phone":"+2349033334444"},{"name":"Rapid Response Unit","phone":"+2349044445555"}]',
+      assets: '[{"name":"Perimeter Fence","type":"INFRASTRUCTURE"},{"name":"Guard Booth","type":"STRUCTURE"},{"name":"Floodlights","type":"EQUIPMENT"}]',
     },
   });
   console.log('Created Sites');
 
-  // 4. Create Guards
+  // 4. Create Guards (8 total: 6 ACTIVE [3 DAY, 3 NIGHT], 1 ON_LEAVE, 1 SUSPENDED)
   const guardsData = [
-    { name: 'Adamu Ibrahim', nin: 'NIN12345678901', status: 'ACTIVE', shift: 'DAY', siteId: site1.id },
-    { name: 'Musa Abdullahi', nin: 'NIN12345678902', status: 'ACTIVE', shift: 'NIGHT', siteId: site1.id },
-    { name: 'Chukwudi Okafor', nin: 'NIN12345678903', status: 'ACTIVE', shift: 'DAY', siteId: site2.id },
-    { name: 'Oluwaseun Adeyemi', nin: 'NIN12345678904', status: 'ON_LEAVE', shift: 'OFF', siteId: site2.id },
-    { name: 'Ngozi Eze', nin: 'NIN12345678905', status: 'SUSPENDED', shift: 'OFF', siteId: site1.id },
+    // Guard 1 - ACTIVE DAY at site1
+    {
+      id: 'seed-guard-001',
+      fullName: 'Adamu Ibrahim',
+      phone: '+2348010000001',
+      address: '15 Ahmadu Bello Way, Lagos',
+      emergencyContact: '+2348010000101',
+      nin: 'NIN12345678901',
+      status: 'ACTIVE',
+      shift: 'DAY',
+      siteId: site1.id,
+      bvn: 'BVN1000000001',
+      trainingRecords: JSON.stringify([
+        { course: 'Fire Safety Training', date: '2024-01-15', expiry: '2025-01-15' },
+        { course: 'First Aid Certification', date: '2024-03-20', expiry: '2026-03-20' },
+      ]),
+      certificates: JSON.stringify([
+        { name: 'Security Guard License', issued: '2023-06-01', issuer: 'Nigeria Security Council' },
+        { name: 'Armed Response Certification', issued: '2024-02-15', issuer: 'Private Security Authority' },
+      ]),
+      backgroundVerification: JSON.stringify({ status: 'VERIFIED', date: '2023-05-20' }),
+      disciplinaryHistory: '[]',
+      employmentDate: new Date('2022-05-15'),
+      performanceScore: 95,
+    },
+    // Guard 2 - ACTIVE NIGHT at site1
+    {
+      id: 'seed-guard-002',
+      fullName: 'Musa Abdullahi',
+      phone: '+2348010000002',
+      address: '22 Herbert Macaulay Way, Lagos',
+      emergencyContact: '+2348010000102',
+      nin: 'NIN12345678902',
+      status: 'ACTIVE',
+      shift: 'NIGHT',
+      siteId: site1.id,
+      bvn: 'BVN1000000002',
+      trainingRecords: JSON.stringify([
+        { course: 'Night Patrol Procedures', date: '2024-02-10', expiry: '2025-02-10' },
+        { course: 'Defensive Tactics', date: '2024-06-05', expiry: '2025-06-05' },
+      ]),
+      certificates: JSON.stringify([
+        { name: 'Security Guard License', issued: '2023-08-01', issuer: 'Nigeria Security Council' },
+      ]),
+      backgroundVerification: JSON.stringify({ status: 'VERIFIED', date: '2023-07-15' }),
+      disciplinaryHistory: JSON.stringify([
+        { incident: 'Late to shift 3 times', date: '2024-08-15', action: 'Verbal warning' },
+        { incident: 'Unauthorized absence', date: '2024-11-01', action: 'One day suspension' },
+      ]),
+      employmentDate: new Date('2022-08-01'),
+      performanceScore: 72,
+    },
+    // Guard 3 - ACTIVE DAY at site2
+    {
+      id: 'seed-guard-003',
+      fullName: 'Chukwudi Okafor',
+      phone: '+2348010000003',
+      address: '7 Awolowo Road, Ikoyi, Lagos',
+      emergencyContact: '+2348010000103',
+      nin: 'NIN12345678903',
+      status: 'ACTIVE',
+      shift: 'DAY',
+      siteId: site2.id,
+      bvn: null,
+      trainingRecords: JSON.stringify([
+        { course: 'CCTV Monitoring Certification', date: '2024-04-12', expiry: '2026-04-12' },
+        { course: 'Fire Safety Training', date: '2024-01-15', expiry: '2025-01-15' },
+        { course: 'First Aid Certification', date: '2024-03-20', expiry: '2026-03-20' },
+      ]),
+      certificates: JSON.stringify([
+        { name: 'Security Guard License', issued: '2023-03-01', issuer: 'Nigeria Security Council' },
+        { name: 'CCTV Operations Certificate', issued: '2024-04-12', issuer: 'TechSafe Nigeria' },
+        { name: 'Advanced Patrol Training', issued: '2024-09-01', issuer: 'Private Security Authority' },
+      ]),
+      backgroundVerification: JSON.stringify({ status: 'VERIFIED', date: '2023-02-28' }),
+      disciplinaryHistory: '[]',
+      employmentDate: new Date('2023-01-10'),
+      performanceScore: 98,
+    },
+    // Guard 4 - ACTIVE NIGHT at site2
+    {
+      id: 'seed-guard-004',
+      fullName: 'Oluwaseun Adeyemi',
+      phone: '+2348010000004',
+      address: '30 Admiralty Way, Lekki, Lagos',
+      emergencyContact: '+2348010000104',
+      nin: 'NIN12345678904',
+      status: 'ACTIVE',
+      shift: 'NIGHT',
+      siteId: site2.id,
+      bvn: 'BVN1000000004',
+      trainingRecords: JSON.stringify([
+        { course: 'Night Patrol Procedures', date: '2024-02-10', expiry: '2025-02-10' },
+        { course: 'Emergency Response Training', date: '2024-07-18', expiry: '2025-07-18' },
+      ]),
+      certificates: JSON.stringify([
+        { name: 'Security Guard License', issued: '2023-11-01', issuer: 'Nigeria Security Council' },
+      ]),
+      backgroundVerification: JSON.stringify({ status: 'VERIFIED', date: '2023-10-20' }),
+      disciplinaryHistory: '[]',
+      employmentDate: new Date('2023-09-15'),
+      performanceScore: 85,
+    },
+    // Guard 5 - ACTIVE DAY at site1
+    {
+      id: 'seed-guard-005',
+      fullName: 'Ngozi Eze',
+      phone: '+2348010000005',
+      address: '8 Bode Thomas Street, Surulere, Lagos',
+      emergencyContact: '+2348010000105',
+      nin: 'NIN12345678905',
+      status: 'ACTIVE',
+      shift: 'DAY',
+      siteId: site1.id,
+      bvn: 'BVN1000000005',
+      trainingRecords: JSON.stringify([
+        { course: 'Fire Safety Training', date: '2024-01-15', expiry: '2025-01-15' },
+        { course: 'Conflict Resolution', date: '2024-05-22', expiry: '2025-05-22' },
+      ]),
+      certificates: JSON.stringify([
+        { name: 'Security Guard License', issued: '2024-01-01', issuer: 'Nigeria Security Council' },
+      ]),
+      backgroundVerification: JSON.stringify({ status: 'PENDING' }),
+      disciplinaryHistory: '[]',
+      employmentDate: new Date('2024-01-05'),
+      performanceScore: 88,
+    },
+    // Guard 6 - ACTIVE NIGHT at site2
+    {
+      id: 'seed-guard-006',
+      fullName: 'Fatima Bello',
+      phone: '+2348010000006',
+      address: '12 Obi Street, Onitsha, Anambra',
+      emergencyContact: '+2348010000106',
+      nin: 'NIN12345678906',
+      status: 'ACTIVE',
+      shift: 'NIGHT',
+      siteId: site2.id,
+      bvn: 'BVN1000000006',
+      trainingRecords: JSON.stringify([
+        { course: 'Night Patrol Procedures', date: '2024-02-10', expiry: '2025-02-10' },
+        { course: 'First Aid Certification', date: '2024-03-20', expiry: '2026-03-20' },
+        { course: 'Radio Communication Protocols', date: '2024-08-01', expiry: '2025-08-01' },
+      ]),
+      certificates: JSON.stringify([
+        { name: 'Security Guard License', issued: '2023-09-01', issuer: 'Nigeria Security Council' },
+        { name: 'Advanced First Aid', issued: '2024-03-20', issuer: 'Red Cross Nigeria' },
+      ]),
+      backgroundVerification: JSON.stringify({ status: 'VERIFIED', date: '2023-08-10' }),
+      disciplinaryHistory: '[]',
+      employmentDate: new Date('2023-07-20'),
+      performanceScore: 91,
+    },
+    // Guard 7 - ON_LEAVE at site1
+    {
+      id: 'seed-guard-007',
+      fullName: 'Emeka Nwachukwu',
+      phone: '+2348010000007',
+      address: '25 Ebitu Ukiwe Street, Abuja',
+      emergencyContact: '+2348010000107',
+      nin: 'NIN12345678907',
+      status: 'ON_LEAVE',
+      shift: 'OFF',
+      siteId: site1.id,
+      bvn: null,
+      trainingRecords: JSON.stringify([
+        { course: 'Fire Safety Training', date: '2024-01-15', expiry: '2025-01-15' },
+      ]),
+      certificates: JSON.stringify([
+        { name: 'Security Guard License', issued: '2023-12-01', issuer: 'Nigeria Security Council' },
+      ]),
+      backgroundVerification: JSON.stringify({ status: 'VERIFIED', date: '2023-11-15' }),
+      disciplinaryHistory: '[]',
+      employmentDate: new Date('2023-11-01'),
+      performanceScore: 80,
+    },
+    // Guard 8 - SUSPENDED at site2
+    {
+      id: 'seed-guard-008',
+      fullName: 'Babatunde Lawal',
+      phone: '+2348010000008',
+      address: '5 Olu Holloway Street, Ikeja, Lagos',
+      emergencyContact: '+2348010000108',
+      nin: 'NIN12345678908',
+      status: 'SUSPENDED',
+      shift: 'OFF',
+      siteId: site2.id,
+      bvn: 'BVN1000000008',
+      trainingRecords: JSON.stringify([
+        { course: 'Fire Safety Training', date: '2024-01-15', expiry: '2025-01-15' },
+      ]),
+      certificates: JSON.stringify([
+        { name: 'Security Guard License', issued: '2024-02-01', issuer: 'Nigeria Security Council' },
+      ]),
+      backgroundVerification: JSON.stringify({ status: 'PENDING' }),
+      disciplinaryHistory: JSON.stringify([
+        { incident: 'Physical altercation with colleague', date: '2024-10-20', action: '14-day suspension pending investigation' },
+        { incident: 'Gross insubordination to supervisor', date: '2024-12-05', action: 'Final written warning + suspension' },
+      ]),
+      employmentDate: new Date('2024-02-15'),
+      performanceScore: 45,
+    },
   ];
 
+  const createdGuards: string[] = [];
   for (const g of guardsData) {
-    await prisma.guard.upsert({
+    const guard = await prisma.guard.upsert({
       where: { nin: g.nin },
       update: {},
       create: {
-        fullName: g.name,
+        id: g.id,
+        fullName: g.fullName,
         organizationId: organization.id,
         photoUrl: '',
-        phone: '+2348000000000',
-        address: 'Lagos, Nigeria',
-        emergencyContact: '+2348000000001',
+        phone: g.phone,
+        address: g.address,
+        emergencyContact: g.emergencyContact,
         nin: g.nin,
+        bvn: g.bvn,
         guarantorDetails: 'Mr. Guarantor',
-        employmentDate: new Date('2022-05-15'),
+        employmentDate: g.employmentDate,
         status: g.status,
         currentShift: g.shift,
         assignedSiteId: g.siteId,
-        trainingRecords: '[]',
-        certificates: '[]',
-        backgroundVerification: '{"status":"VERIFIED"}',
-        disciplinaryHistory: '[]',
+        trainingRecords: g.trainingRecords,
+        certificates: g.certificates,
+        backgroundVerification: g.backgroundVerification,
+        disciplinaryHistory: g.disciplinaryHistory,
+        performanceScore: g.performanceScore,
       },
     });
+    createdGuards.push(guard.id);
   }
   console.log(`Created ${createdGuards.length} Guards`);
 
@@ -341,7 +546,7 @@ async function main() {
   }
   console.log(`Created ${incidentsData.length} Incidents`);
 
-  // 7. Create Patrol Routes (2 per site)
+  // 7. Create Patrol Routes (one per site)
   const patrolRoute1 = await prisma.patrolRoute.upsert({
     where: { id: 'seed-route-001' },
     update: {},
@@ -349,10 +554,10 @@ async function main() {
       id: 'seed-route-001',
       name: 'Chevron Main Gate Perimeter Patrol',
       siteId: site1.id,
-      assignedGuardId: createdGuards[0],
-      scheduledStart: new Date(new Date().setHours(6, 0, 0, 0)),
-      scheduledEnd: new Date(new Date().setHours(18, 0, 0, 0)),
-      frequency: 'HOURLY',
+      assignedGuardId: createdGuards[0], // Adamu Ibrahim
+      scheduledStart: new Date('2024-01-01T06:00:00Z'),
+      scheduledEnd: new Date('2024-12-31T18:00:00Z'),
+      frequency: 'DAILY',
       isActive: true,
     },
   });
@@ -362,23 +567,25 @@ async function main() {
     update: {},
     create: {
       id: 'seed-route-002',
-      name: 'Banana Island Alpha Night Patrol',
+      name: 'Banana Island Alpha Perimeter Sweep',
       siteId: site2.id,
-      assignedGuardId: createdGuards[1],
-      scheduledStart: new Date(new Date().setHours(18, 0, 0, 0)),
-      scheduledEnd: new Date(new Date().setHours(6, 0, 0, 0)),
-      frequency: 'HOURLY',
+      assignedGuardId: createdGuards[2], // Chukwudi Okafor
+      scheduledStart: new Date('2024-01-01T06:00:00Z'),
+      scheduledEnd: new Date('2024-12-31T18:00:00Z'),
+      frequency: 'DAILY',
       isActive: true,
     },
   });
+  console.log('Created 2 Patrol Routes');
 
-  // 8. Create Checkpoints for each patrol route (3-4 per route)
+  // 8. Create Checkpoints for each route
   const checkpointsData = [
+    // Route 1 checkpoints
     {
       id: 'seed-cp-001',
       patrolRouteId: patrolRoute1.id,
-      name: 'Chevron Main Gate - Entrance Checkpoint',
-      qrCodeToken: 'QR-CHEVRON-MAIN-001',
+      name: 'East Gate Entry Point',
+      qrCodeToken: 'qr-chevron-east-gate',
       sequenceOrder: 1,
       expectedLatitude: 6.4385,
       expectedLongitude: 3.5352,
@@ -386,35 +593,36 @@ async function main() {
     {
       id: 'seed-cp-002',
       patrolRouteId: patrolRoute1.id,
-      name: 'Chevron Main Gate - East Perimeter',
-      qrCodeToken: 'QR-CHEVRON-EAST-002',
+      name: 'South Perimeter Fence',
+      qrCodeToken: 'qr-chevron-south-fence',
       sequenceOrder: 2,
-      expectedLatitude: 6.439,
-      expectedLongitude: 3.536,
+      expectedLatitude: 6.4370,
+      expectedLongitude: 3.5350,
     },
     {
       id: 'seed-cp-003',
       patrolRouteId: patrolRoute1.id,
-      name: 'Chevron Main Gate - West Perimeter',
-      qrCodeToken: 'QR-CHEVRON-WEST-003',
+      name: 'West Service Gate',
+      qrCodeToken: 'qr-chevron-west-gate',
       sequenceOrder: 3,
-      expectedLatitude: 6.438,
-      expectedLongitude: 3.5345,
+      expectedLatitude: 6.4380,
+      expectedLongitude: 3.5340,
     },
     {
       id: 'seed-cp-004',
       patrolRouteId: patrolRoute1.id,
-      name: 'Chevron Main Gate - Guard Tower',
-      qrCodeToken: 'QR-CHEVRON-TOWER-004',
+      name: 'North Fuel Storage Area',
+      qrCodeToken: 'qr-chevron-north-storage',
       sequenceOrder: 4,
-      expectedLatitude: 6.4387,
-      expectedLongitude: 3.535,
+      expectedLatitude: 6.4395,
+      expectedLongitude: 3.5355,
     },
+    // Route 2 checkpoints
     {
       id: 'seed-cp-005',
       patrolRouteId: patrolRoute2.id,
-      name: 'Banana Island - North Entrance',
-      qrCodeToken: 'QR-BANANA-NORTH-001',
+      name: 'Main Entrance Gate',
+      qrCodeToken: 'qr-banana-main-gate',
       sequenceOrder: 1,
       expectedLatitude: 6.4531,
       expectedLongitude: 3.4447,
@@ -422,25 +630,25 @@ async function main() {
     {
       id: 'seed-cp-006',
       patrolRouteId: patrolRoute2.id,
-      name: 'Banana Island - East Fence Line',
-      qrCodeToken: 'QR-BANANA-EAST-002',
+      name: 'Waterfront Boundary',
+      qrCodeToken: 'qr-banana-waterfront',
       sequenceOrder: 2,
-      expectedLatitude: 6.4535,
-      expectedLongitude: 3.445,
+      expectedLatitude: 6.4520,
+      expectedLongitude: 3.4455,
     },
     {
       id: 'seed-cp-007',
       patrolRouteId: patrolRoute2.id,
-      name: 'Banana Island - Waterfront Post',
-      qrCodeToken: 'QR-BANANA-WATER-003',
+      name: 'Clubhouse Security Point',
+      qrCodeToken: 'qr-banana-clubhouse',
       sequenceOrder: 3,
-      expectedLatitude: 6.4528,
-      expectedLongitude: 3.4443,
+      expectedLatitude: 6.4540,
+      expectedLongitude: 3.4440,
     },
   ];
 
   for (const cp of checkpointsData) {
-    await prisma.checkpoint.upsert({
+    await prisma.patrolCheckpoint.upsert({
       where: { id: cp.id },
       update: {},
       create: cp,
@@ -448,38 +656,38 @@ async function main() {
   }
   console.log(`Created ${checkpointsData.length} Checkpoints`);
 
-  // 9. Create Patrol Records for yesterday (3 records - 2 completed, 1 in-progress)
-  const yesterday = new Date();
+  // 9. Create Patrol Records (2-3 with completion data)
+  const yesterday = new Date(now);
   yesterday.setDate(yesterday.getDate() - 1);
   yesterday.setHours(0, 0, 0, 0);
 
   const patrolRecordsData = [
     {
-      id: 'seed-pr-001',
+      id: 'seed-patrol-record-001',
       routeId: patrolRoute1.id,
       guardId: createdGuards[0],
-      startTime: new Date(yesterday.getTime() + 6 * 3600000), // 06:00
-      endTime: new Date(yesterday.getTime() + 6.5 * 3600000), // 06:30
+      startTime: new Date(yesterday.getTime() + 8 * 3600000), // 08:00
+      endTime: new Date(yesterday.getTime() + 8.75 * 3600000), // 08:45
       status: 'COMPLETED',
-      scannedCheckpoints: JSON.stringify(['seed-cp-001', 'seed-cp-002', 'seed-cp-004']),
-      missedCheckpoints: JSON.stringify(['seed-cp-003']),
-      completionPercentage: 75,
-      generalNotes: 'West perimeter checkpoint was inaccessible due to construction.',
-    },
-    {
-      id: 'seed-pr-002',
-      routeId: patrolRoute2.id,
-      guardId: createdGuards[1],
-      startTime: new Date(yesterday.getTime() + 20 * 3600000), // 20:00
-      endTime: new Date(yesterday.getTime() + 20.5 * 3600000), // 20:30
-      status: 'IN_PROGRESS',
-      scannedCheckpoints: JSON.stringify(['seed-cp-005']),
+      scannedCheckpoints: JSON.stringify(['seed-cp-001', 'seed-cp-002', 'seed-cp-003', 'seed-cp-004']),
       missedCheckpoints: '[]',
-      completionPercentage: 33,
-      generalNotes: 'Night patrol in progress. All clear so far.',
+      completionPercentage: 100,
+      generalNotes: 'All checkpoints clear. No irregularities found.',
     },
     {
-      id: 'seed-pr-003',
+      id: 'seed-patrol-record-002',
+      routeId: patrolRoute2.id,
+      guardId: createdGuards[2],
+      startTime: new Date(yesterday.getTime() + 10 * 3600000), // 10:00
+      endTime: new Date(yesterday.getTime() + 10.5 * 3600000), // 10:30
+      status: 'COMPLETED',
+      scannedCheckpoints: JSON.stringify(['seed-cp-005', 'seed-cp-006']),
+      missedCheckpoints: JSON.stringify(['seed-cp-007']),
+      completionPercentage: 66,
+      generalNotes: 'Clubhouse checkpoint area was under renovation; access restricted.',
+    },
+    {
+      id: 'seed-patrol-record-003',
       routeId: patrolRoute1.id,
       guardId: createdGuards[0],
       startTime: new Date(yesterday.getTime() + 14 * 3600000), // 14:00
