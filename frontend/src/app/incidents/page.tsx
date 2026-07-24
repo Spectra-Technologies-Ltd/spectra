@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -36,6 +37,7 @@ interface IncidentsResponse {
 }
 
 export default function IncidentsPage() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
 
@@ -108,9 +110,12 @@ export default function IncidentsPage() {
                   {data?.data?.map((incident: Incident) => (
                     <tr key={incident.id} className="hover:bg-secondary/30 transition-colors group">
                       <td className="px-6 py-4">
-                        <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
+                        <button
+                          onClick={() => router.push(`/incidents/${incident.id}`)}
+                          className="font-medium text-foreground hover:text-primary transition-colors text-left"
+                        >
                           {incident.title}
-                        </span>
+                        </button>
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-foreground capitalize">{incident.incidentType}</span>
@@ -150,7 +155,12 @@ export default function IncidentsPage() {
               {data?.data?.map((incident: Incident) => (
                 <div key={incident.id} className="p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium text-foreground truncate">{incident.title}</span>
+                    <button
+                      onClick={() => router.push(`/incidents/${incident.id}`)}
+                      className="font-medium text-foreground hover:text-primary transition-colors text-left truncate"
+                    >
+                      {incident.title}
+                    </button>
                     <Badge colorClassName={getSeverityColor(incident.severity)}>{incident.severity}</Badge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1 capitalize">

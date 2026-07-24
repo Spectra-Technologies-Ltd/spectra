@@ -168,6 +168,21 @@ export class GuardService {
     return { message: `${dto.guardIds.length} guards assigned to ${site.name}` };
   }
 
+  async updateVerification(id: string, dto: { status: string; verifiedBy?: string; date?: string }, organizationId: string) {
+    await this.findOne(id, organizationId);
+    const existing = JSON.parse((await this.prisma.guard.findUnique({ where: { id }, select: { backgroundVerification: true } }))?.backgroundVerification || '{}');
+    const updated = {
+      ...existing,
+      status: dto.status,
+      verifiedBy: dto.verifiedBy || existing.verifiedBy || '',
+      date: dto.date || new Date().toISOString(),
+    };
+    return this.prisma.guard.update({
+      where: { id },
+      data: { backgroundVerification: JSON.stringify(updated) },
+    });
+  }
+
   async findUnassigned(organizationId: string) {
     return this.prisma.guard.findMany({
       where: { organizationId, assignedSiteId: null, status: 'ACTIVE' },

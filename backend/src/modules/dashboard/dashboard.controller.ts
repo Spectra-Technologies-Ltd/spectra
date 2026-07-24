@@ -45,4 +45,16 @@ export class DashboardController {
   getRecentActivities(@CurrentUser() user: any) {
     return this.dashboardService.getRecentActivities(user.organizationId);
   }
+
+  @Get('guard-stats')
+  @Roles('ADMIN')
+  getGuardStats(@CurrentUser() user: any) {
+    return this.dashboardService.getGuardStats(user.organizationId);
+  }
+
+  @Get('site-comparison')
+  @Roles('ADMIN')
+  getSiteComparison(@CurrentUser() user: any) {
+    return this.dashboardService.getSiteComparison(user.organizationId);
+  }
 }
