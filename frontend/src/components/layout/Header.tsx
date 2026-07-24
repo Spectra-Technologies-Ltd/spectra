@@ -2,11 +2,12 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, Search, Sun, Moon, Users, Building2, MapPin, AlertTriangle, Loader2 } from 'lucide-react';
+import { Bell, Search, Sun, Moon, Menu, Users, Building2, MapPin, AlertTriangle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
+import { useSidebar } from './SidebarContext';
 
 interface SearchResult {
   id: string;
@@ -176,10 +177,20 @@ export default function Header() {
     }
   };
 
+  const { openMobile } = useSidebar();
+
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/80 backdrop-blur-xl px-6">
-      {/* Search */}
-      <div className="flex items-center gap-3 flex-1 max-w-md" ref={containerRef}>
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/80 backdrop-blur-xl px-3 sm:px-6">
+      {/* Mobile menu + Search */}
+      <div className="flex items-center gap-2 flex-1 max-w-md" ref={containerRef}>
+        {/* Hamburger — visible only on mobile */}
+        <button
+          onClick={openMobile}
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-all md:hidden shrink-0"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
         <div className="relative flex items-center w-full gap-2 rounded-lg bg-secondary/50 border border-border px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary/30 transition-all">
           {loading ? (
             <Loader2 className="h-4 w-4 text-muted-foreground shrink-0 animate-spin" />
