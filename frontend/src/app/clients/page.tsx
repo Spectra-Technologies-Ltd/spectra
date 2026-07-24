@@ -6,11 +6,14 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
-  Building2, Search, Plus, Filter, MoreVertical, ChevronLeft, ChevronRight, MapPin,
+  Building2, Search, Plus, Filter, MoreVertical, MapPin,
   X, Edit, Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { Badge } from '@/components/ui/Badge';
+import { Pagination } from '@/components/ui/Pagination';
+import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
 
 interface Client {
   id: string;
@@ -83,7 +86,7 @@ export default function ClientsDirectoryPage() {
             Manage your corporate clients, estates, and contracts.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setShowFilter(!showFilter)}
             className={cn(
@@ -146,115 +149,141 @@ export default function ClientsDirectoryPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
-              <tr>
-                <th className="px-6 py-4 font-medium tracking-wider">Client / Estate</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Contact Person</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Active Sites</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Contract Expiry</th>
-                <th className="px-6 py-4 font-medium tracking-wider">Billing</th>
-                <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      Loading clients...
-                    </div>
-                  </td>
-                </tr>
-              ) : data?.data?.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
-                    <Building2 className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                    <p>No clients found matching your criteria.</p>
-                  </td>
-                </tr>
-              ) : (
-                data?.data?.map((client: Client) => (
-                  <tr key={client.id} className="hover:bg-secondary/30 transition-colors group">
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
-                          {client.companyName}
-                        </span>
-                        <span className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                          <MapPin className="h-3 w-3" /> {client.estateName}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="text-foreground">{client.contactPerson}</span>
-                        <span className="text-xs text-muted-foreground">{client.phone}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1">
-                        <span className="h-5 w-5 rounded bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
-                          {client.sites.length}
-                        </span>
-                        <span className="text-xs text-muted-foreground">sites</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-foreground text-sm">
-                        {format(new Date(client.contractEnd), 'MMM dd, yyyy')}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={cn('px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider', getBillingStatusColor(client.billingStatus))}>
-                        {client.billingStatus}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right relative">
-                      <button
-                        onClick={() => setOpenMenu(openMenu === client.id ? null : client.id)}
-                        className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </button>
-                      {openMenu === client.id && (
-                        <div ref={menuRef} className="absolute right-0 top-full mt-1 w-36 rounded-lg border border-border bg-card shadow-xl z-50 py-1">
-                          <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
-                            <Edit className="h-4 w-4 text-muted-foreground" /> Edit
-                          </button>
-                          <button
-                            onClick={() => { if (confirm('Delete this client?')) deleteMutation.mutate(client.id); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4" /> Delete
-                          </button>
-                        </div>
-                      )}
-                    </td>
+        {isLoading ? (
+          <LoadingState label="Loading clients..." />
+        ) : data?.data?.length === 0 ? (
+          <EmptyState icon={Building2} title="No clients found matching your criteria." />
+        ) : (
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
+                  <tr>
+                    <th className="px-6 py-4 font-medium tracking-wider">Client / Estate</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Contact Person</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Active Sites</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Contract Expiry</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Billing</th>
+                    <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {data?.data?.map((client: Client) => (
+                    <tr key={client.id} className="hover:bg-secondary/30 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
+                            {client.companyName}
+                          </span>
+                          <span className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                            <MapPin className="h-3 w-3" /> {client.estateName}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="text-foreground">{client.contactPerson}</span>
+                          <span className="text-xs text-muted-foreground">{client.phone}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1">
+                          <span className="h-5 w-5 rounded bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+                            {client.sites.length}
+                          </span>
+                          <span className="text-xs text-muted-foreground">sites</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-foreground text-sm">
+                          {format(new Date(client.contractEnd), 'MMM dd, yyyy')}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge colorClassName={getBillingStatusColor(client.billingStatus)}>{client.billingStatus}</Badge>
+                      </td>
+                      <td className="px-6 py-4 text-right relative">
+                        <button
+                          onClick={() => setOpenMenu(openMenu === client.id ? null : client.id)}
+                          className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+                        {openMenu === client.id && (
+                          <div ref={menuRef} className="absolute right-0 top-full mt-1 w-36 rounded-lg border border-border bg-card shadow-xl z-50 py-1">
+                            <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
+                              <Edit className="h-4 w-4 text-muted-foreground" /> Edit
+                            </button>
+                            <button
+                              onClick={() => { if (confirm('Delete this client?')) deleteMutation.mutate(client.id); }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" /> Delete
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-border">
+              {data?.data?.map((client: Client) => (
+                <div key={client.id} className="p-4 flex items-start gap-3 active:bg-secondary/30">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium text-foreground truncate">{client.companyName}</span>
+                      <Badge colorClassName={getBillingStatusColor(client.billingStatus)}>{client.billingStatus}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                      <MapPin className="h-3 w-3 shrink-0" /> {client.estateName}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {client.contactPerson} · {client.phone}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {client.sites.length} sites · expires {format(new Date(client.contractEnd), 'MMM dd, yyyy')}
+                    </p>
+                  </div>
+                  <div className="relative shrink-0">
+                    <button
+                      onClick={() => setOpenMenu(openMenu === client.id ? null : client.id)}
+                      className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </button>
+                    {openMenu === client.id && (
+                      <div ref={menuRef} className="absolute right-0 top-full mt-1 w-36 rounded-lg border border-border bg-card shadow-xl z-50 py-1">
+                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
+                          <Edit className="h-4 w-4 text-muted-foreground" /> Edit
+                        </button>
+                        <button
+                          onClick={() => { if (confirm('Delete this client?')) deleteMutation.mutate(client.id); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {data?.meta && (
-          <div className="border-t border-border p-4 flex items-center justify-between bg-secondary/10">
-            <span className="text-xs text-muted-foreground">
-              Showing <span className="font-medium text-foreground">{data.data.length}</span> of <span className="font-medium text-foreground">{data.meta.total}</span> entries
-            </span>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <span className="text-xs font-medium px-2 text-foreground">Page {page} of {data.meta.pages}</span>
-              <button onClick={() => setPage((p) => Math.min(data.meta.pages, p + 1))} disabled={page === data.meta.pages || data.meta.pages === 0} className="p-1.5 rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            page={page}
+            totalPages={data.meta.pages}
+            currentCount={data.data.length}
+            totalCount={data.meta.total}
+            onPrev={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => setPage((p) => Math.min(data.meta.pages, p + 1))}
+          />
         )}
       </div>
     </DashboardLayout>
