@@ -462,6 +462,7 @@ async function main() {
       severity: 'HIGH',
       photos: '[]',
       videos: '[]',
+      voiceNotes: '[]',
       witnesses: JSON.stringify([{ name: 'Mr. Olamide', role: 'Client Representative', phone: '+2348012345678' }]),
       actionsTaken:
         'Deployed additional security personnel to the gate. Logged vehicle plate number with local authorities. Briefed all shift guards on heightened vigilance.',
@@ -482,6 +483,7 @@ async function main() {
       severity: 'CRITICAL',
       photos: '[]',
       videos: '[]',
+      voiceNotes: '[]',
       witnesses: JSON.stringify([]),
       actionsTaken:
         'Cordoned off the area. Contacted estate security coordinator and local police. Awaiting bomb disposal unit assessment.',
@@ -502,6 +504,7 @@ async function main() {
       severity: 'MEDIUM',
       photos: '[]',
       videos: '[]',
+      voiceNotes: '[]',
       witnesses: JSON.stringify([{ name: 'Security Control Room', role: 'Monitoring Team' }]),
       actionsTaken:
         'Fire extinguished using portable extinguisher. Generator room inspected by maintenance team. Faulty fuel line identified and replaced. Fire extinguisher replaced and incident logged.',
@@ -522,6 +525,7 @@ async function main() {
       severity: 'LOW',
       photos: '[]',
       videos: '[]',
+      voiceNotes: '[]',
       witnesses: JSON.stringify([
         { name: 'Site Engineer', role: 'Site Staff' },
         { name: 'Project Manager', role: 'Contractor Lead' },
