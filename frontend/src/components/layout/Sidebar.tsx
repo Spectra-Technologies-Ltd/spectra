@@ -150,7 +150,7 @@ export default function Sidebar() {
       {/* Mobile sidebar (overlay) */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 flex h-dvh flex-col border-r border-border bg-card transition-transform duration-300 md:hidden',
+                  'fixed inset-y-0 left-0 z-40 flex h-screen h-dvh flex-col border-r border-border bg-card transition-transform duration-300 md:hidden',
           collapsed ? 'w-[68px]' : 'w-[240px]',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
         )}
@@ -161,7 +161,7 @@ export default function Sidebar() {
       {/* Desktop sidebar (always visible) */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-40 hidden h-dvh flex-col border-r border-border bg-card transition-all duration-300 md:flex',
+                  'fixed left-0 top-0 z-40 hidden h-screen h-dvh flex-col border-r border-border bg-card transition-all duration-300 md:flex',
           collapsed ? 'w-[68px]' : 'w-[240px]'
         )}
       >

@@ -153,6 +153,17 @@
   background: var(--color-muted-foreground);
 }
 
+/* iOS smooth scrolling */
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .h-dvh {
+    height: -webkit-fill-available;
+  }
+}
+
 .dashboard-card {
   border: 1px solid hsl(var(--border));
   background: hsl(var(--card));
