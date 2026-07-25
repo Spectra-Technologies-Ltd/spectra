@@ -23,7 +23,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   }, []);
 
   if (isLoading) {
-    return <div className="flex h-dvh items-center justify-center bg-background"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
+    return <div className="flex h-screen h-dvh items-center justify-center bg-background"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
   }
 
   if (!isAuthenticated) {
@@ -31,7 +31,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className="flex flex-col h-dvh bg-background overflow-hidden md:hidden">
+    <div className="flex flex-col h-screen h-dvh bg-background overflow-hidden md:hidden">
       {/* Mobile Header */}
       <header className="flex items-center justify-between px-4 h-14 border-b border-border bg-card pt-[env(safe-area-inset-top)]">
         <div className="flex items-center gap-2">
