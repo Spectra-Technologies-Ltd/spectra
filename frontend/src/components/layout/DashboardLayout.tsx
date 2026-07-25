@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (isLoading) {
     return (
-      className="flex h-screen h-dvh items-center justify-center bg-background"
+      <div className="flex h-screen h-dvh items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           <span className="text-sm text-muted-foreground">Loading secure interface...</span>
@@ -26,9 +26,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <SidebarProvider>
-      className="flex h-screen h-dvh overflow-hidden bg-background text-foreground"
+      <div className="flex h-screen h-dvh overflow-hidden bg-background text-foreground">
         <Sidebar />
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden md:ml-[240px]">
           <Header />
           <main className="flex-1 overflow-y-auto px-3 py-4 sm:px-5 lg:px-6">
             <div className="mx-auto w-full max-w-[1440px]">{children}</div>

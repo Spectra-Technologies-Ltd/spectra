@@ -10,8 +10,14 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { mkdirSync, existsSync } from 'fs';
 
 async function bootstrap() {
+  // Ensure uploads directory exists
+  const uploadsDir = join(process.cwd(), 'uploads');
+  if (!existsSync(uploadsDir)) {
+    mkdirSync(uploadsDir, { recursive: true });
+  }
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET is required');
   }

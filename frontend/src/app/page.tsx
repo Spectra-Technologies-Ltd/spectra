@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
@@ -103,6 +104,7 @@ function MetricCard({
   trend,
   icon: Icon,
   tone,
+  actions = [],
 }: {
   label: string;
   value: string;
@@ -110,8 +112,23 @@ function MetricCard({
   trend: "up" | "down";
   icon: React.ElementType;
   tone: string;
+  actions?: { label: string; href: string }[];
 }) {
   const TrendIcon = trend === "up" ? TrendingUp : TrendingDown;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Close menu on click outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
     <div className="dashboard-card rounded-lg p-3 sm:p-4">
@@ -119,9 +136,31 @@ function MetricCard({
         <div className={`flex h-8 w-8 items-center justify-center rounded-md ${tone}`}>
           <Icon className="h-4 w-4" />
         </div>
-        <button aria-label={`${label} options`} className="text-slate-400 transition hover:text-slate-700">
-          <MoreVertical className="h-3.5 w-3.5" />
-        </button>
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={`${label} options`}
+            className="text-slate-400 transition hover:text-slate-700"
+          >
+            <MoreVertical className="h-3.5 w-3.5" />
+          </button>
+          {menuOpen && actions.length > 0 && (
+            <div className="absolute right-0 top-full mt-1 w-44 rounded-lg border border-border bg-card shadow-xl z-50 py-1">
+              {actions.map((action) => (
+                <button
+                  key={action.label}
+                  onClick={() => {
+                    router.push(action.href);
+                    setMenuOpen(false);
+                  }}
+                  className="w-full px-3 py-2 text-left text-xs font-semibold text-slate-700 transition hover:bg-secondary"
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       <p className="text-xs font-semibold text-slate-600">{label}</p>
       <p className="mt-1 text-xl font-black tracking-tight text-slate-950">{value}</p>
@@ -206,6 +245,40 @@ export default function DashboardPage() {
           { type: "Report", description: "Daily Activity Report", location: "Multiple Sites", time: "08:00 AM", status: "Completed" },
         ];
 
+  const metricCardActions: Record<string, { label: string; href: string }[]> = {
+    "Total Guards": [
+      { label: "View All Guards", href: "/guards" },
+      { label: "Download Report", href: "/reports?type=guards" },
+    ],
+    "Active Patrols": [
+      { label: "View Active Patrols", href: "/patrols" },
+      { label: "Download Report", href: "/reports?type=patrols" },
+    ],
+    "Open Incidents": [
+      { label: "View Incidents", href: "/incidents" },
+      { label: "Download Report", href: "/reports?type=incidents" },
+    ],
+    "Attendance Today": [
+      { label: "View Attendance", href: "/attendance" },
+      { label: "Download Report", href: "/reports?type=attendance" },
+    ],
+    "Late Check-Ins": [
+      { label: "View Attendance", href: "/attendance" },
+      { label: "Download Report", href: "/reports?type=attendance" },
+    ],
+    "Absent Today": [
+      { label: "View Attendance", href: "/attendance" },
+    ],
+    "Sites Online": [
+      { label: "View Sites", href: "/sites" },
+      { label: "Download Report", href: "/reports?type=sites" },
+    ],
+    "High Risk Sites": [
+      { label: "View Sites", href: "/sites" },
+      { label: "Download Report", href: "/reports?type=sites" },
+    ],
+  };
+
   const metricCards = [
     {
       label: "Total Guards",
@@ -282,7 +355,7 @@ export default function DashboardPage() {
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-8">
         {metricCards.map((card) => (
-          <MetricCard key={card.label} {...card} />
+          <MetricCard key={card.label} {...card} actions={metricCardActions[card.label] ?? []} />
         ))}
       </section>
 

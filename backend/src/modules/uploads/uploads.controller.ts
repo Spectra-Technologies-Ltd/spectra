@@ -18,65 +18,17 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 @Controller('uploads')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UploadsController {
-  constructor(private readonly uploadsService: UploadsService) {}
+  constructor(private uploadsService: UploadsService) {}
 
   @Post('guard/:id/photo')
   @Roles('ADMIN')
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(HttpStatus.OK)
   async uploadGuardPhoto(
-    @Param('id') guardId: string,
+    @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() user: any,
   ) {
-    return this.uploadsService.uploadGuardPhoto(guardId, file, user.organizationId);
-  }
-
-  @Post('incident/:id/photo')
-  @Roles('EMPLOYEE', 'ADMIN')
-  @UseInterceptors(FileInterceptor('file'))
-  @HttpCode(HttpStatus.OK)
-  async uploadIncidentPhoto(
-    @Param('id') incidentId: string,
-    @UploadedFile() file: Express.Multer.File,
-    @CurrentUser() user: any,
-  ) {
-    return this.uploadsService.attachIncidentPhoto(incidentId, file, user.organizationId);
-  }
-
-  @Post('incident/:id/video')
-  @Roles('EMPLOYEE', 'ADMIN')
-  @UseInterceptors(FileInterceptor('file'))
-  @HttpCode(HttpStatus.OK)
-  async uploadIncidentVideo(
-    @Param('id') incidentId: string,
-    @UploadedFile() file: Express.Multer.File,
-    @CurrentUser() user: any,
-  ) {
-    return this.uploadsService.attachIncidentVideo(incidentId, file, user.organizationId);
-  }
-
-  @Post('incident/:id/voice')
-  @Roles('EMPLOYEE', 'ADMIN')
-  @UseInterceptors(FileInterceptor('file'))
-  @HttpCode(HttpStatus.OK)
-  async uploadIncidentVoiceNote(
-    @Param('id') incidentId: string,
-    @UploadedFile() file: Express.Multer.File,
-    @CurrentUser() user: any,
-  ) {
-    return this.uploadsService.attachIncidentVoiceNote(incidentId, file, user.organizationId);
-  }
-
-  @Post('attendance/:id/photo')
-  @Roles('EMPLOYEE', 'ADMIN')
-  @UseInterceptors(FileInterceptor('file'))
-  @HttpCode(HttpStatus.OK)
-  async uploadAttendancePhoto(
-    @Param('id') attendanceId: string,
-    @UploadedFile() file: Express.Multer.File,
-    @CurrentUser() user: any,
-  ) {
-    return this.uploadsService.attachAttendancePhoto(attendanceId, file, user.organizationId);
+    return await this.uploadsService.attachGuardPhoto(id, file.filename, user.organizationId);
   }
 }

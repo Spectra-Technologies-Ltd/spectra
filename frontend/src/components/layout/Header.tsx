@@ -151,11 +151,18 @@ export default function Header() {
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setSelectedIndex((i) => Math.max(i - 1, 0));
-    } else if (e.key === 'Enter' && results[selectedIndex]) {
+    } else if (e.key === 'Enter') {
       e.preventDefault();
-      router.push(results[selectedIndex].url);
-      setOpen(false);
-      setQuery('');
+      if (results[selectedIndex]) {
+        router.push(results[selectedIndex].url);
+        setOpen(false);
+        setQuery('');
+      } else if (query.trim().length >= 2) {
+        // Fallback: navigate to guards with search query
+        router.push(`/guards?search=${encodeURIComponent(query)}`);
+        setOpen(false);
+        setQuery('');
+      }
     }
   };
 
@@ -195,7 +202,20 @@ export default function Header() {
           {loading ? (
             <Loader2 className="h-4 w-4 text-muted-foreground shrink-0 animate-spin" />
           ) : (
-            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+            <button
+              type="button"
+              onClick={() => {
+                if (query.trim().length >= 2) {
+                  router.push(`/guards?search=${encodeURIComponent(query)}`);
+                  setOpen(false);
+                  setQuery('');
+                }
+              }}
+              className="shrink-0"
+              aria-label="Search"
+            >
+              <Search className="h-4 w-4 text-muted-foreground" />
+            </button>
           )}
           <input
             ref={inputRef}
