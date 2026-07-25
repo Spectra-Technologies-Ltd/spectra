@@ -140,6 +140,14 @@ export class IncidentService {
     };
   }
 
+  async remove(id: string, organizationId: string) {
+    const incident = await this.prisma.incident.findFirst({
+      where: { id, site: { organizationId } },
+    });
+    if (!incident) throw new NotFoundException('Incident not found');
+    return this.prisma.incident.delete({ where: { id } });
+  }
+
   async findOne(id: string) {
     const incident = await this.prisma.incident.findUnique({
       where: { id },
