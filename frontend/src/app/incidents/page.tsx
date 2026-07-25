@@ -7,7 +7,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
-  AlertTriangle, Search, MoreVertical, Trash2, Edit,
+  AlertTriangle, Search, Plus, MoreVertical, Trash2, Edit, ClipboardList,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -91,6 +91,12 @@ export default function IncidentsPage() {
             Track and manage security incidents across all sites.
           </p>
         </div>
+        <button
+          onClick={() => router.push('/incidents/add')}
+          className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+        >
+          <Plus className="h-4 w-4" /> Report Incident
+        </button>
       </div>
 
       <div className="rounded-xl border border-border bg-card overflow-hidden flex flex-col">
@@ -239,6 +245,18 @@ export default function IncidentsPage() {
                           <Edit className="h-4 w-4 text-muted-foreground" /> View Details
                         </button>
                         <button
+                          onClick={async () => {
+                            try {
+                              await api.patch(`/incidents/${incident.id}/status`, { status: 'RESOLVED', resolutionNotes: 'Resolved by admin' });
+                              queryClient.invalidateQueries({ queryKey: ['incidents'] });
+                            } catch {}
+                            setOpenMenu(null);
+                          }}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                        >
+                          <ClipboardList className="h-4 w-4" /> Mark Resolved
+                        </button>
+                        <button
                           onClick={() => { if (confirm('Delete this incident?')) deleteMutation.mutate(incident.id); }}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors"
                         >
@@ -253,7 +271,9 @@ export default function IncidentsPage() {
           </>
         )}
 
-        {data?.meta && (
+        {data?.meta && (                 </tr>
+                  ))}
+                </tbody>
           <Pagination
             page={page}
             totalPages={data.meta.pages}
