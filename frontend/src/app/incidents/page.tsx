@@ -271,9 +271,7 @@ export default function IncidentsPage() {
           </>
         )}
 
-        {data?.meta && (                 </tr>
-                  ))}
-                </tbody>
+        {data?.meta && (
           <Pagination
             page={page}
             totalPages={data.meta.pages}
