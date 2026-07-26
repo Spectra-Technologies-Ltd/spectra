@@ -16,11 +16,12 @@ export default function AddIncidentPage() {
 
   const [form, setForm] = useState({
     title: '',
-    incidentType: 'THEFT',
+    type: 'THEFT',
     severity: 'MEDIUM',
     siteId: '',
     description: '',
-    occurrenceDate: '',
+    latitude: 0,
+    longitude: 0,
   });
 
   const { data: sites } = useQuery({
@@ -37,14 +38,7 @@ export default function AddIncidentPage() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload: any = {
-        ...form,
-        occurrenceDate: form.occurrenceDate
-          ? new Date(form.occurrenceDate).toISOString()
-          : undefined,
-      };
-      if (!payload.occurrenceDate) delete payload.occurrenceDate;
-      await api.post('/incidents', payload);
+      await api.post('/incidents', form);
     },
     onSuccess: () => router.push('/incidents'),
     onError: (err: any) => {
@@ -107,13 +101,13 @@ export default function AddIncidentPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="incidentType" className="block text-xs font-medium text-muted-foreground mb-1">
+                <label htmlFor="type" className="block text-xs font-medium text-muted-foreground mb-1">
                   Incident Type <span className="text-destructive">*</span>
                 </label>
                 <select
-                  id="incidentType"
-                  name="incidentType"
-                  value={form.incidentType}
+                  id="type"
+                  name="type"
+                  value={form.type}
                   onChange={handleChange}
                   className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 >
@@ -175,19 +169,8 @@ export default function AddIncidentPage() {
               />
             </div>
 
-            <div>
-              <label htmlFor="occurrenceDate" className="block text-xs font-medium text-muted-foreground mb-1">
-                Occurrence Date/Time
-              </label>
-              <input
-                id="occurrenceDate"
-                name="occurrenceDate"
-                type="datetime-local"
-                value={form.occurrenceDate}
-                onChange={handleChange}
-                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-              />
-            </div>
+            <input type="hidden" name="latitude" value={form.latitude} />
+            <input type="hidden" name="longitude" value={form.longitude} />
           </div>
 
           <div className="flex items-center gap-3">

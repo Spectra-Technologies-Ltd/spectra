@@ -3,10 +3,11 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import { SidebarProvider } from './SidebarContext';
+import { SidebarProvider, useSidebar } from './SidebarContext';
 import { useAuth } from '@/providers/AuthProvider';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+function DashboardContent({ children }: { children: React.ReactNode }) {
+  const { collapsed } = useSidebar();
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -25,16 +26,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex h-screen h-dvh overflow-hidden bg-background text-foreground">
-        <Sidebar />
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden md:ml-[240px]">
-          <Header />
-          <main className="flex-1 overflow-y-auto px-3 py-4 sm:px-5 lg:px-6">
-            <div className="mx-auto w-full max-w-[1440px]">{children}</div>
-          </main>
-        </div>
+    <div className="flex h-screen h-dvh overflow-hidden bg-background text-foreground">
+      <Sidebar />
+      <div className={`flex min-w-0 flex-1 flex-col overflow-hidden ${collapsed ? 'md:ml-[68px]' : 'md:ml-[240px]'}`}>
+        <Header />
+        <main className="flex-1 overflow-y-auto px-3 py-4 sm:px-5 lg:px-6">
+          <div className="mx-auto w-full max-w-[1440px]">{children}</div>
+        </main>
       </div>
+    </div>
+  );
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
+      <DashboardContent>{children}</DashboardContent>
     </SidebarProvider>
   );
 }
