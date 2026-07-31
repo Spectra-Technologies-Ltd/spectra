@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
-import { ReportIncidentDto, UpdateIncidentStatusDto } from './dto/incident.dto';
+import {
+  ReportIncidentDto,
+  UpdateIncidentDto,
+  UpdateIncidentStatusDto,
+} from './dto/incident.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
@@ -87,6 +91,99 @@ export class IncidentService {
         resolutionNotes: dto.resolutionNotes,
       },
     });
+  }
+
+  async update(id: string, dto: UpdateIncidentDto, organizationId: string) {
+    const incident = await this.prisma.incident.findFirst({
+      where: { id, site: { organizationId } },
+    });
+    if (!incident) throw new NotFoundException('Incident not found');
+
+    const data: any = {};
+    if (dto.title) data.title = dto.title;
+    if (dto.description) data.description = dto.description;
+    if (dto.type) data.incidentType = dto.type;
+    if (dto.severity) data.severity = dto.severity;
+    if (dto.siteId) data.siteId = dto.siteId;
+    if (dto.status) {
+      data.status = dto.status;
+      data.investigationStatus = dto.status;
+    }
+    if (dto.resolutionNotes !== undefined) data.resolutionNotes = dto.resolutionNotes;
+    if (dto.actionsTaken !== undefined) data.actionsTaken = dto.actionsTaken;
+    if (dto.mediaUrls) data.photos = JSON.stringify(dto.mediaUrls);
+    if (dto.involvedParties) data.guardsInvolved = JSON.stringify(dto.involvedParties);
+
+    return this.prisma.incident.update({ where: { id }, data });
+  }
+
+  async getMetrics(query: {
+    organizationId: string;
+    startDate?: string;
+    endDate?: string;
+    type?: string;
+  }) {
+    const where: any = { site: { organizationId: query.organizationId } };
+    if (query.type) where.incidentType = query.type;
+
+    const dateFilter: any = {};
+    if (query.startDate) dateFilter.gte = new Date(query.startDate);
+    if (query.endDate) dateFilter.lte = new Date(query.endDate);
+    if (Object.keys(dateFilter).length > 0) where.reportedAt = dateFilter;
+
+    // Total incidents matching the filter
+    const total = await this.prisma.incident.count({ where });
+
+    // Incidents reported today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const daily = await this.prisma.incident.count({
+      where: { ...where, reportedAt: { gte: today, lt: tomorrow } },
+    });
+
+    // Incidents this week
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekly = await this.prisma.incident.count({
+      where: { ...where, reportedAt: { gte: weekAgo } },
+    });
+
+    // Incidents by type
+    const byType = await this.prisma.incident.groupBy({
+      by: ['incidentType'],
+      where,
+      _count: { id: true },
+    });
+
+    // Open vs resolved
+    const open = await this.prisma.incident.count({
+      where: {
+        ...where,
+        status: { in: ['OPEN', 'INVESTIGATING'] },
+      },
+    });
+    const resolved = await this.prisma.incident.count({
+      where: { ...where, status: { in: ['RESOLVED', 'CLOSED'] } },
+    });
+
+    return {
+      total,
+      daily,
+      weekly,
+      open,
+      resolved,
+      byType: byType.map((i) => ({
+        type: i.incidentType,
+        count: i._count.id,
+      })),
+      filters: {
+        startDate: query.startDate || null,
+        endDate: query.endDate || null,
+        type: query.type || null,
+      },
+    };
   }
 
   async findAll(query: {
