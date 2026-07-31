@@ -1,4 +1,11 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Logger,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 import {
   ReportIncidentDto,
@@ -123,67 +130,165 @@ export class IncidentService {
     endDate?: string;
     type?: string;
   }) {
-    const where: any = { site: { organizationId: query.organizationId } };
-    if (query.type) where.incidentType = query.type;
+    const { organizationId } = query;
+    const startDate = query.startDate ? new Date(query.startDate) : undefined;
+    const endDate = query.endDate ? new Date(query.endDate) : undefined;
 
-    const dateFilter: any = {};
-    if (query.startDate) dateFilter.gte = new Date(query.startDate);
-    if (query.endDate) dateFilter.lte = new Date(query.endDate);
-    if (Object.keys(dateFilter).length > 0) where.reportedAt = dateFilter;
+    if (startDate && Number.isNaN(startDate.getTime())) {
+      throw new BadRequestException(`Invalid startDate: "${query.startDate}"`);
+    }
+    if (endDate && Number.isNaN(endDate.getTime())) {
+      throw new BadRequestException(`Invalid endDate: "${query.endDate}"`);
+    }
+    if (startDate && endDate && startDate > endDate) {
+      throw new BadRequestException('startDate must be before endDate');
+    }
 
-    // Total incidents matching the filter
-    const total = await this.prisma.incident.count({ where });
+    try {
+      // Aggregation filter shared by all metric queries
+      const where: Prisma.IncidentWhereInput = {
+        site: { organizationId },
+        ...(query.type ? { incidentType: query.type } : {}),
+        ...(startDate || endDate
+          ? {
+              reportedAt: {
+                ...(startDate ? { gte: startDate } : {}),
+                ...(endDate ? { lte: endDate } : {}),
+              },
+            }
+          : {}),
+      };
 
-    // Incidents reported today
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const daily = await this.prisma.incident.count({
-      where: { ...where, reportedAt: { gte: today, lt: tomorrow } },
-    });
+      // Organization-scoped calendar metrics (daily/weekly ignore the
+      // optional date range so they stay "live" stats)
+      const orgWhere: Prisma.IncidentWhereInput = {
+        site: { organizationId },
+        ...(query.type ? { incidentType: query.type } : {}),
+      };
 
-    // Incidents this week
-    const weekAgo = new Date(today);
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const weekly = await this.prisma.incident.count({
-      where: { ...where, reportedAt: { gte: weekAgo } },
-    });
+      // Current calendar day window (local time)
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const tomorrowStart = new Date(todayStart);
+      tomorrowStart.setDate(tomorrowStart.getDate() + 1);
 
-    // Incidents by type
-    const byType = await this.prisma.incident.groupBy({
-      by: ['incidentType'],
-      where,
-      _count: { id: true },
-    });
+      const weekAgo = new Date(todayStart);
+      weekAgo.setDate(weekAgo.getDate() - 7);
 
-    // Open vs resolved
-    const open = await this.prisma.incident.count({
-      where: {
-        ...where,
-        status: { in: ['OPEN', 'INVESTIGATING'] },
-      },
-    });
-    const resolved = await this.prisma.incident.count({
-      where: { ...where, status: { in: ['RESOLVED', 'CLOSED'] } },
-    });
+      // Run all aggregates in parallel; Prisma compiles these to SQL
+      // COUNT / GROUP BY queries backed by the Incident indexes.
+      const [total, daily, weekly, open, resolved, byTypeRows, dailyBreakdown] =
+        await Promise.all([
+          this.prisma.incident.count({ where }),
+          this.prisma.incident.count({
+            where: {
+              ...orgWhere,
+              reportedAt: { gte: todayStart, lt: tomorrowStart },
+            },
+          }),
+          this.prisma.incident.count({
+            where: { ...orgWhere, reportedAt: { gte: weekAgo } },
+          }),
+          this.prisma.incident.count({
+            where: { ...where, status: { in: ['OPEN', 'INVESTIGATING'] } },
+          }),
+          this.prisma.incident.count({
+            where: { ...where, status: { in: ['RESOLVED', 'CLOSED'] } },
+          }),
+          this.prisma.incident.groupBy({
+            by: ['incidentType'],
+            where,
+            _count: { id: true },
+          }),
+          this.getDailyBreakdown(where, startDate, endDate),
+        ]);
 
-    return {
-      total,
-      daily,
-      weekly,
-      open,
-      resolved,
-      byType: byType.map((i) => ({
-        type: i.incidentType,
-        count: i._count.id,
-      })),
-      filters: {
-        startDate: query.startDate || null,
-        endDate: query.endDate || null,
-        type: query.type || null,
-      },
-    };
+      // { type_name: count } dictionary per the endpoint spec
+      const byType: Record<string, number> = {};
+      for (const row of byTypeRows) {
+        byType[row.incidentType] = row._count.id;
+      }
+
+      return {
+        total,
+        daily,
+        weekly,
+        open,
+        resolved,
+        byType,
+        dailyBreakdown,
+        filters: {
+          startDate: query.startDate || null,
+          endDate: query.endDate || null,
+          type: query.type || null,
+        },
+      };
+    } catch (error) {
+      this.logger.error(
+        'Failed to compute incident metrics',
+        error instanceof Error ? error.stack : String(error),
+      );
+      throw new InternalServerErrorException(
+        'Failed to compute incident metrics',
+      );
+    }
+  }
+
+  /**
+   * Time-series of daily incident counts. Defaults to the last 7 days and
+   * honors the startDate/endDate range when provided. Bounded to 31 days
+   * so the per-day COUNT queries stay cheap.
+   */
+  private async getDailyBreakdown(
+    where: Prisma.IncidentWhereInput,
+    startDate?: Date,
+    endDate?: Date,
+  ) {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    let from: Date;
+    let to: Date;
+    if (startDate || endDate) {
+      from = new Date(startDate ?? todayStart);
+      from.setHours(0, 0, 0, 0);
+      to = new Date(endDate ?? todayStart);
+      to.setHours(0, 0, 0, 0);
+    } else {
+      from = new Date(todayStart);
+      from.setDate(from.getDate() - 6);
+      to = new Date(todayStart);
+    }
+
+    // Walk backwards from `to`, keeping at most MAX_DAYS buckets
+    const MAX_DAYS = 31;
+    const days: Date[] = [];
+    for (
+      const cursor = new Date(to);
+      days.length < MAX_DAYS;
+      cursor.setDate(cursor.getDate() - 1)
+    ) {
+      days.push(new Date(cursor));
+      if (cursor.getTime() <= from.getTime()) break;
+    }
+    days.reverse();
+
+    return Promise.all(
+      days.map(async (day) => {
+        const nextDay = new Date(day);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const count = await this.prisma.incident.count({
+          where: { ...where, reportedAt: { gte: day, lt: nextDay } },
+        });
+        return { date: this.formatDateKey(day), count };
+      }),
+    );
+  }
+
+  private formatDateKey(date: Date): string {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
   }
 
   async findAll(query: {
