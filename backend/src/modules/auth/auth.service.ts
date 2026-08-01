@@ -196,7 +196,7 @@ export class AuthService {
     }
   }
 
-  async updateProfile(userId: string, dto: { firstName?: string; lastName?: string; phone?: string; email?: string }) {
+  async updateProfile(userId: string, dto: { firstName?: string; lastName?: string; phone?: string; email?: string; photoUrl?: string }) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new UnauthorizedException('User not found');
 
@@ -204,6 +204,7 @@ export class AuthService {
     if (dto.firstName) data.firstName = dto.firstName;
     if (dto.lastName) data.lastName = dto.lastName;
     if (dto.phone) data.phone = dto.phone;
+    if (dto.photoUrl !== undefined) data.photoUrl = dto.photoUrl;
     if (dto.email) {
       const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
       if (existing && existing.id !== userId) {
@@ -231,6 +232,7 @@ export class AuthService {
         firstName: true,
         lastName: true,
         phone: true,
+        photoUrl: true,
         role: true,
         isActive: true,
         createdAt: true,

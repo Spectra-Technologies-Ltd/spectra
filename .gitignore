@@ -6,4 +6,4 @@ dist/
 *.log
 .DS_Store
 SECURITY_AUDIT.md
-uploads/
+/uploads/
