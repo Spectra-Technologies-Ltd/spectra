@@ -76,7 +76,7 @@ export class GuardController {
   }
 
   @Get(':id')
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'EMPLOYEE')
   async findOne(@Param('id') id: string, @CurrentUser() user: any) {
     return this.guardService.findOne(id, user.organizationId);
   }

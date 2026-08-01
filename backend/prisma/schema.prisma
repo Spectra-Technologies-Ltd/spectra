@@ -17,6 +17,7 @@ model User {
   lastName            String
   phone               String
   role                String         // "CEO", "OPERATIONS_MANAGER", "HR", "SUPERVISOR", "GUARD", "CLIENT"
+  photoUrl            String?
   isActive            Boolean        @default(true)
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
