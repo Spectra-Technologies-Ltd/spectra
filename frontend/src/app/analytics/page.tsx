@@ -15,6 +15,7 @@ import {
   Line,
   AreaChart,
   Area,
+  Legend,
   ResponsiveContainer,
 } from "recharts";
 import { BarChart3, Calendar, Filter, TrendingUp, AlertTriangle } from "lucide-react";
