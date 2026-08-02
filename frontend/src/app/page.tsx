@@ -523,7 +523,6 @@ export default function DashboardPage() {
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {[
             { label: "Add Guard", href: "/guards/add", icon: UserCheck, color: "text-blue-600" },
-            { label: "Create Patrol", href: "/patrols", icon: Route, color: "text-blue-600" },
             { label: "Report Incident", href: "/incidents", icon: AlertTriangle, color: "text-red-500" },
             { label: "Add Client", href: "/clients/add", icon: Building2, color: "text-emerald-600" },
             { label: "Open Reports", href: "/reports", icon: FileText, color: "text-blue-600" },
