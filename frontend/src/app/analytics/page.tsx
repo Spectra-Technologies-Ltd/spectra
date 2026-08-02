@@ -20,6 +20,8 @@ import {
 } from "recharts";
 import { BarChart3, Calendar, Filter, TrendingUp, AlertTriangle } from "lucide-react";
 
+// Analytics page — incident metrics, attendance trends, and site risk distribution
+
 const typeLabels: Record<string, string> = {
   THEFT: "Theft",
   TRESPASS: "Trespass",
