@@ -97,6 +97,7 @@ model Client {
   contactPerson            String
   phone                    String
   email                    String    @unique
+  photoUrl                 String?
   contractStart            DateTime
   contractEnd              DateTime
   monthlyFee               Float
