@@ -199,7 +199,7 @@ export default function GuardsDirectoryPage() {
                       <td className="px-6 py-4">
                         <Badge colorClassName={getStatusColor(guard.status)}>{guard.status}</Badge>
                       </td>
-                      <td className="px-6 py-4 text-right relative">
+                      <td className="px-6 py-4 text-right relative overflow-visible">
                         <button
                           onClick={() => setOpenMenu(openMenu === guard.id ? null : guard.id)}
                           className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
@@ -218,10 +218,10 @@ export default function GuardsDirectoryPage() {
                               <Edit className="h-4 w-4 text-muted-foreground" /> View Profile
                             </button>
                             <button
-                              onClick={() => { router.push(`/guards/${guard.id}#transfer`); setOpenMenu(null); }}
+                              onClick={() => { router.push(`/guards/${guard.id}`); setOpenMenu(null); }}
                               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
                             >
-                              <ArrowRightLeft className="h-4 w-4 text-muted-foreground" /> Transfer
+                              <ArrowRightLeft className="h-4 w-4 text-muted-foreground" /> Manage
                             </button>
                             <button
                               onClick={() => { if (confirm('Delete this guard?')) deleteMutation.mutate(guard.id); }}
@@ -238,7 +238,7 @@ export default function GuardsDirectoryPage() {
               </table>
             </div>
 
-            {/* Mobile card list — no horizontal scrolling required */}
+            {/* Mobile card list */}
             <div className="md:hidden divide-y divide-border">
               {data?.data?.map((guard: Guard) => (
                 <div key={guard.id} className="p-4 flex items-start gap-3 active:bg-secondary/30">
@@ -279,10 +279,10 @@ export default function GuardsDirectoryPage() {
                           <Edit className="h-4 w-4 text-muted-foreground" /> View Profile
                         </button>
                         <button
-                          onClick={() => { router.push(`/guards/${guard.id}#transfer`); setOpenMenu(null); }}
+                          onClick={() => { router.push(`/guards/${guard.id}`); setOpenMenu(null); }}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
                         >
-                          <ArrowRightLeft className="h-4 w-4 text-muted-foreground" /> Transfer
+                          <ArrowRightLeft className="h-4 w-4 text-muted-foreground" /> Manage
                         </button>
                         <button
                           onClick={() => { if (confirm('Delete this guard?')) deleteMutation.mutate(guard.id); }}
