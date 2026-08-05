@@ -143,36 +143,36 @@ export default function AnalyticsPage() {
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Time period dropdown */}
-          <select
-            value={selectedPeriod.label}
-            onChange={(e) => {
-              const period = TIME_PERIODS.find((p) => p.label === e.target.value);
-              if (period) setSelectedPeriod(period);
-            }}
-            className="flex items-center gap-2 bg-secondary rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/80 transition-colors"
-          >
-            <Calendar className="h-4 w-4 inline text-muted-foreground mr-1" />
-            {TIME_PERIODS.map((p) => (
-              <option key={p.label} value={p.label}>
-                {p.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <select
+              value={selectedPeriod.label}
+              onChange={(e) => {
+                const period = TIME_PERIODS.find((p) => p.label === e.target.value);
+                if (period) setSelectedPeriod(period);
+              }}
+              className="appearance-none bg-secondary rounded-lg border border-border pl-9 pr-3 py-1.5 text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/80 transition-colors"
+            >
+              {TIME_PERIODS.map((p) => (
+                <option key={p.label} value={p.label}>{p.label}</option>
+              ))}
+            </select>
+          </div>
 
           {/* Incident type filter */}
-          <select
-            value={incidentTypeFilter}
-            onChange={(e) => setIncidentTypeFilter(e.target.value)}
-            className="flex items-center gap-2 bg-secondary rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/80 transition-colors"
-          >
-            <Filter className="h-4 w-4 inline text-muted-foreground mr-1" />
-            <option value="">All Incident Types</option>
-            {INCIDENT_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {typeLabels[t]}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <select
+              value={incidentTypeFilter}
+              onChange={(e) => setIncidentTypeFilter(e.target.value)}
+              className="appearance-none bg-secondary rounded-lg border border-border pl-9 pr-3 py-1.5 text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/80 transition-colors"
+            >
+              <option value="">All Incident Types</option>
+              {INCIDENT_TYPES.map((t) => (
+                <option key={t} value={t}>{typeLabels[t]}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
