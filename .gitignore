@@ -7,3 +7,8 @@ dist/
 .DS_Store
 SECURITY_AUDIT.md
 /uploads/
+*.db
+*.sqlite
+*.sqlite3
+backend/prisma/dev.db
+/spectra-main/

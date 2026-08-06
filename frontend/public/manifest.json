@@ -1,0 +1,19 @@
+{
+  "name": "SPECTRA Operations",
+  "short_name": "SPECTRA",
+  "description": "Enterprise operations intelligence platform for private security companies",
+  "start_url": "/mobile",
+  "display": "standalone",
+  "background_color": "#111318",
+  "theme_color": "#111318",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["security", "business", "productivity"]
+}
