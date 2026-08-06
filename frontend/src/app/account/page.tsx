@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
-  User, Loader2, Save, CheckCircle2, AlertCircle, Mail, Phone, Shield,
+  User, Loader2, Save, CheckCircle2, AlertCircle, Mail, Phone, Shield, Camera,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,6 +16,7 @@ interface UserProfile {
   lastName: string;
   email: string;
   phone: string;
+  photoUrl: string | null;
   role: string;
   createdAt: string;
 }
@@ -23,6 +24,8 @@ interface UserProfile {
 export default function AccountSettingsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -45,6 +48,29 @@ export default function AccountSettingsPage() {
       setPhone(user.phone || '');
     }
   }, [user]);
+
+  const photoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post('/uploads/user/photo', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth-me'] });
+      setPhotoUploading(false);
+    },
+    onError: () => setPhotoUploading(false),
+  });
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoUploading(true);
+    photoMutation.mutate(file);
+  };
 
   const updateMutation = useMutation({
     mutationFn: async (data: { firstName: string; lastName: string; phone: string }) => {
@@ -97,11 +123,22 @@ export default function AccountSettingsPage() {
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           {/* Gradient Header */}
           <div className="bg-gradient-to-b from-primary/20 to-card p-6 flex flex-col items-center">
-            <div className="h-20 w-20 rounded-full bg-primary/20 border-4 border-card shadow-lg flex items-center justify-center">
-              <span className="text-3xl font-bold text-primary">
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
-              </span>
+            <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              {user?.photoUrl ? (
+                <img src={user.photoUrl} alt="Profile" className="h-20 w-20 rounded-full object-cover border-4 border-card shadow-lg" />
+              ) : (
+                <div className="h-20 w-20 rounded-full bg-primary/20 border-4 border-card shadow-lg flex items-center justify-center">
+                  <span className="text-3xl font-bold text-primary">
+                    {user?.firstName?.[0]}{user?.lastName?.[0]}
+                  </span>
+                </div>
+              )}
+              <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                {photoUploading ? <Loader2 className="h-6 w-6 text-white animate-spin" /> : <Camera className="h-6 w-6 text-white" />}
+              </div>
             </div>
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+            <p className="text-xs text-muted-foreground mt-2">{photoUploading ? 'Uploading...' : 'Click to change photo'}</p>
             <h2 className="text-xl font-bold text-foreground mt-4">
               {user?.firstName} {user?.lastName}
             </h2>

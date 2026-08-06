@@ -448,13 +448,18 @@ export default function GuardProfilePage() {
                       Training Records
                     </p>
                     <div className="space-y-2">
-                      {trainingList.map((training: string, i: number) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-2 text-sm text-foreground bg-secondary/20 rounded-lg px-3 py-2"
-                        >
-                          <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0" />
-                          {training}
+                      {trainingList.map((training: any, i: number) => (
+                        <div key={i} className="flex items-start gap-2 text-sm bg-secondary/20 rounded-lg px-3 py-2">
+                          <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                          <div className="min-w-0">
+                            <p className="text-foreground">{typeof training === 'string' ? training : training.course || training.name}</p>
+                            {(training.date || training.expiry) && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {training.date && `Completed: ${formatDate(training.date)}`}
+                                {training.expiry && ` · Expires: ${formatDate(training.expiry)}`}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -466,13 +471,18 @@ export default function GuardProfilePage() {
                       Certificates
                     </p>
                     <div className="space-y-2">
-                      {certList.map((cert: string, i: number) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-2 text-sm text-foreground bg-secondary/20 rounded-lg px-3 py-2"
-                        >
-                          <Award className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                          {cert}
+                      {certList.map((cert: any, i: number) => (
+                        <div key={i} className="flex items-start gap-2 text-sm bg-secondary/20 rounded-lg px-3 py-2">
+                          <Award className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                          <div className="min-w-0">
+                            <p className="text-foreground">{typeof cert === 'string' ? cert : cert.name}</p>
+                            {(cert.issued || cert.issuer) && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {cert.issuer && `${cert.issuer}`}
+                                {cert.issued && ` · ${formatDate(cert.issued)}`}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>

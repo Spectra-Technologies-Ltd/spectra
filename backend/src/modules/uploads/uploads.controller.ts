@@ -112,6 +112,43 @@ export class UploadsController {
   }
 
   /**
+   * Upload a client's logo/photo.
+   * POST /uploads/client/:id/photo
+   */
+  @Post('client/:id/photo')
+  @Roles('ADMIN')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: (_req, file, cb) => {
+        if (!file.mimetype.startsWith('image/')) {
+          cb(new BadRequestException('Only image files are allowed'), false);
+          return;
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async uploadClientPhoto(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() user: { organizationId: string },
+  ) {
+    if (!file) throw new BadRequestException('No file uploaded');
+
+    const client = await this.prisma.client.findFirst({
+      where: { id, organizationId: user.organizationId },
+    });
+    if (!client) throw new BadRequestException('Client not found in your organization');
+
+    const url = await this.uploadAndPersist(file, 'clients');
+
+    await this.prisma.client.update({ where: { id }, data: { photoUrl: url } });
+
+    return { photoUrl: url };
+  }
+
+  /**
    * Upload to Cloudinary if configured, otherwise save locally.
    */
   private async uploadAndPersist(

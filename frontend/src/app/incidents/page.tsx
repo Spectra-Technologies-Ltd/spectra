@@ -172,7 +172,7 @@ export default function IncidentsPage() {
                           {format(new Date(incident.reportedAt), 'MMM dd, yyyy')}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right relative">
+                      <td className="px-6 py-4 text-right relative overflow-visible">
                         <button
                           onClick={() => setOpenMenu(openMenu === incident.id ? null : incident.id)}
                           className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
