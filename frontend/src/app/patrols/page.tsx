@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
@@ -17,7 +16,7 @@ interface PatrolRecord {
   startTime: string;
   endTime: string | null;
   completionPercentage: number;
-  guard: { id: string; fullName: string };
+  guard: { fullName: string };
   route: { name: string; site: { name: string } };
 }
 
@@ -43,7 +42,6 @@ function getStatusBadge(status: string) {
 }
 
 export default function PatrolsPage() {
-  const router = useRouter();
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useQuery({
@@ -97,12 +95,7 @@ export default function PatrolsPage() {
                         {record.route.name}
                       </td>
                       <td className="px-6 py-4 text-foreground">
-                        <button
-                          onClick={() => router.push(`/guards/${record.guard.id}`)}
-                          className="hover:text-primary transition-colors text-left"
-                        >
-                          {record.guard.fullName}
-                        </button>
+                        {record.guard.fullName}
                       </td>
                       <td className="px-6 py-4 text-foreground">
                         {record.route.site.name}

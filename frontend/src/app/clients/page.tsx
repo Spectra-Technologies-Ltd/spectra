@@ -172,7 +172,7 @@ export default function ClientsDirectoryPage() {
                     <tr key={client.id} className="hover:bg-secondary/30 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer" onClick={() => router.push(`/clients/${client.id}`)}>
+                          <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
                             {client.companyName}
                           </span>
                           <span className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
@@ -202,7 +202,7 @@ export default function ClientsDirectoryPage() {
                       <td className="px-6 py-4">
                         <Badge colorClassName={getBillingStatusColor(client.billingStatus)}>{client.billingStatus}</Badge>
                       </td>
-                      <td className="px-6 py-4 text-right relative overflow-visible">
+                      <td className="px-6 py-4 text-right relative">
                         <button
                           onClick={() => setOpenMenu(openMenu === client.id ? null : client.id)}
                           className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
@@ -211,7 +211,7 @@ export default function ClientsDirectoryPage() {
                         </button>
                         {openMenu === client.id && (
                           <div ref={menuRef} className="absolute right-0 top-full mt-1 w-36 rounded-lg border border-border bg-card shadow-xl z-50 py-1">
-                            <button onClick={() => router.push(`/clients/${client.id}`)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
+                            <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
                               <Edit className="h-4 w-4 text-muted-foreground" /> Edit
                             </button>
                             <button
@@ -257,7 +257,7 @@ export default function ClientsDirectoryPage() {
                     </button>
                     {openMenu === client.id && (
                       <div ref={menuRef} className="absolute right-0 top-full mt-1 w-36 rounded-lg border border-border bg-card shadow-xl z-50 py-1">
-                        <button onClick={() => router.push(`/clients/${client.id}`)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
+                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
                           <Edit className="h-4 w-4 text-muted-foreground" /> Edit
                         </button>
                         <button

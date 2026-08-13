@@ -23,7 +23,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   }, []);
 
   if (isLoading) {
-    return <div className="flex h-screen h-dvh items-center justify-center bg-background"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
+    return <div className="flex h-screen items-center justify-center bg-background"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
   }
 
   if (!isAuthenticated) {
@@ -31,7 +31,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className="flex flex-col h-screen h-dvh bg-background overflow-hidden md:hidden">
+    <div className="flex flex-col h-screen bg-background overflow-hidden md:hidden">
       {/* Mobile Header */}
       <header className="flex items-center justify-between px-4 h-14 border-b border-border bg-card pt-[env(safe-area-inset-top)]">
         <div className="flex items-center gap-2">
@@ -65,12 +65,12 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-background/50 pb-[calc(4rem+env(safe-area-inset-bottom))]">
+      <main className="flex-1 overflow-y-auto bg-background/50 pb-20">
         {children}
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-card px-6 flex items-center justify-between z-50 pb-[env(safe-area-inset-bottom)]" style={{ height: 'calc(4rem + env(safe-area-inset-bottom))' }}>
+      <nav className="fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-card px-6 flex items-center justify-between z-50 pb-[env(safe-area-inset-bottom)]">
         <Link href="/mobile" className={cn("flex flex-col items-center gap-1", pathname === '/mobile' ? "text-primary" : "text-muted-foreground")}>
           <Home className="h-5 w-5" />
           <span className="text-[10px] font-medium">Home</span>
@@ -80,10 +80,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           <span className="text-[10px] font-medium">Patrol</span>
         </Link>
         <div className="relative -top-5">
-          <button
-            onClick={() => router.push('/mobile')}
-            className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-[0_4px_20px_rgba(139,92,246,0.4)]"
-          >
+          <button className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-[0_4px_20px_rgba(139,92,246,0.4)]">
             <Shield className="h-6 w-6" />
           </button>
         </div>

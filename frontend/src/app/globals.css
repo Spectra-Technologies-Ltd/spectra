@@ -113,12 +113,14 @@
     color: hsl(var(--foreground));
   }
 
+  /* Visible keyboard focus everywhere, without adding a ring on mouse clicks */
   :focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
     border-radius: 4px;
   }
 
+  /* Respect the OS-level reduced motion preference */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -130,6 +132,7 @@
     }
   }
 
+  /* Comfortable 44px minimum tap targets on touch devices */
   @media (pointer: coarse) {
     button,
     a {
@@ -138,6 +141,7 @@
   }
 }
 
+/* Slim scrollbars for dense operations screens */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -151,17 +155,6 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-muted-foreground);
-}
-
-/* iOS smooth scrolling */
-.scrollable {
-  -webkit-overflow-scrolling: touch;
-}
-
-@supports (-webkit-touch-callout: none) {
-  .h-dvh {
-    height: -webkit-fill-available;
-  }
 }
 
 .dashboard-card {
