@@ -20,7 +20,7 @@ import {
   MapPin,
   TrendingDown,
   TrendingUp,
-  MoreVertical,
+  ArrowUpRight,
 } from "lucide-react";
 import {
   Area,
@@ -114,21 +114,24 @@ function MetricCard({
   const TrendIcon = trend === "up" ? TrendingUp : TrendingDown;
 
   return (
-    <div className="dashboard-card rounded-lg p-3 sm:p-4">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className={`flex h-8 w-8 items-center justify-center rounded-md ${tone}`}>
-          <Icon className="h-4 w-4" />
+    <div className="dashboard-card rounded-lg p-4 transition-shadow hover:shadow-md">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500">
+            {label}
+          </p>
+          <p className="mt-1.5 text-2xl font-black tracking-tight text-zinc-950">{value}</p>
         </div>
-        <button aria-label={`${label} options`} className="text-slate-400 transition hover:text-slate-700">
-          <MoreVertical className="h-3.5 w-3.5" />
-        </button>
+        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${tone}`}>
+          <Icon className="h-4.5 w-4.5" />
+        </div>
       </div>
-      <p className="text-xs font-semibold text-slate-600">{label}</p>
-      <p className="mt-1 text-xl font-black tracking-tight text-slate-950">{value}</p>
-      <div className="mt-2 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] font-semibold">
-        <TrendIcon className={`h-3 w-3 ${trend === "up" ? "text-emerald-500" : "text-orange-500"}`} />
-        <span className={trend === "up" ? "text-emerald-600" : "text-orange-500"}>{delta}</span>
-        <span className="font-medium text-slate-400">vs yesterday</span>
+      <div className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs font-bold">
+        <TrendIcon
+          className={`h-3.5 w-3.5 ${trend === "up" ? "text-emerald-500" : "text-red-500"}`}
+        />
+        <span className={trend === "up" ? "text-emerald-600" : "text-red-500"}>{delta}</span>
+        <span className="font-medium text-zinc-400">vs yesterday</span>
       </div>
     </div>
   );
@@ -178,6 +181,13 @@ export default function DashboardPage() {
   });
 
   const s = stats ?? fallbackStats;
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const today = new Date().toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
   const trendData = attendanceTrend ?? fallbackAttendanceTrend;
   const incidents = (incidentsByType ?? fallbackIncidentsByType).slice(0, 4);
   const totalPatrols = Math.max(s.totalSites + s.activeGuards + s.openIncidents, 1);
@@ -185,7 +195,7 @@ export default function DashboardPage() {
   const inProgressPatrols = Math.max(s.activeGuards, 0);
   const overduePatrols = Math.max(s.openIncidents - 1, 0);
   const patrolData = [
-    { name: "Completed", value: completedPatrols, color: "#22c55e" },
+    { name: "Completed", value: completedPatrols, color: "#10b981" },
     { name: "In Progress", value: inProgressPatrols, color: "#3b82f6" },
     { name: "Overdue", value: overduePatrols, color: "#ef4444" },
   ].filter((item) => item.value > 0);
@@ -275,87 +285,165 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="mb-4 sm:hidden">
-        <h1 className="text-2xl font-black tracking-tight text-slate-950">Dashboard</h1>
-        <p className="text-sm text-slate-500">Welcome back, {user?.firstName ?? "Operator"}.</p>
+      <div className="animate-rise mb-5 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+            Command Center · {today}
+          </p>
+          <h1 className="mt-1 text-2xl font-black tracking-tight text-zinc-950 sm:text-3xl">
+            {greeting}, {user?.firstName ?? "Operator"}.
+          </h1>
+          <p className="mt-1 text-sm text-zinc-500">
+            Here&apos;s what&apos;s happening across your network.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-700">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-500" />
+          Live
+        </div>
       </div>
 
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-8">
+      <section className="animate-rise grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-8" style={{ animationDelay: "80ms" }}>
         {metricCards.map((card) => (
           <MetricCard key={card.label} {...card} />
         ))}
       </section>
 
-      <section className="mt-3 dashboard-card overflow-hidden rounded-lg">
+      <section className="animate-rise mt-3 dashboard-card overflow-hidden rounded-lg" style={{ animationDelay: "160ms" }}>
         <div className="border-b border-border px-4 py-4 sm:px-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-black text-slate-950">Recent Activity</h2>
-              <p className="text-xs font-medium text-slate-500">Live operational events</p>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+                LIVE FEED
+              </p>
+              <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">
+                Recent Activity
+              </h2>
             </div>
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+            <span className="flex items-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-700">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-500" />
               Live
             </span>
           </div>
         </div>
         <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs font-bold uppercase text-slate-500">
+            <thead className="border-b border-border font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
               <tr>
-                <th className="px-5 py-3">Type</th>
-                <th className="px-5 py-3">Description</th>
-                <th className="px-5 py-3">Location</th>
-                <th className="px-5 py-3">Time</th>
-                <th className="px-5 py-3">Status</th>
+                <th className="px-5 py-3 font-bold">Type</th>
+                <th className="px-5 py-3 font-bold">Description</th>
+                <th className="px-5 py-3 font-bold">Location</th>
+                <th className="px-5 py-3 font-bold">Time</th>
+                <th className="px-5 py-3 font-bold">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {activities.map((activity, index) => (
-                <tr key={`${activity.description}-${index}`} className="transition hover:bg-slate-50/80">
-                  <td className="px-5 py-3 font-semibold text-slate-700">{activity.type}</td>
-                  <td className="px-5 py-3 text-slate-700">{activity.description}</td>
-                  <td className="px-5 py-3 text-slate-500">{activity.location}</td>
-                  <td className="px-5 py-3 text-slate-500">{activity.time}</td>
-                  <td className="px-5 py-3">
-                    <span className={`rounded-md px-2.5 py-1 text-xs font-bold ${activity.status === "Open" ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}`}>
-                      {activity.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+            <tbody className="divide-y divide-border/60">
+              {activities.map((activity, index) => {
+                const ActivityIcon =
+                  activity.type === "Incident"
+                    ? ShieldAlert
+                    : activity.type === "Attendance"
+                      ? ClipboardCheck
+                      : activity.type === "Patrol"
+                        ? Route
+                        : FileText;
+                const activityTone =
+                  activity.type === "Incident"
+                    ? "bg-red-50 text-red-600"
+                    : activity.type === "Attendance"
+                      ? "bg-emerald-50 text-emerald-600"
+                      : activity.type === "Patrol"
+                        ? "bg-blue-50 text-blue-600"
+                        : "bg-violet-50 text-violet-600";
+                const statusTone =
+                  activity.status === "Open"
+                    ? "bg-red-50 text-red-600 ring-1 ring-red-100"
+                    : activity.status === "Completed"
+                      ? "bg-blue-50 text-blue-600 ring-1 ring-blue-100"
+                      : "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100";
+
+                return (
+                  <tr
+                    key={`${activity.description}-${index}`}
+                    className="transition-colors hover:bg-zinc-50"
+                  >
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className={`flex h-7 w-7 items-center justify-center rounded-md ${activityTone}`}
+                        >
+                          <ActivityIcon className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="text-xs font-bold uppercase tracking-wide text-zinc-700">
+                          {activity.type}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3 font-medium text-zinc-700">
+                      {activity.description}
+                    </td>
+                    <td className="px-5 py-3 text-zinc-500">{activity.location}</td>
+                    <td className="px-5 py-3 font-mono text-xs text-zinc-500">
+                      {activity.time}
+                    </td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`inline-flex rounded-md px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] ${statusTone}`}
+                      >
+                        {activity.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-        <div className="divide-y divide-slate-100 md:hidden">
+        <div className="divide-y divide-border/60 md:hidden">
           {activities.map((activity, index) => (
             <div key={`${activity.description}-${index}`} className="p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-bold uppercase text-slate-500">{activity.type}</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-950">{activity.description}</p>
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+                    {activity.type}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-zinc-950">
+                    {activity.description}
+                  </p>
                 </div>
-                <span className={`rounded-md px-2.5 py-1 text-xs font-bold ${activity.status === "Open" ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}`}>
+                <span
+                  className={`inline-flex rounded-md px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] ${
+                    activity.status === "Open"
+                      ? "bg-red-50 text-red-600"
+                      : activity.status === "Completed"
+                        ? "bg-blue-50 text-blue-600"
+                        : "bg-emerald-50 text-emerald-600"
+                  }`}
+                >
                   {activity.status}
                 </span>
               </div>
-              <p className="mt-3 text-xs font-medium text-slate-500">
-                {activity.location} - {activity.time}
+              <p className="mt-3 font-mono text-xs text-zinc-500">
+                {activity.location} · {activity.time}
               </p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.45fr_1fr_0.85fr]">
+      <section className="animate-rise mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.45fr_1fr_0.85fr]" style={{ animationDelay: "240ms" }}>
         <div className="dashboard-card rounded-lg p-4 sm:p-5">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-base font-black text-slate-950">Attendance Overview</h2>
-              <p className="text-xs font-medium text-slate-500">Last 7 Days</p>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+                LAST 7 DAYS
+              </p>
+              <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">
+                Attendance Overview
+              </h2>
             </div>
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-600">
-              <span className="h-2 w-2 rounded-full bg-blue-500" />
+            <div className="flex items-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-cyan-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-500" />
               Present
             </div>
           </div>
@@ -364,31 +452,37 @@ export default function DashboardPage() {
               <AreaChart data={trendData} margin={{ left: -16, right: 8, top: 10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="attendanceBlue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.24} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.02} />
+                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.22} />
+                    <stop offset="95%" stopColor="#22d3ee" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="#e2e8f0" vertical={false} />
-                <XAxis dataKey="day" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <CartesianGrid stroke="var(--color-border)" vertical={false} />
+                <XAxis dataKey="day" tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "8px",
+                    backgroundColor: "var(--color-card)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: "6px",
                     boxShadow: "0 12px 30px rgba(15, 23, 42, 0.10)",
                     fontSize: "12px",
+                    color: "var(--color-foreground)",
                   }}
                 />
-                <Area type="monotone" dataKey="rate" stroke="#2563eb" strokeWidth={3} fill="url(#attendanceBlue)" />
+                <Area type="monotone" dataKey="rate" stroke="#06b6d4" strokeWidth={2.5} fill="url(#attendanceBlue)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="dashboard-card rounded-lg p-4 sm:p-5">
-          <h2 className="text-base font-black text-slate-950">Patrols Overview</h2>
-          <p className="text-xs font-medium text-slate-500">Last 7 Days</p>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+            LAST 7 DAYS
+          </p>
+          <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">
+            Patrols Overview
+          </h2>
+          <p className="mt-1 text-xs font-medium text-zinc-400">Completed vs in progress</p>
           <div className="mt-3 grid min-h-[250px] grid-cols-1 items-center gap-4 sm:grid-cols-[1fr_0.9fr] xl:grid-cols-1 2xl:grid-cols-[1fr_0.9fr]">
             <div className="relative h-[190px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -400,25 +494,28 @@ export default function DashboardPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#ffffff",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: "8px",
+                      backgroundColor: "var(--color-card)",
+                      border: "1px solid var(--color-border)",
+                      borderRadius: "6px",
                       fontSize: "12px",
+                      color: "var(--color-foreground)",
                     }}
                   />
                 </PieChart>
               </ResponsiveContainer>
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-black text-slate-950">{totalPatrols}</span>
-                <span className="text-xs font-semibold text-slate-400">Total</span>
+                <span className="text-3xl font-black tracking-tight text-zinc-950">{totalPatrols}</span>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
+                  Total
+                </span>
               </div>
             </div>
             <div className="space-y-3">
               {patrolData.map((item) => (
                 <div key={item.name} className="flex items-center gap-2 text-sm">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="flex-1 font-semibold text-slate-700">{item.name}</span>
-                  <span className="font-bold text-slate-950">{item.value}</span>
+                  <span className="flex-1 font-semibold text-zinc-700">{item.name}</span>
+                  <span className="font-mono text-sm font-bold text-zinc-950">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -426,42 +523,63 @@ export default function DashboardPage() {
         </div>
 
         <div className="dashboard-card rounded-lg p-4 sm:p-5">
-          <h2 className="text-base font-black text-slate-950">Incidents</h2>
-          <p className="text-xs font-medium text-slate-500">Recent</p>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+            RECENT
+          </p>
+          <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">Incidents</h2>
           <div className="mt-5 space-y-4">
             {incidents.map((incident: { type: string; count: number }, index: number) => (
               <div key={incident.type} className="flex gap-3">
-                <span className={`mt-1 h-2.5 w-2.5 rounded-full ${index === 1 ? "bg-amber-400" : "bg-red-500"}`} />
+                <span
+                  className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ring-4 ${
+                    index === 1 ? "bg-amber-400 ring-amber-50" : "bg-red-500 ring-red-50"
+                  }`}
+                />
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-slate-950">{typeLabels[incident.type] ?? incident.type}</p>
-                  <p className="text-xs font-medium text-slate-500">{incident.count * 2 + index + 1} min ago</p>
+                  <p className="truncate text-sm font-bold text-zinc-950">
+                    {typeLabels[incident.type] ?? incident.type}
+                  </p>
+                  <p className="mt-0.5 font-mono text-xs text-zinc-500">
+                    {incident.count * 2 + index + 1} min ago
+                  </p>
                 </div>
               </div>
             ))}
           </div>
-          <Link href="/incidents" className="mt-8 inline-flex text-sm font-bold text-blue-600 transition hover:text-blue-700">
+          <Link
+            href="/incidents"
+            className="group mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-zinc-950 transition hover:text-cyan-600"
+          >
             View all
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>
       </section>
 
-      <section className="mt-4 dashboard-card rounded-lg p-4 sm:p-5">
-        <h2 className="text-base font-black text-slate-950">Quick Actions</h2>
+      <section className="animate-rise mt-4 dashboard-card rounded-lg p-4 sm:p-5" style={{ animationDelay: "320ms" }}>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+          SHORTCUTS
+        </p>
+        <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">
+          Quick Actions
+        </h2>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {[
             { label: "Add Guard", href: "/guards/add", icon: UserCheck, color: "text-blue-600" },
-            { label: "Create Patrol", href: "/patrols", icon: Route, color: "text-blue-600" },
+            { label: "Create Patrol", href: "/patrols", icon: Route, color: "text-cyan-600" },
             { label: "Report Incident", href: "/incidents", icon: AlertTriangle, color: "text-red-500" },
             { label: "Add Client", href: "/clients/add", icon: Building2, color: "text-emerald-600" },
-            { label: "Open Reports", href: "/reports", icon: FileText, color: "text-blue-600" },
+            { label: "Open Reports", href: "/reports", icon: FileText, color: "text-violet-600" },
           ].map((action) => (
             <Link
               key={action.label}
               href={action.href}
-              className="flex min-h-[88px] flex-col items-center justify-center gap-2 rounded-lg bg-slate-50 p-3 text-center transition hover:bg-blue-50 hover:shadow-sm"
+              className="group flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-lg border border-transparent bg-zinc-50 p-3 text-center transition-all hover:-translate-y-0.5 hover:border-zinc-200 hover:bg-white hover:shadow-md hover:shadow-zinc-950/5"
             >
-              <action.icon className={`h-5 w-5 ${action.color}`} />
-              <span className="text-xs font-bold text-slate-700">{action.label}</span>
+              <action.icon className={`h-5 w-5 transition-transform group-hover:scale-110 ${action.color}`} />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-700">
+                {action.label}
+              </span>
             </Link>
           ))}
         </div>

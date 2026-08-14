@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   Bell,
   Search,
@@ -14,6 +14,8 @@ import {
   Loader2,
   Menu,
   CircleHelp,
+  PanelLeftClose,
+  PanelLeft,
 } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
 import { useQuery } from '@tanstack/react-query';
@@ -59,10 +61,48 @@ interface NotificationItem {
   createdAt: string;
 }
 
+const DETAIL_META: { pattern: RegExp; title: string; crumb: string }[] = [
+  { pattern: /^\/guards\/add$/, title: 'Add Guard', crumb: 'Operations / Guards / Add' },
+  { pattern: /^\/guards\/[^/]+$/, title: 'Guard Profile', crumb: 'Operations / Guards / Profile' },
+  { pattern: /^\/clients\/add$/, title: 'Add Client', crumb: 'Management / Clients / Add' },
+  { pattern: /^\/clients\/[^/]+$/, title: 'Client Profile', crumb: 'Management / Clients / Profile' },
+  { pattern: /^\/sites\/add$/, title: 'Add Site', crumb: 'Management / Sites / Add' },
+  { pattern: /^\/sites\/[^/]+$/, title: 'Site Profile', crumb: 'Management / Sites / Profile' },
+  { pattern: /^\/incidents\/add$/, title: 'Report Incident', crumb: 'Security / Incidents / Add' },
+  { pattern: /^\/incidents\/[^/]+$/, title: 'Incident Detail', crumb: 'Security / Incidents / Detail' },
+];
+
+const ROUTE_META: { prefix: string; title: string; crumb: string }[] = [
+  { prefix: '/attendance', title: 'Attendance', crumb: 'Operations / Attendance' },
+  { prefix: '/patrols', title: 'Patrols', crumb: 'Operations / Patrols' },
+  { prefix: '/guards', title: 'Guards', crumb: 'Operations / Guards' },
+  { prefix: '/clients', title: 'Clients', crumb: 'Management / Clients' },
+  { prefix: '/sites', title: 'Sites', crumb: 'Management / Sites' },
+  { prefix: '/incidents', title: 'Incidents', crumb: 'Security / Incidents' },
+  { prefix: '/reports', title: 'Reports', crumb: 'Security / Reports' },
+  { prefix: '/analytics', title: 'Analytics', crumb: 'Insights / Analytics' },
+  { prefix: '/notifications', title: 'Notifications', crumb: 'System / Notifications' },
+  { prefix: '/account', title: 'Account', crumb: 'System / Account' },
+  { prefix: '/mobile', title: 'Mobile', crumb: 'Field / Mobile' },
+];
+
+function getPageMeta(pathname: string) {
+  if (pathname === '/') return { title: 'Dashboard', crumb: 'Overview / Dashboard' };
+  for (const detail of DETAIL_META) {
+    if (detail.pattern.test(pathname)) return { title: detail.title, crumb: detail.crumb };
+  }
+  for (const route of ROUTE_META) {
+    if (pathname.startsWith(route.prefix)) return { title: route.title, crumb: route.crumb };
+  }
+  return { title: 'Dashboard', crumb: 'Overview / Dashboard' };
+}
+
 export default function Header() {
   const { user } = useAuth();
-  const { openMobile } = useSidebar();
+  const { openMobile, collapsed, toggleCollapsed } = useSidebar();
   const router = useRouter();
+  const pathname = usePathname();
+  const { title, crumb } = getPageMeta(pathname || '');
   const [darkMode, setDarkMode] = React.useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -230,6 +270,17 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-white/85 px-3 shadow-sm shadow-slate-900/5 backdrop-blur-xl sm:px-5 lg:px-6">
+      {/* Desktop: toggle sidebar collapse */}
+      <button
+        onClick={toggleCollapsed}
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        title={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
+        className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 lg:flex"
+      >
+        {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
+      </button>
+
+      {/* Mobile: open drawer */}
       <button
         onClick={openMobile}
         aria-label="Open menu"
@@ -240,8 +291,8 @@ export default function Header() {
 
       <div className="flex min-w-0 flex-1 items-center gap-3" ref={containerRef}>
         <div className="hidden min-w-0 sm:block">
-          <h1 className="truncate text-lg font-black tracking-tight text-slate-950 md:text-xl">Dashboard</h1>
-          <p className="truncate text-[11px] font-medium text-slate-500">Overview / Dashboard</p>
+          <h1 className="truncate text-lg font-black tracking-tight text-slate-950 md:text-xl">{title}</h1>
+          <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{crumb}</p>
         </div>
 
         <div className="relative ml-auto flex w-full max-w-[250px] items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 transition-all focus-within:border-blue-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/10 sm:max-w-xs md:max-w-md">

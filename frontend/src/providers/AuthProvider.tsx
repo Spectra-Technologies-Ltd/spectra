@@ -53,10 +53,10 @@ export default function AuthProvider({
     const publicPaths = ["/login", "/register"];
     const isPublicPath = publicPaths.includes(pathname || "");
 
+    // Only guard private routes — let authenticated users view the auth pages
+    // so they can always sign in or create an account from the same place.
     if (!user && !isPublicPath) {
       router.push("/login");
-    } else if (user && isPublicPath) {
-      router.push("/");
     }
   }, [user, pathname, isLoading, router]);
 

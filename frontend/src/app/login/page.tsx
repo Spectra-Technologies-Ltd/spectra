@@ -1,12 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Shield, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import {
+  Shield,
+  Eye,
+  EyeOff,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  ArrowRight,
+  Mail,
+  LockKeyhole,
+} from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import api from "@/lib/api";
+import BrandPanel from "@/components/auth/BrandPanel";
+import AuthModeSwitch from "@/components/auth/AuthModeSwitch";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -18,7 +31,17 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const registered = searchParams.get("registered");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,115 +71,152 @@ export default function LoginPage() {
     }
   };
 
+  const labelClass = "font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500";
+
   return (
-    <div className="flex min-h-screen min-h-dvh flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-card border border-border p-8 rounded-xl shadow-2xl backdrop-blur-md">
-        {/* Header */}
-        <div className="flex flex-col items-center justify-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 mb-3">
-            <Shield className="h-6 w-6 animate-pulse" />
+    <div className="flex min-h-screen min-h-dvh bg-[#f9fafb]">
+      <BrandPanel />
+
+      <div className="flex flex-1 items-center justify-center px-4 py-12 sm:px-8">
+        <div className="w-full max-w-[400px]">
+          {/* Mobile brand */}
+          <div className="animate-rise mb-10 flex flex-col items-center gap-3 lg:hidden">
+            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-black text-white shadow-lg">
+              <Shield className="h-6 w-6" />
+            </div>
+            <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
+              SPECTRA
+            </p>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            SPECTRA OPERATIONS
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Secure client sign-in to Operations Command Center
+
+          <p className="animate-rise font-mono text-[11px] font-bold tracking-[0.28em] text-zinc-400">
+            SECURE SIGN-IN
           </p>
-        </div>
+          <h2 className="animate-rise mt-3 text-3xl font-black tracking-tight text-zinc-950" style={{ animationDelay: "60ms" }}>
+            Welcome back
+          </h2>
+          <p className="animate-rise mt-2 text-sm text-zinc-500" style={{ animationDelay: "120ms" }}>
+            Sign in to the Spectra Operations Command Center.
+          </p>
 
-        {/* Error Notification */}
-        {error && (
-          <div className="flex items-start gap-3 rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
-            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+          <AuthModeSwitch mode="signin" />
+
+          {registered === "1" && (
+            <div className="mt-6 flex items-start gap-3 rounded-md border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p className="font-bold">Account created</p>
+                <p className="mt-0.5 text-emerald-600">
+                  Your security account is ready. Sign in to continue.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p className="font-bold">Authentication error</p>
+                <p className="mt-0.5 text-red-600">{error}</p>
+              </div>
+            </div>
+          )}
+
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div>
-              <h5 className="font-semibold">Authentication Error</h5>
-              <p className="mt-0.5 opacity-90">{error}</p>
+              <label htmlFor="email" className={labelClass}>
+                Security Email
+              </label>
+              <div className="relative mt-1.5">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  autoFocus
+                  placeholder="operator@spectra.com"
+                  {...register("email")}
+                  className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 ${
+                    errors.email
+                      ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                      : "border-zinc-200 focus:border-black focus:ring-black/10"
+                  }`}
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-1.5 text-xs font-medium text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
-          </div>
-        )}
 
-        {/* Login Form */}
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5"
-            >
-              Security Email Address
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="operator@spectra.com"
-              {...register("email")}
-              className={`w-full rounded-lg bg-secondary/50 border ${
-                errors.email ? "border-destructive" : "border-border"
-              } px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
-            />
-            {errors.email && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5"
-            >
-              Secure PIN / Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                placeholder="••••••••"
-                {...register("password")}
-                className={`w-full rounded-lg bg-secondary/50 border ${
-                  errors.password ? "border-destructive" : "border-border"
-                } px-3.5 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground focus:outline-none"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
+            <div>
+              <label htmlFor="password" className={labelClass}>
+                Password
+              </label>
+              <div className="relative mt-1.5">
+                <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-10 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 ${
+                    errors.password
+                      ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                      : "border-zinc-200 focus:border-black focus:ring-black/10"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 transition hover:text-zinc-900"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-1.5 text-xs font-medium text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
-            {errors.password && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.password.message}
-              </p>
-            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="group flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-zinc-950/10 transition-all hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Authenticating...
+                </>
+              ) : (
+                <>
+                  Enter Command Center
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-7 flex items-center gap-3">
+            <span className="h-px flex-1 bg-zinc-200" />
+            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-zinc-400">
+              SECURE ACCESS
+            </span>
+            <span className="h-px flex-1 bg-zinc-200" />
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full mt-4 flex justify-center items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 transition-all"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Authenticating
-                Security ID...
-              </>
-            ) : (
-              "Enter Security Dashboard"
-            )}
-          </button>
-        </form>
-
-        <div className="border-t border-border pt-4 text-center">
-          <p className="text-xs text-muted-foreground">
-            Protected by Spectra Cryptographic Protocol. All attempts logged.
+          <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-zinc-400">
+            PROTECTED BY SPECTRA CRYPTOGRAPHIC PROTOCOL
           </p>
         </div>
       </div>

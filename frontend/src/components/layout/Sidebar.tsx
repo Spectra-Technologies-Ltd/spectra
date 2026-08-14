@@ -14,14 +14,16 @@ import {
   Route,
   BarChart3,
   FileText,
-  ChevronLeft,
-  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   LogOut,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/providers/AuthProvider';
 import { useSidebar } from './SidebarContext';
+import { useQuery } from '@tanstack/react-query';
+import api from '@/lib/api';
 
 const navSections = [
   {
@@ -46,7 +48,7 @@ const navSections = [
   {
     label: 'Security',
     items: [
-      { label: 'Incidents', href: '/incidents', icon: AlertTriangle, badge: '5' },
+      { label: 'Incidents', href: '/incidents', icon: AlertTriangle },
       { label: 'Reports', href: '/reports', icon: FileText },
     ],
   },
@@ -61,6 +63,17 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
+  // Live count of open incidents for the sidebar badge
+  const { data: openIncidents } = useQuery({
+    queryKey: ['sidebar-open-incidents'],
+    queryFn: async () => {
+      const res = await api.get('/incidents', { params: { status: 'OPEN', limit: 1 } });
+      return res.data?.meta?.total ?? 0;
+    },
+    staleTime: 60000,
+    refetchInterval: 120000,
+  });
+
   useEffect(() => {
     closeMobile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,62 +86,107 @@ export default function Sidebar() {
     };
   }, [mobileOpen]);
 
+  // Keyboard shortcut: Ctrl/Cmd + B toggles the sidebar
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        const target = e.target as HTMLElement | null;
+        const typing =
+          target &&
+          (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.isContentEditable);
+        if (typing) return;
+        e.preventDefault();
+        toggleCollapsed();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [toggleCollapsed]);
+
   return (
     <>
       {mobileOpen && (
         <div
           onClick={closeMobile}
           aria-hidden="true"
-          className="fixed inset-0 z-40 animate-in fade-in bg-slate-950/55 backdrop-blur-[2px] duration-200 lg:hidden"
+          className="fixed inset-0 z-40 animate-in fade-in bg-slate-950/60 backdrop-blur-[2px] duration-200 lg:hidden"
         />
       )}
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-[#07152b] text-slate-200 shadow-2xl shadow-slate-950/20 transition-transform duration-300 ease-in-out',
-          'lg:static lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300',
+          'fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-gradient-to-b from-[#101014] via-[#0a0a0c] to-[#060607] text-slate-200 shadow-2xl shadow-slate-950/40 transition-transform duration-300 ease-in-out',
+          'lg:relative lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out lg:border-r lg:border-white/[0.07]',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
-          collapsed ? 'w-[260px] lg:w-[78px]' : 'w-[260px]',
+          collapsed ? 'w-[260px] lg:w-[76px]' : 'w-[260px]',
         )}
       >
-        <div className="flex h-18 shrink-0 items-center justify-between border-b border-white/10 px-4 py-4">
-          <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-400/40 bg-blue-500/15 text-blue-300">
-              <Shield className="h-5 w-5" />
-            </div>
-            <div className={cn('min-w-0', collapsed && 'lg:hidden')}>
-              <p className="whitespace-nowrap text-base font-black leading-tight tracking-[0.16em] text-white">
-                SPECTRA
-              </p>
-              <p className="truncate text-[10px] font-medium tracking-[0.14em] text-slate-400">
-                Security Platform
-              </p>
-            </div>
+        {/* Brand */}
+        <div className="flex h-[68px] shrink-0 items-center gap-3 border-b border-white/[0.07] px-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-black shadow-lg shadow-black/40 ring-1 ring-white/20">
+            <Shield className="h-5 w-5" />
           </div>
+          <div className={cn('min-w-0 overflow-hidden whitespace-nowrap', collapsed && 'lg:hidden')}>
+            <p className="text-[15px] font-black leading-tight tracking-[0.18em] text-white">
+              SPECTRA
+            </p>
+            <p className="truncate text-[10px] font-medium tracking-[0.14em] text-slate-400">
+              Security Platform
+            </p>
+          </div>
+
           <button
             onClick={closeMobile}
             aria-label="Close menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-all hover:bg-white/10 hover:text-white lg:hidden"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-all hover:bg-white/10 hover:text-white lg:hidden"
           >
             <X className="h-4.5 w-4.5" />
           </button>
         </div>
 
-        <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
+        {/* Floating expand/collapse toggle (desktop) */}
+        <button
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#18181b] text-slate-300 shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-cyan-400/50 hover:text-cyan-300 hover:shadow-cyan-950/40 lg:flex"
+        >
+          {collapsed ? <ChevronsRight className="h-3.5 w-3.5" /> : <ChevronsLeft className="h-3.5 w-3.5" />}
+        </button>
+
+        {/* Navigation */}
+        <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
           {navSections.map((section) => (
             <div key={section.label}>
               <p
                 className={cn(
-                  'mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500',
-                  collapsed && 'lg:px-0 lg:text-center',
+                  'mb-2 flex items-center gap-2 px-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500',
+                  collapsed && 'lg:justify-center lg:px-0',
                 )}
               >
-                {collapsed ? '...' : section.label}
+                <span
+                  className={cn(
+                    'flex min-w-0 flex-1 items-center gap-2',
+                    collapsed && 'lg:hidden',
+                  )}
+                >
+                  {section.label}
+                  <span className="h-px flex-1 bg-white/[0.06]" />
+                </span>
+                <span
+                  className={cn('hidden h-px w-8 shrink-0 bg-white/10', collapsed && 'lg:block')}
+                />
               </p>
               <div className="space-y-1">
                 {section.items.map((item) => {
                   const isActive =
                     item.href === '/' ? pathname === '/' : pathname?.startsWith(item.href);
+                  const badge: string | null =
+                    item.href === '/incidents' && openIncidents && openIncidents > 0
+                      ? String(openIncidents)
+                      : null;
 
                   return (
                     <Link
@@ -136,24 +194,42 @@ export default function Sidebar() {
                       href={item.href}
                       title={collapsed ? item.label : undefined}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-150',
+                        'group relative flex items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-semibold transition-all duration-150',
+                        collapsed && 'lg:justify-center lg:px-0',
                         isActive
-                          ? 'bg-blue-500 text-white shadow-lg shadow-blue-950/30'
-                          : 'text-slate-300 hover:bg-white/8 hover:text-white',
+                          ? 'bg-white text-black shadow-lg shadow-black/30'
+                          : 'text-zinc-400 hover:bg-white/[0.07] hover:text-white',
                       )}
                     >
-                      <item.icon className="h-4.5 w-4.5 shrink-0" />
-                      <span className={cn('truncate', collapsed && 'lg:hidden')}>
+                      {/* Active accent bar */}
+                      <span
+                        className={cn(
+                          'absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.8)] transition-opacity duration-150',
+                          isActive ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      <item.icon
+                        className={cn(
+                          'h-[18px] w-[18px] shrink-0 transition-colors',
+                          isActive ? 'text-zinc-900' : 'text-zinc-400 group-hover:text-slate-100',
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left transition-opacity duration-200',
+                          collapsed && 'lg:opacity-0',
+                        )}
+                      >
                         {item.label}
                       </span>
-                      {'badge' in item && item.badge && (
+                      {badge && (
                         <span
                           className={cn(
-                            'ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white',
+                            'ml-auto shrink-0 rounded-full bg-rose-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white ring-1 ring-white/20',
                             collapsed && 'lg:hidden',
                           )}
                         >
-                          {item.badge}
+                          {badge}
                         </span>
                       )}
                     </Link>
@@ -164,18 +240,22 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        <div className="space-y-1 border-t border-white/10 p-3">
+        {/* Footer */}
+        <div className="space-y-1 border-t border-white/[0.07] p-3">
           {user && (
-            <div className="flex items-center gap-2.5 px-3 py-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
-                {user.firstName?.[0]}
-                {user.lastName?.[0]}
+            <div className="flex items-center gap-3 rounded-lg px-2 py-2">
+              <div className="relative shrink-0">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-xs font-bold text-black shadow-md shadow-black/40">
+                  {user.firstName?.[0]}
+                  {user.lastName?.[0]}
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0a0a0c]" />
               </div>
-              <div className={cn('overflow-hidden', collapsed && 'lg:hidden')}>
+              <div className={cn('min-w-0 overflow-hidden whitespace-nowrap', collapsed && 'lg:hidden')}>
                 <p className="truncate text-xs font-semibold text-white">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="truncate text-[10px] uppercase tracking-wider text-slate-500">
+                <p className="truncate text-[10px] font-medium uppercase tracking-wider text-slate-500">
                   {user.role?.replace('_', ' ')}
                 </p>
               </div>
@@ -184,18 +264,21 @@ export default function Sidebar() {
 
           <button
             onClick={logout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-slate-400 transition-all hover:bg-red-500/10 hover:text-red-300"
+            title={collapsed ? 'Sign Out' : undefined}
+            className={cn(
+              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold text-slate-400 transition-all hover:bg-rose-500/10 hover:text-rose-300',
+              collapsed && 'lg:justify-center lg:px-0',
+            )}
           >
-            <LogOut className="h-4 w-4 shrink-0" />
-            <span className={cn(collapsed && 'lg:hidden')}>Sign Out</span>
-          </button>
-
-          <button
-            onClick={toggleCollapsed}
-            className="hidden w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-400 transition-all hover:bg-white/8 hover:text-white lg:flex"
-          >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-            <span className={cn(collapsed && 'lg:hidden')}>Collapse</span>
+            <LogOut className="h-[18px] w-[18px] shrink-0" />
+            <span
+              className={cn(
+                'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left transition-opacity duration-200',
+                collapsed && 'lg:opacity-0',
+              )}
+            >
+              Sign Out
+            </span>
           </button>
         </div>
       </aside>
