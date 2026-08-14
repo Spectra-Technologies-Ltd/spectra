@@ -43,7 +43,7 @@ function getBillingColor(status: string) {
     case 'PAID': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
     case 'UNPAID': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
     case 'OVERDUE': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
-    default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+    default: return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
   }
 }
 
@@ -53,7 +53,7 @@ function getRiskColor(level: string) {
     case 'MEDIUM': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
     case 'HIGH': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
     case 'CRITICAL': return 'bg-red-500/10 text-red-500 border-red-500/20';
-    default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+    default: return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
   }
 }
 

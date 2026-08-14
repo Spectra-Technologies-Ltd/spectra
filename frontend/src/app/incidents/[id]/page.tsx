@@ -71,7 +71,7 @@ function getSeverityBadge(severity: string) {
     case "CRITICAL":
       return "bg-red-500/10 text-red-400 border-red-500/20";
     default:
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 }
 
@@ -84,9 +84,9 @@ function getStatusBadge(status: string) {
     case "RESOLVED":
       return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
     case "CLOSED":
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
     default:
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 }
 
@@ -99,9 +99,9 @@ function getInvestigationBadge(status: string) {
     case "RESOLVED":
       return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
     case "CLOSED":
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
     default:
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 }
 
@@ -116,7 +116,7 @@ function getRiskBadge(riskLevel: string) {
     case "CRITICAL":
       return "bg-red-500/10 text-red-400 border-red-500/20";
     default:
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 }
 

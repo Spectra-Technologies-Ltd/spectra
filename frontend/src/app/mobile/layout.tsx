@@ -80,7 +80,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           <span className="text-[10px] font-medium">Patrol</span>
         </Link>
         <div className="relative -top-5">
-          <button className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-[0_4px_20px_rgba(139,92,246,0.4)]">
+          <button className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-[0_4px_20px_rgba(34,211,238,0.4)]">
             <Shield className="h-6 w-6" />
           </button>
         </div>

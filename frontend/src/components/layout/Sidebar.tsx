@@ -111,15 +111,15 @@ export default function Sidebar() {
         <div
           onClick={closeMobile}
           aria-hidden="true"
-          className="fixed inset-0 z-40 animate-fade-in bg-slate-950/60 backdrop-blur-[2px] lg:hidden"
+          className="fixed inset-0 z-40 animate-fade-in bg-zinc-950/60 backdrop-blur-[2px] lg:hidden"
         />
       )}
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex h-screen supports-[height:100dvh]:h-dvh flex-col bg-gradient-to-b from-[#101014] via-[#0a0a0c] to-[#060607] text-slate-200 shadow-2xl shadow-slate-950/40 transition-transform duration-300 ease-in-out',
-          'lg:relative lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out lg:border-r lg:border-white/[0.07]',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full',
+          'fixed inset-y-0 left-0 z-50 flex h-screen supports-[height:100dvh]:h-dvh flex-col bg-gradient-to-b from-[#101014] via-[#0a0a0c] to-[#060607] text-zinc-200 shadow-2xl shadow-zinc-950/40 transition-transform duration-300 ease-in-out',
+          'lg:relative lg:z-auto lg:tranzinc-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out lg:border-r lg:border-white/[0.07]',
+          mobileOpen ? 'tranzinc-x-0' : '-tranzinc-x-full',
           collapsed ? 'w-[260px] lg:w-[76px]' : 'w-[260px]',
         )}
       >
@@ -132,7 +132,7 @@ export default function Sidebar() {
             <p className="text-[15px] font-black leading-tight tracking-[0.18em] text-white">
               BASTION
             </p>
-            <p className="truncate text-[10px] font-medium tracking-[0.14em] text-slate-400">
+            <p className="truncate text-[10px] font-medium tracking-[0.14em] text-zinc-400">
               Security Platform
             </p>
           </div>
@@ -140,7 +140,7 @@ export default function Sidebar() {
           <button
             onClick={closeMobile}
             aria-label="Close menu"
-            className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-all hover:bg-white/10 hover:text-white lg:hidden"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-all hover:bg-white/10 hover:text-white lg:hidden"
           >
             <X className="h-4.5 w-4.5" />
           </button>
@@ -152,7 +152,7 @@ export default function Sidebar() {
           aria-label={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
           aria-expanded={!collapsed}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#18181b] text-slate-300 shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-cyan-400/50 hover:text-cyan-300 hover:shadow-cyan-950/40 lg:flex"
+          className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -tranzinc-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#18181b] text-zinc-300 shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-cyan-400/50 hover:text-cyan-300 hover:shadow-cyan-950/40 lg:flex"
         >
           {collapsed ? <ChevronsRight className="h-3.5 w-3.5" /> : <ChevronsLeft className="h-3.5 w-3.5" />}
         </button>
@@ -163,7 +163,7 @@ export default function Sidebar() {
             <div key={section.label}>
               <p
                 className={cn(
-                  'mb-2 flex items-center gap-2 px-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500',
+                  'mb-2 flex items-center gap-2 px-2 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500',
                   collapsed && 'lg:justify-center lg:px-0',
                 )}
               >
@@ -206,14 +206,14 @@ export default function Sidebar() {
                       {/* Active accent bar */}
                       <span
                         className={cn(
-                          'absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.8)] transition-opacity duration-150',
+                          'absolute left-0 top-1/2 h-5 w-[3px] -tranzinc-y-1/2 rounded-r-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.8)] transition-opacity duration-150',
                           isActive ? 'opacity-100' : 'opacity-0',
                         )}
                       />
                       <item.icon
                         className={cn(
                           'h-[18px] w-[18px] shrink-0 transition-colors',
-                          isActive ? 'text-zinc-900' : 'text-zinc-400 group-hover:text-slate-100',
+                          isActive ? 'text-zinc-900' : 'text-zinc-400 group-hover:text-zinc-100',
                         )}
                       />
                       <span
@@ -257,7 +257,7 @@ export default function Sidebar() {
                 <p className="truncate text-xs font-semibold text-white">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="truncate text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                <p className="truncate text-[10px] font-medium uppercase tracking-wider text-zinc-500">
                   {user.role?.replace('_', ' ')}
                 </p>
               </div>
@@ -268,7 +268,7 @@ export default function Sidebar() {
             onClick={logout}
             title={collapsed ? 'Sign Out' : undefined}
             className={cn(
-              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold text-slate-400 transition-all hover:bg-rose-500/10 hover:text-rose-300',
+              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold text-zinc-400 transition-all hover:bg-rose-500/10 hover:text-rose-300',
               collapsed && 'lg:justify-center lg:px-0',
             )}
           >

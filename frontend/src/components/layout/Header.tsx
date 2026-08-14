@@ -269,14 +269,14 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-white/85 px-3 shadow-sm shadow-slate-900/5 backdrop-blur-xl sm:px-5 lg:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-white/85 px-3 shadow-sm shadow-zinc-900/5 backdrop-blur-xl sm:px-5 lg:px-6">
       {/* Desktop: toggle sidebar collapse */}
       <button
         onClick={toggleCollapsed}
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         aria-expanded={!collapsed}
         title={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
-        className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 lg:flex"
+        className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900 lg:flex"
       >
         {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
       </button>
@@ -285,22 +285,22 @@ export default function Header() {
       <button
         onClick={openMobile}
         aria-label="Open menu"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 lg:hidden"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900 lg:hidden"
       >
         <Menu className="h-5 w-5" />
       </button>
 
       <div className="flex min-w-0 flex-1 items-center gap-3" ref={containerRef}>
         <div className="hidden min-w-0 sm:block">
-          <h1 className="truncate text-lg font-black tracking-tight text-slate-950 md:text-xl">{title}</h1>
-          <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{crumb}</p>
+          <h1 className="truncate text-lg font-black tracking-tight text-zinc-950 md:text-xl">{title}</h1>
+          <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">{crumb}</p>
         </div>
 
-        <div className="relative ml-auto flex w-full max-w-[250px] items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 transition-all focus-within:border-blue-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/10 sm:max-w-xs md:max-w-md">
+        <div className="relative ml-auto flex w-full max-w-[250px] items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 transition-all focus-within:border-cyan-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-cyan-500/10 sm:max-w-xs md:max-w-md">
           {loading ? (
-            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-slate-400" />
+            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-zinc-400" />
           ) : (
-            <Search className="h-4 w-4 shrink-0 text-slate-400" />
+            <Search className="h-4 w-4 shrink-0 text-zinc-400" />
           )}
           <input
             ref={inputRef}
@@ -321,14 +321,14 @@ export default function Header() {
               if (results.length > 0) setOpen(true);
             }}
             onKeyDown={handleKeyDown}
-            className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+            className="min-w-0 flex-1 bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400"
           />
-          <kbd className="hidden items-center gap-0.5 rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 sm:inline-flex">
+          <kbd className="hidden items-center gap-0.5 rounded border border-zinc-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-zinc-400 sm:inline-flex">
             Ctrl K
           </kbd>
 
           {open && results.length > 0 && (
-            <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[320px] overflow-y-auto rounded-lg border border-border bg-white py-1 shadow-xl shadow-slate-900/10">
+            <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[320px] overflow-y-auto rounded-lg border border-border bg-white py-1 shadow-xl shadow-zinc-900/10">
               {results.map((r, i) => (
                 <button
                   key={r.id}
@@ -339,15 +339,15 @@ export default function Header() {
                   }}
                   className={cn(
                     'flex w-full items-center gap-3 px-3 py-2 text-sm transition-colors',
-                    i === selectedIndex ? 'bg-slate-100' : 'hover:bg-slate-50',
+                    i === selectedIndex ? 'bg-zinc-100' : 'hover:bg-zinc-50',
                   )}
                 >
                   <span className={cn('shrink-0', getTypeColor(r.type))}>{getIcon(r.type)}</span>
                   <div className="min-w-0 text-left">
-                    <p className="truncate text-slate-950">{r.label}</p>
-                    <p className="truncate text-xs text-slate-500">{r.subtitle}</p>
+                    <p className="truncate text-zinc-950">{r.label}</p>
+                    <p className="truncate text-xs text-zinc-500">{r.subtitle}</p>
                   </div>
-                  <span className="ml-auto shrink-0 text-[10px] uppercase text-slate-400">
+                  <span className="ml-auto shrink-0 text-[10px] uppercase text-zinc-400">
                     {r.type}
                   </span>
                 </button>
@@ -361,14 +361,14 @@ export default function Header() {
         <button
           onClick={toggleTheme}
           aria-label="Toggle theme"
-          className="hidden h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 sm:flex"
+          className="hidden h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900 sm:flex"
         >
           {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
 
         <button
           aria-label="Help"
-          className="hidden h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 sm:flex"
+          className="hidden h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900 sm:flex"
         >
           <CircleHelp className="h-4 w-4" />
         </button>
@@ -377,7 +377,7 @@ export default function Header() {
           <button
             onClick={() => setNotifOpen(!notifOpen)}
             aria-label="Notifications"
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900"
+            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900"
           >
             <Bell className="h-4 w-4" />
             {notifData?.count > 0 && (
@@ -387,11 +387,11 @@ export default function Header() {
             )}
           </button>
           {notifOpen && (
-            <div className="fixed left-3 right-3 top-16 z-50 mt-0 max-h-[360px] w-auto overflow-y-auto rounded-lg border border-border bg-white py-1 shadow-xl shadow-slate-900/10 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80">
+            <div className="fixed left-3 right-3 top-16 z-50 mt-0 max-h-[360px] w-auto overflow-y-auto rounded-lg border border-border bg-white py-1 shadow-xl shadow-zinc-900/10 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80">
               <div className="flex items-center justify-between border-b border-border px-3 py-2">
-                <p className="text-xs font-semibold text-slate-950">Notifications</p>
+                <p className="text-xs font-semibold text-zinc-950">Notifications</p>
                 {notifData?.count > 0 && (
-                  <span className="text-[10px] text-slate-500">{notifData.count} unread</span>
+                  <span className="text-[10px] text-zinc-500">{notifData.count} unread</span>
                 )}
               </div>
               {recentNotifs?.length > 0 ? (
@@ -403,15 +403,15 @@ export default function Header() {
                       setNotifOpen(false);
                     }}
                     className={cn(
-                      'w-full border-b border-border/70 px-3 py-2.5 text-left transition-colors last:border-0 hover:bg-slate-50',
-                      n.status === 'UNREAD' && 'bg-blue-50',
+                      'w-full border-b border-border/70 px-3 py-2.5 text-left transition-colors last:border-0 hover:bg-zinc-50',
+                      n.status === 'UNREAD' && 'bg-cyan-50',
                     )}
                   >
-                    <p className={cn('text-sm leading-snug', n.status === 'UNREAD' ? 'font-semibold text-slate-950' : 'text-slate-600')}>
+                    <p className={cn('text-sm leading-snug', n.status === 'UNREAD' ? 'font-semibold text-zinc-950' : 'text-zinc-600')}>
                       {n.title}
                     </p>
-                    <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">{n.message}</p>
-                    <p className="mt-1 text-[10px] text-slate-400">
+                    <p className="mt-0.5 line-clamp-1 text-xs text-zinc-500">{n.message}</p>
+                    <p className="mt-1 text-[10px] text-zinc-400">
                       {new Date(n.createdAt).toLocaleDateString('en-GB', {
                         day: 'numeric',
                         month: 'short',
@@ -422,7 +422,7 @@ export default function Header() {
                   </button>
                 ))
               ) : (
-                <div className="px-3 py-6 text-center text-sm text-slate-500">
+                <div className="px-3 py-6 text-center text-sm text-zinc-500">
                   No notifications yet
                 </div>
               )}
@@ -432,7 +432,7 @@ export default function Header() {
                     router.push('/notifications');
                     setNotifOpen(false);
                   }}
-                  className="w-full px-3 py-2 text-xs font-semibold text-blue-600 transition-colors hover:bg-slate-50"
+                  className="w-full px-3 py-2 text-xs font-semibold text-zinc-900 transition-colors hover:bg-zinc-50 hover:text-cyan-600"
                 >
                   View all notifications
                 </button>
@@ -443,15 +443,15 @@ export default function Header() {
 
         {user && (
           <div className="ml-1 flex items-center gap-2 border-l border-border pl-2 sm:ml-2 sm:pl-3">
-            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-slate-200 text-xs font-bold text-slate-700 shadow-sm">
+            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-zinc-200 text-xs font-bold text-zinc-700 shadow-sm">
               {user.firstName?.[0]}
               {user.lastName?.[0]}
             </div>
             <div className="hidden md:block">
-              <p className="text-xs font-semibold text-slate-950">
+              <p className="text-xs font-semibold text-zinc-950">
                 {user.firstName} {user.lastName}
               </p>
-              <p className="text-[10px] uppercase tracking-wider text-slate-500">
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500">
                 {user.role?.replace('_', ' ')}
               </p>
             </div>

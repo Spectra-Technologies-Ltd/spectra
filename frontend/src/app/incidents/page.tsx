@@ -52,7 +52,7 @@ export default function IncidentsPage() {
       case 'MEDIUM': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
       case 'HIGH': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
       case 'CRITICAL': return 'bg-red-500/10 text-red-500 border-red-500/20';
-      default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+      default: return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
     }
   };
 
@@ -73,7 +73,7 @@ export default function IncidentsPage() {
         {/* Toolbar */}
         <div className="p-4 border-b border-border flex items-center justify-between bg-secondary/20">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -tranzinc-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search incidents..."

@@ -271,7 +271,7 @@ export default function DashboardPage() {
       delta: "+4%",
       trend: "up" as const,
       icon: MapPin,
-      tone: "bg-violet-50 text-violet-600",
+      tone: "bg-cyan-50 text-cyan-600",
     },
     {
       label: "High Risk Sites",
@@ -354,7 +354,7 @@ export default function DashboardPage() {
                       ? "bg-emerald-50 text-emerald-600"
                       : activity.type === "Patrol"
                         ? "bg-blue-50 text-blue-600"
-                        : "bg-violet-50 text-violet-600";
+                        : "bg-cyan-50 text-cyan-600";
                 const statusTone =
                   activity.status === "Open"
                     ? "bg-red-50 text-red-600 ring-1 ring-red-100"
@@ -551,7 +551,7 @@ export default function DashboardPage() {
             className="group mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-zinc-950 transition hover:text-cyan-600"
           >
             View all
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:tranzinc-x-0.5 group-hover:-tranzinc-y-0.5" />
           </Link>
         </div>
       </section>
@@ -569,12 +569,12 @@ export default function DashboardPage() {
             { label: "Create Patrol", href: "/patrols", icon: Route, color: "text-cyan-600" },
             { label: "Report Incident", href: "/incidents", icon: AlertTriangle, color: "text-red-500" },
             { label: "Add Client", href: "/clients/add", icon: Building2, color: "text-emerald-600" },
-            { label: "Open Reports", href: "/reports", icon: FileText, color: "text-violet-600" },
+            { label: "Open Reports", href: "/reports", icon: FileText, color: "text-cyan-600" },
           ].map((action) => (
             <Link
               key={action.label}
               href={action.href}
-              className="group flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-lg border border-transparent bg-zinc-50 p-3 text-center transition-all hover:-translate-y-0.5 hover:border-zinc-200 hover:bg-white hover:shadow-md hover:shadow-zinc-950/5"
+              className="group flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-lg border border-transparent bg-zinc-50 p-3 text-center transition-all hover:-tranzinc-y-0.5 hover:border-zinc-200 hover:bg-white hover:shadow-md hover:shadow-zinc-950/5"
             >
               <action.icon className={`h-5 w-5 transition-transform group-hover:scale-110 ${action.color}`} />
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-700">

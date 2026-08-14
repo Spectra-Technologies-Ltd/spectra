@@ -41,7 +41,7 @@ function getStatusStyle(status: string) {
     case 'ABSENT':
       return 'bg-red-500/10 text-red-500 border-red-500/20';
     default:
-      return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+      return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
   }
 }
 

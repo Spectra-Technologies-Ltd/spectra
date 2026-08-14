@@ -226,7 +226,7 @@ export default function MobileDashboard() {
               "relative flex flex-col items-center justify-center h-48 w-48 rounded-full shadow-2xl transition-all duration-300",
               isCheckedIn
                 ? "bg-gradient-to-b from-emerald-500 to-emerald-700 shadow-emerald-500/30"
-                : "bg-gradient-to-b from-primary to-purple-700 shadow-primary/30",
+                : "bg-gradient-to-b from-primary to-zinc-800 shadow-primary/30",
               isProcessing
                 ? "opacity-70 scale-95"
                 : "hover:scale-105 active:scale-95",

@@ -129,7 +129,7 @@ function LoginForm() {
                 Security Email
               </label>
               <div className="relative mt-1.5">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
                 <input
                   id="email"
                   type="email"
@@ -156,7 +156,7 @@ function LoginForm() {
                 Password
               </label>
               <div className="relative mt-1.5">
-                <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -201,7 +201,7 @@ function LoginForm() {
               ) : (
                 <>
                   Enter Command Center
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:tranzinc-x-0.5" />
                 </>
               )}
             </button>

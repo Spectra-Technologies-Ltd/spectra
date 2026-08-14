@@ -66,9 +66,9 @@ function getStatusBadge(status: string) {
     case "SUSPENDED":
       return "bg-rose-500/10 text-rose-400 border-rose-500/20";
     case "INACTIVE":
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
     default:
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 }
 
@@ -77,9 +77,9 @@ function getShiftBadge(shift: string) {
     case "DAY":
       return "bg-amber-500/10 text-amber-400 border-amber-500/20";
     case "NIGHT":
-      return "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
+      return "bg-zinc-500/10 text-zinc-500 border-zinc-500/20";
     default:
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 }
 
