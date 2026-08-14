@@ -36,7 +36,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
       <header className="flex items-center justify-between px-4 h-14 border-b border-border bg-card pt-[env(safe-area-inset-top)]">
         <div className="flex items-center gap-2">
           <Shield className="h-5 w-5 text-primary" />
-          <span className="font-bold text-sm tracking-wide">SPECTRA OPS</span>
+          <span className="font-bold text-sm tracking-wide">BASTION OPS</span>
         </div>
         <div className="relative">
           <button

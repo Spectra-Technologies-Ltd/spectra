@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1",
+  // Same-origin by default so the deployed app is proxied through the frontend
+  // domain (Safari on iOS blocks the third-party cookies a cross-origin API
+  // would need for auth). Local dev overrides this via NEXT_PUBLIC_API_URL.
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api/v1",
   withCredentials: true,
   timeout: 10000,
 });

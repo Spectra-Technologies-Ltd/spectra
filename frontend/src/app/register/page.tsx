@@ -117,7 +117,7 @@ export default function RegisterPage() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        organizationName: data.organizationName || "Spectra Operations",
+        organizationName: data.organizationName || "Bastion Operations",
         password: data.password,
       });
       router.push("/login?registered=1");
@@ -134,7 +134,7 @@ export default function RegisterPage() {
   const labelClass =
     "font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500";
   const inputClass = (hasError: boolean) =>
-    `w-full rounded-md border bg-white py-2.5 pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 ${
+    `w-full rounded-md border bg-white py-2.5 pl-9 pr-3 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
       hasError
         ? "border-red-300 focus:border-red-400 focus:ring-red-100"
         : "border-zinc-200 focus:border-black focus:ring-black/10"
@@ -147,7 +147,7 @@ export default function RegisterPage() {
         <div className="relative hidden flex-col justify-between overflow-hidden bg-[#09090b] p-10 lg:flex">
           <img
             src="/spectra-operator.png"
-            alt="Spectra operators coordinating a mission"
+            alt="Bastion operators coordinating a mission"
             className="absolute inset-0 h-full w-full object-cover opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#09090b]/75 via-[#09090b]/85 to-[#09090b]" />
@@ -158,7 +158,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <p className="font-mono text-sm font-bold tracking-[0.3em] text-white">
-                SPECTRA
+                BASTION
               </p>
               <p className="font-mono text-[10px] tracking-[0.24em] text-zinc-400">
                 SECURITY PLATFORM
@@ -222,7 +222,7 @@ export default function RegisterPage() {
           </div>
 
           <p className="relative font-mono text-[10px] tracking-[0.2em] text-zinc-500">
-            © 2026 SPECTRA SYSTEMS, INC.
+            © 2026 BASTION SYSTEMS, INC.
           </p>
         </div>
 
@@ -234,7 +234,7 @@ export default function RegisterPage() {
               <Shield className="h-6 w-6" />
             </div>
             <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
-              SPECTRA
+              BASTION
             </p>
           </div>
 
@@ -261,7 +261,7 @@ export default function RegisterPage() {
           )}
 
           <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="firstName" className={labelClass}>
                   First Name
@@ -317,7 +317,7 @@ export default function RegisterPage() {
                   id="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="operator@spectra.com"
+                  placeholder="operator@bastion.com"
                   {...register("email")}
                   className={inputClass(!!errors.email)}
                 />
@@ -361,7 +361,7 @@ export default function RegisterPage() {
                   id="organizationName"
                   type="text"
                   autoComplete="organization"
-                  placeholder="Spectra Operations"
+                  placeholder="Bastion Operations"
                   {...register("organizationName")}
                   className={inputClass(!!errors.organizationName)}
                 />
@@ -373,7 +373,7 @@ export default function RegisterPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor="password" className={labelClass}>
                   Password
@@ -486,7 +486,7 @@ export default function RegisterPage() {
           </div>
 
           <p className="mt-5 text-center text-sm text-zinc-500">
-            Protected by Spectra Cryptographic Protocol. All attempts logged.
+            Protected by Bastion Cryptographic Protocol. All attempts logged.
           </p>
         </div>
       </div>

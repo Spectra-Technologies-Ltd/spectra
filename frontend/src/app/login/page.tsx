@@ -85,7 +85,7 @@ function LoginForm() {
               <Shield className="h-6 w-6" />
             </div>
             <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
-              SPECTRA
+              BASTION
             </p>
           </div>
 
@@ -96,7 +96,7 @@ function LoginForm() {
             Welcome back
           </h2>
           <p className="animate-rise mt-2 text-sm text-zinc-500" style={{ animationDelay: "120ms" }}>
-            Sign in to the Spectra Operations Command Center.
+            Sign in to the Bastion Operations Command Center.
           </p>
 
           <AuthModeSwitch mode="signin" />
@@ -135,9 +135,9 @@ function LoginForm() {
                   type="email"
                   autoComplete="email"
                   autoFocus
-                  placeholder="operator@spectra.com"
+                  placeholder="operator@bastion.com"
                   {...register("email")}
-                  className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 ${
+                  className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-3 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
                     errors.email
                       ? "border-red-300 focus:border-red-400 focus:ring-red-100"
                       : "border-zinc-200 focus:border-black focus:ring-black/10"
@@ -163,7 +163,7 @@ function LoginForm() {
                   autoComplete="current-password"
                   placeholder="••••••••"
                   {...register("password")}
-                  className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-10 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 ${
+                  className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-10 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
                     errors.password
                       ? "border-red-300 focus:border-red-400 focus:ring-red-100"
                       : "border-zinc-200 focus:border-black focus:ring-black/10"
@@ -216,7 +216,7 @@ function LoginForm() {
           </div>
 
           <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-zinc-400">
-            PROTECTED BY SPECTRA CRYPTOGRAPHIC PROTOCOL
+            PROTECTED BY BASTION CRYPTOGRAPHIC PROTOCOL
           </p>
         </div>
       </div>

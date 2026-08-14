@@ -4,7 +4,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import AuthProvider from "@/providers/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "SPECTRA | Operations Intelligence Platform",
+  title: "BASTION | Operations Intelligence Platform",
   description:
     "Enterprise operations intelligence platform for private security companies, connecting guards, clients, sites, and analytics.",
 };
