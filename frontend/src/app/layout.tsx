@@ -7,13 +7,24 @@ export const metadata: Metadata = {
   title: "BASTION | Operations Intelligence Platform",
   description:
     "Enterprise operations intelligence platform for private security companies, connecting guards, clients, sites, and analytics.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "BASTION",
+  },
+  icons: {
+    apple: "/apple-touch-icon.png",
+    icon: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#f5f7fb",
+  themeColor: "#0d0d12",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
