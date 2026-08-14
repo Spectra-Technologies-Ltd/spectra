@@ -21,7 +21,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   if (!isAuthenticated) {
-    return <>{children}</>;
+    // AuthProvider redirects to /login; render nothing to avoid a flash of
+    // protected content before the redirect lands.
+    return null;
   }
 
   return (

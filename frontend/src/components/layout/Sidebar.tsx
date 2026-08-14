@@ -111,13 +111,13 @@ export default function Sidebar() {
         <div
           onClick={closeMobile}
           aria-hidden="true"
-          className="fixed inset-0 z-40 animate-in fade-in bg-slate-950/60 backdrop-blur-[2px] duration-200 lg:hidden"
+          className="fixed inset-0 z-40 animate-fade-in bg-slate-950/60 backdrop-blur-[2px] lg:hidden"
         />
       )}
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-gradient-to-b from-[#101014] via-[#0a0a0c] to-[#060607] text-slate-200 shadow-2xl shadow-slate-950/40 transition-transform duration-300 ease-in-out',
+          'fixed inset-y-0 left-0 z-50 flex h-screen supports-[height:100dvh]:h-dvh flex-col bg-gradient-to-b from-[#101014] via-[#0a0a0c] to-[#060607] text-slate-200 shadow-2xl shadow-slate-950/40 transition-transform duration-300 ease-in-out',
           'lg:relative lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out lg:border-r lg:border-white/[0.07]',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
           collapsed ? 'w-[260px] lg:w-[76px]' : 'w-[260px]',
@@ -130,7 +130,7 @@ export default function Sidebar() {
           </div>
           <div className={cn('min-w-0 overflow-hidden whitespace-nowrap', collapsed && 'lg:hidden')}>
             <p className="text-[15px] font-black leading-tight tracking-[0.18em] text-white">
-              SPECTRA
+              BASTION
             </p>
             <p className="truncate text-[10px] font-medium tracking-[0.14em] text-slate-400">
               Security Platform
@@ -150,6 +150,7 @@ export default function Sidebar() {
         <button
           onClick={toggleCollapsed}
           aria-label={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
+          aria-expanded={!collapsed}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#18181b] text-slate-300 shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-cyan-400/50 hover:text-cyan-300 hover:shadow-cyan-950/40 lg:flex"
         >
@@ -193,6 +194,7 @@ export default function Sidebar() {
                       key={item.href}
                       href={item.href}
                       title={collapsed ? item.label : undefined}
+                      aria-current={isActive ? 'page' : undefined}
                       className={cn(
                         'group relative flex items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-semibold transition-all duration-150',
                         collapsed && 'lg:justify-center lg:px-0',
@@ -216,8 +218,8 @@ export default function Sidebar() {
                       />
                       <span
                         className={cn(
-                          'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left transition-opacity duration-200',
-                          collapsed && 'lg:opacity-0',
+                          'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left transition-[max-width,opacity] duration-200',
+                          collapsed && 'lg:max-w-0 lg:opacity-0',
                         )}
                       >
                         {item.label}
@@ -273,8 +275,8 @@ export default function Sidebar() {
             <LogOut className="h-[18px] w-[18px] shrink-0" />
             <span
               className={cn(
-                'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left transition-opacity duration-200',
-                collapsed && 'lg:opacity-0',
+                'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left transition-[max-width,opacity] duration-200',
+                collapsed && 'lg:max-w-0 lg:opacity-0',
               )}
             >
               Sign Out

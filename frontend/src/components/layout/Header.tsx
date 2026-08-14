@@ -274,6 +274,7 @@ export default function Header() {
       <button
         onClick={toggleCollapsed}
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-expanded={!collapsed}
         title={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
         className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 lg:flex"
       >
@@ -304,7 +305,7 @@ export default function Header() {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search Spectra..."
+            placeholder="Search Bastion..."
             value={query}
             onChange={(e) => {
               const nextQuery = e.target.value;
