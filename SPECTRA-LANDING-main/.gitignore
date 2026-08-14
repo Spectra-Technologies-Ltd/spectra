@@ -9,6 +9,10 @@ __v0_jsx-dev-runtime.ts
 # Environment variables
 .env*.local
 
+# Local dev logs
+*.log
+*.tsbuildinfo
+
 # Common ignores
 node_modules
 .next/

@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, Crosshair, Menu, MoveRight, Play, Plus, Radar, Scan, X } from 'lucide-react'
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
+
 const products = [
   { name: 'SKYFIN', type: 'AERIAL / VTOL', image: '/images/spectra-drone-fleet.png', description: 'A persistent aerial scout for mapping, inspection and perimeter awareness across complex terrain.', stats: [['Range', '120 km'], ['Endurance', '18 hr'], ['Payload', '18 kg'], ['Launch', 'VTOL']] },
   { name: 'SEAFIN', type: 'MARITIME / USV', image: '/images/spectra-product.png', description: 'A modular surface vehicle that turns coastlines, ports and offshore infrastructure into observable territory.', stats: [['Range', '900 nm'], ['Endurance', '30 days'], ['Payload', '450 kg'], ['Top speed', '18 kn']] },
@@ -77,7 +79,7 @@ export default function Page() {
         <img src="/images/spectra-drone-hero.png" alt="Autonomous aerial drone surveying a coastline" className="hero-image" />
         <div className="hero-overlay" />
         <div className="hero-grid" />
-        <div className="hero-copy"><p className="eyebrow">MISSION INTELLIGENCE / SYSTEM 01</p><h1>See more.<br /><em>Do more.</em></h1><p className="hero-description">Spectra builds autonomous systems and mission software for the places where human reach stops — across air, sea and the critical infrastructure between.</p><button className="outline-button" onClick={() => scrollTo('capabilities')}>Explore the platform <MoveRight size={17} /></button></div>
+        <div className="hero-copy"><p className="eyebrow">MISSION INTELLIGENCE / SYSTEM 01</p><h1>See more.<br /><em>Do more.</em></h1><p className="hero-description">Spectra builds autonomous systems and mission software for the places where human reach stops — across air, sea and the critical infrastructure between.</p><a className="outline-button" href={`${APP_URL}/register`}>Get Started <MoveRight size={17} /></a></div>
         <div className="hero-bottom"><span>36° 12′ 44″ N / 115° 09′ 18″ W</span><span className="hero-scroll"><span className="scroll-line" /> SCROLL TO DISCOVER</span><span>LIVE / AUTONOMOUS</span></div>
       </section>
 
