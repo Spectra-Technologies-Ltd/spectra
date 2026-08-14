@@ -78,9 +78,7 @@ export default function Page() {
 
       <section id="top" ref={heroRef} className="hero-section">
         <CeaserScene />
-        <img src="/images/spectra-drone-hero.png" alt="Autonomous aerial drone surveying a coastline" className="hero-image hero-image-blend" />
-        <div className="hero-overlay" />
-        <div className="hero-grid" />
+        <div className="hero-scrim" />
         <div className="hero-copy"><p className="eyebrow">MISSION INTELLIGENCE / SYSTEM 01</p><h1>See more.<br /><em>Do more.</em></h1><p className="hero-description">Spectra builds autonomous systems and mission software for the places where human reach stops — across air, sea and the critical infrastructure between.</p><a className="outline-button" href={`${APP_URL}/register`}>Get Started <MoveRight size={17} /></a></div>
         <div className="hero-bottom"><span>36° 12′ 44″ N / 115° 09′ 18″ W</span><span className="hero-scroll"><span className="scroll-line" /> SCROLL TO DISCOVER</span><span>LIVE / AUTONOMOUS</span></div>
       </section>

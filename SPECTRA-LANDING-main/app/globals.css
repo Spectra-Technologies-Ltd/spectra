@@ -74,11 +74,8 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--accent); outlin
 
 .hero-section { min-height: 100vh; position: relative; display: flex; align-items: flex-end; }
 .hero-image, .careers-section > img, .mission-card > img, .capability-image { height: 100%; inset: 0; object-fit: cover; position: absolute; width: 100%; }
-.hero-image { filter: saturate(.75); }
-/* Blend the hero photo over the Ceaser 3D scene so the animation shows through */
-.hero-image-blend { mix-blend-mode: screen; opacity: .62; }
-.hero-overlay { background: linear-gradient(90deg, rgba(4,8,24,.62) 0%, rgba(4,8,24,.15) 65%), linear-gradient(0deg, rgba(4,8,24,.55), transparent 55%); inset: 0; position: absolute; }
-.hero-grid { background-image: linear-gradient(rgba(150,180,215,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(150,180,215,.06) 1px, transparent 1px); background-size: 100px 100px; inset: 0; mask-image: linear-gradient(to bottom, black, transparent 70%); opacity: .6; position: absolute; }
+/* Soft readability scrim behind the hero copy (the 3D scene is the backdrop) */
+.hero-scrim { background: linear-gradient(90deg, rgba(4,8,24,.66) 0%, rgba(4,8,24,.18) 55%, transparent 80%), linear-gradient(0deg, rgba(4,8,24,.55), transparent 60%); inset: 0; position: absolute; pointer-events: none; }
 .hero-copy { max-width: 810px; padding: 0 7vw 14vh; position: relative; z-index: 1; }
 .hero-copy h1, h2 { font-size: clamp(52px, 8.3vw, 130px); font-weight: 330; letter-spacing: -.09em; line-height: .9; margin: 26px 0; }
 h1 em, h2 em, .statement-section em, .careers-section em, .contact-section em { color: var(--accent); font-style: normal; }
