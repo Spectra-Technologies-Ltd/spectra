@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, Crosshair, Menu, MoveRight, Play, Plus, Radar, Scan, X } from 'lucide-react'
+import CeaserScene from '../components/CeaserScene'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
 
@@ -76,7 +77,8 @@ export default function Page() {
       </div>
 
       <section id="top" ref={heroRef} className="hero-section">
-        <img src="/images/spectra-drone-hero.png" alt="Autonomous aerial drone surveying a coastline" className="hero-image" />
+        <CeaserScene />
+        <img src="/images/spectra-drone-hero.png" alt="Autonomous aerial drone surveying a coastline" className="hero-image hero-image-blend" />
         <div className="hero-overlay" />
         <div className="hero-grid" />
         <div className="hero-copy"><p className="eyebrow">MISSION INTELLIGENCE / SYSTEM 01</p><h1>See more.<br /><em>Do more.</em></h1><p className="hero-description">Spectra builds autonomous systems and mission software for the places where human reach stops — across air, sea and the critical infrastructure between.</p><a className="outline-button" href={`${APP_URL}/register`}>Get Started <MoveRight size={17} /></a></div>
