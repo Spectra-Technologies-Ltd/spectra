@@ -181,3 +181,68 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
 @layer base { * { @apply border-border outline-ring/50; } }
+
+/* ── Isometric platform architecture animation ── */
+.bg-blueprint {
+  background-image:
+    linear-gradient(to right, rgba(60, 60, 66, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(60, 60, 66, 0.14) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.iso-scene { perspective: 1600px; }
+
+.iso-stage {
+  transform-style: preserve-3d;
+  transform: rotateX(58deg) rotateZ(-45deg);
+  animation: iso-bob 9s ease-in-out infinite;
+}
+
+.iso-dots {
+  background-image: radial-gradient(rgba(40, 40, 46, 0.5) 22%, transparent 23%);
+  background-size: 20px 20px;
+}
+
+.iso-dots-soft {
+  background-image: radial-gradient(rgba(90, 90, 96, 0.45) 22%, transparent 23%);
+  background-size: 20px 20px;
+}
+
+@keyframes iso-bob {
+  0%,
+  100% { transform: rotateX(58deg) rotateZ(-45deg) translateZ(0); }
+  50% { transform: rotateX(58deg) rotateZ(-45deg) translateZ(-14px); }
+}
+
+@keyframes iso-float {
+  0%,
+  100% { transform: translate(-50%, -50%) translate3d(var(--cx), var(--cy), var(--cz)); }
+  50% { transform: translate(-50%, -50%) translate3d(var(--cx), var(--cy), calc(var(--cz) + 16px)); }
+}
+
+@keyframes iso-pulse {
+  0% { top: 100%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 0%; opacity: 0; }
+}
+
+@keyframes iso-glow {
+  0%,
+  100% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.85); }
+  50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.15); }
+}
+
+@keyframes iso-blink {
+  0%,
+  100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* Container for the animation inside the capabilities stage */
+.capability-animation-wrap { position: relative; }
+.capability-animation-wrap .iso-scene { margin-top: -8px; }
+
+@media (max-width: 800px) {
+  .capability-animation-wrap .iso-scene { height: 460px; }
+}
