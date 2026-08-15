@@ -182,6 +182,43 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 
 @layer base { * { @apply border-border outline-ring/50; } }
 
+/* ── Menu groups (BastionOS / Napoleon / Architecture / Work With Us) ── */
+.menu-group { margin-bottom: 30px; }
+.menu-group-title { color: var(--accent); display: block; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .2em; margin-bottom: 4px; text-transform: uppercase; }
+
+/* ── More dropdown pills ── */
+.menu-more { margin-top: 36px; }
+.menu-more-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.menu-more-links button, .menu-more-links a { background: none; border: 1px solid rgba(220,235,255,.22); color: #a9b7cc; cursor: pointer; font-family: var(--font-geist-mono), monospace; font-size: 11px; letter-spacing: .08em; padding: 9px 15px; text-decoration: none; text-transform: uppercase; transition: border-color .2s ease, color .2s ease; }
+.menu-more-links button:hover, .menu-more-links a:hover { border-color: var(--accent); color: var(--foreground); }
+
+/* ── Newsletter ── */
+.menu-newsletter { margin-top: 36px; }
+.newsletter { display: flex; gap: 10px; margin-top: 10px; max-width: 460px; }
+.newsletter-input { background: rgba(7,10,28,.6); border: 1px solid rgba(220,235,255,.25); color: var(--foreground); font-family: var(--font-geist-mono), monospace; font-size: 12px; min-width: 0; padding: 13px 14px; width: 100%; }
+.newsletter-input::placeholder { color: #5a6b7d; }
+.newsletter-input:focus { border-color: var(--accent); outline: none; }
+.newsletter-btn { background: var(--accent); border: 0; color: var(--accent-foreground); cursor: pointer; font-family: var(--font-geist-mono), monospace; font-size: 10px; font-weight: 700; letter-spacing: .14em; padding: 0 20px; text-transform: uppercase; white-space: nowrap; transition: opacity .2s ease; }
+.newsletter-btn:hover { opacity: .9; }
+
+/* ── Footer newsletter row ── */
+.footer-newsletter { align-items: center; border-top: 1px solid var(--border); display: flex; gap: 24px; justify-content: space-between; padding: 30px 0 40px; }
+.footer-newsletter > span { color: #a9b7cc; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; }
+
+/* ── Architecture card description inside the mission layout ── */
+.mission-copy { color: #b3bfd3; font-size: 13px; line-height: 1.6; max-width: 460px; margin-bottom: 16px; }
+
+@media (max-width: 640px) {
+  .newsletter { flex-direction: column; }
+  .newsletter-btn { padding: 13px 20px; }
+  .footer-newsletter { align-items: stretch; flex-direction: column; gap: 14px; }
+}
+
+@media (max-width: 800px) {
+  .menu-group { margin-bottom: 22px; }
+  .menu-more { margin-top: 26px; }
+}
+
 /* ── Isometric platform architecture animation ── */
 .bg-blueprint {
   background-image:
