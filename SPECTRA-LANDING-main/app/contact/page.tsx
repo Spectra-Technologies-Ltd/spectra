@@ -1,6 +1,7 @@
 import { MapPin, Phone, Mail } from 'lucide-react'
 import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
+import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 import { ContactForm } from '@/components/contact-form'
 import { StandardForm } from '@/components/standard-form'
@@ -19,21 +20,17 @@ const details = [
 
 export default function ContactPage() {
   return (
-    <main className="spectra-shell contact-light">
-      <SiteHeader light />
+    <main className="spectra-shell">
+      <SiteHeader />
 
       {/* Hero — Contact Us / Get In Touch */}
-      <div className="contact-hero animate-fade-in">
-        <h1>Contact Us</h1>
-        <p className="contact-getintouch">Get In Touch</p>
-      </div>
+      <PageHero kicker="CONTACT / GET IN TOUCH" title="Contact" em="Us." tag="SPECTRA / SIGNAL" />
 
-      {/* Form demo — wizard + standard form, side by side */}
-      <section className="contact-section">
-        <Reveal>
-          <h2>Contact Form Demo</h2>
-          <div className="contact-divider" />
-        </Reveal>
+      {/* Contact Form Demo — wizard + standard form, side by side */}
+      <section className="page-section" style={{ paddingTop: 40 }}>
+        <div className="page-section-head">
+          <Reveal><p className="eyebrow">CONTACT FORM DEMO</p><h3>Get in<br />touch.</h3></Reveal>
+        </div>
         <Reveal>
           <div className="contact-form-demo">
             <div>
@@ -49,18 +46,17 @@ export default function ContactPage() {
       </section>
 
       {/* Contact details */}
-      <section className="contact-section">
-        <Reveal>
-          <h2>Contact details</h2>
-          <div className="contact-divider" />
-        </Reveal>
+      <section className="page-section page-section-alt">
+        <div className="page-section-head">
+          <Reveal><p className="eyebrow">CONTACT DETAILS</p><h3>Reach us<br />directly.</h3></Reveal>
+        </div>
         <Reveal>
           <div className="contact-detail-grid">
             {details.map(({ icon: Icon, label, value, sub }) => (
-              <div key={label} className="contact-detail-item">
-                <span className="detail-icon grow-hover"><Icon size={18} /></span>
+              <div key={label} className="page-card contact-detail-card">
+                <span className="card-index grow-hover"><Icon size={18} /></span>
                 <h4>{label}</h4>
-                <p>{value}</p>
+                <p className="contact-detail-value">{value}</p>
                 <p>{sub}</p>
               </div>
             ))}
@@ -69,26 +65,20 @@ export default function ContactPage() {
       </section>
 
       {/* Newsletter */}
-      <section className="contact-section">
-        <Reveal>
-          <h2>Subscribe now</h2>
-          <div className="contact-divider" />
-        </Reveal>
+      <section className="page-section">
+        <div className="page-section-head">
+          <Reveal><p className="eyebrow">NEWSLETTER</p><h3>Subscribe<br />now.</h3></Reveal>
+          <Reveal><p className="body-copy">Join our newsletter to get the latest news, updates, and special offers delivered straight to your inbox.</p></Reveal>
+        </div>
         <Reveal>
           <div className="contact-newsletter">
-            <div className="newsletter-left">
-              <p className="newsletter-kicker">Sign up now!</p>
-              <p className="contact-body" style={{ marginTop: 8 }}>
-                Join our newsletter to get the latest news, updates, and special offers delivered
-                straight to your inbox.
-              </p>
-            </div>
+            <p className="newsletter-kicker">Sign up now!</p>
             <NewsletterInline />
           </div>
         </Reveal>
       </section>
 
-      <SiteFooter light />
+      <SiteFooter />
     </main>
   )
 }
