@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
 import { NewsletterForm } from './newsletter-form'
@@ -35,6 +36,7 @@ const WORKSPACE_GROUP = [
 ] as const
 
 const MORE_LINKS = [
+  ['Home', '/'],
   ['BastionOS', '/bastionos'],
   ['Napoleon', '/napoleon'],
   ['Workspace', `${APP_URL}/login`],
@@ -76,15 +78,13 @@ export default function SiteHeader() {
     setMenuOpen(false)
     if (pathname === '/') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    } else {
-      router.push('/')
     }
   }
 
   return (
     <>
       <header className={`site-header ${menuOpen ? 'header-hidden' : ''}`}>
-        <button className="wordmark" onClick={goTop} aria-label="Spectra home">SPECTRA<span>.</span></button>
+        <Link className="wordmark" href="/" onClick={goTop} aria-label="Spectra home">SPECTRA<span>.</span></Link>
         <div className="header-center">INTELLIGENT INFRASTRUCTURE / MACHINE INTELLIGENCE</div>
         <button className="menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Open menu"><span>MENU</span><Menu size={17} /></button>
       </header>

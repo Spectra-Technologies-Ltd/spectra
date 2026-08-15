@@ -57,7 +57,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--accent); outlin
 .spectra-shell { overflow: hidden; background: var(--background); }
 .site-header { align-items: center; background: linear-gradient(180deg, rgba(7,10,28,.8), transparent); display: flex; height: 78px; justify-content: space-between; left: 0; padding: 0 34px; position: fixed; right: 0; top: 0; z-index: 20; transition: opacity .35s ease, transform .35s ease; }
 .header-hidden { opacity: 0; pointer-events: none; transform: translateY(-20px); }
-.wordmark { background: none; border: 0; color: var(--foreground); cursor: pointer; font-size: 18px; font-weight: 750; letter-spacing: -.08em; padding: 0; }
+.wordmark { background: none; border: 0; color: var(--foreground); cursor: pointer; font-size: 18px; font-weight: 750; letter-spacing: -.08em; padding: 0; text-decoration: none; }
 .wordmark span { color: var(--accent); }
 .header-center, .eyebrow, .section-kicker, .hero-bottom, .menu-panel-top, .menu-foot, .filter-list, .product-nav, .spec-list span, .footer-links > div > span, .footer-bottom, .odometer small { color: #9aa9c7; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .menu-trigger { align-items: center; background: none; border: 0; color: var(--foreground); cursor: pointer; display: flex; gap: 9px; letter-spacing: .14em; font-family: var(--font-geist-mono), monospace; font-size: 10px; }

@@ -46,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable} bg-background`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${geist.variable} ${geistMono.variable} bg-background`}>
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
