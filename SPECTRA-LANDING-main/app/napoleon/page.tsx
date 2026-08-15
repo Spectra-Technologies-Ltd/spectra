@@ -37,7 +37,7 @@ export default function NapoleonPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="NAPOLEON / THE INTELLIGENCE LAYER" title="Think, learn," em="predict.">
+      <PageHero kicker="NAPOLEON / THE INTELLIGENCE LAYER" title="Think, learn," em="predict." tag="NAPOLEON / INFERENCE">
         <p>
           NapoleonOS — the strategic intelligence engine. Named after history&apos;s greatest
           strategist, it represents the power of intelligence, adaptability and precision in
@@ -46,37 +46,62 @@ export default function NapoleonPage() {
         <Link className="outline-button" href="/bastionos">See it power BastionOS <ArrowUpRight size={17} /></Link>
       </PageHero>
 
+      {/* Manifesto rhythm */}
+      <section className="manifesto-section" style={{ paddingTop: 130 }}>
+        <div className="section-kicker"><span>01</span><span>THE STRATEGIC INTELLIGENCE ENGINE</span></div>
+        <Reveal><h2>Victory is decided<br /><em>by intelligence.</em></h2></Reveal>
+        <div className="manifesto-meta">
+          <span>01—05</span>
+          <p>Napoleon understood that victory was not determined by force alone — it was determined by the ability to gather information, understand the battlefield, anticipate movement, and make decisions faster than the opposition.</p>
+        </div>
+      </section>
+
+      {/* The signal-to-intelligence narrative */}
       <section className="page-section">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">THE STRATEGIC INTELLIGENCE ENGINE</p><h3>Victory is decided<br />by intelligence.</h3></Reveal>
+          <Reveal><p className="eyebrow">02 / THE PROBLEM</p><h3>Your battlefield<br />is data.</h3></Reveal>
         </div>
         <Reveal>
           <div className="page-prose">
             <p>
-              Napoleon understood that victory was not determined by force alone — it was determined
-              by the ability to <strong>gather information</strong>, <strong>understand the battlefield</strong>,{' '}
-              <strong>anticipate movement</strong>, and <strong>make decisions faster</strong> than the opposition.
-            </p>
-            <p>
-              Organizations today face a similar challenge. Their battlefield is not land — it is{' '}
-              <em>data</em>. Every operation, transaction, employee action, customer interaction, and
-              asset movement creates signals. However, these signals often remain fragmented,
-              preventing organizations from seeing the complete picture.
-            </p>
-            <p>
-              Napoleon is Spectra&apos;s machine learning model built to become the{' '}
-              <strong>strategic intelligence layer</strong> of modern organizations. Like Napoleon&apos;s
-              ability to analyze complex battlefields and coordinate forces, NapoleonOS learns from
-              vast operational data to <strong>identify patterns</strong>, <strong>uncover relationships</strong>,{' '}
-              <strong>predict outcomes</strong>, and provide <strong>decision intelligence</strong>.
+              Organizations today face a similar challenge to the battlefield. Their terrain is not
+              land — it is <em>data</em>. Every operation, transaction, employee action, customer
+              interaction, and asset movement creates signals. However, these signals often remain{' '}
+              <strong>fragmented</strong>, preventing organizations from seeing the complete picture.
             </p>
           </div>
         </Reveal>
       </section>
 
-      <section className="page-section page-section-alt">
+      {/* Command visual — the landing page HUD concept */}
+      <section id="inference" className="command-section">
+        <div className="section-kicker"><span>03</span><span>INFERENCE</span></div>
+        <div className="command-layout">
+          <div className="command-copy">
+            <Reveal>
+              <p className="eyebrow">MACHINE INTELLIGENCE LAYER</p>
+              <h2>Signals in.<br /><em>Intelligence out.</em></h2>
+              <p className="body-copy">Napoleon is Spectra&apos;s machine learning model — the strategic intelligence layer of modern organizations. It learns from vast operational data to identify patterns, uncover relationships, predict outcomes, and provide decision intelligence.</p>
+              <Link className="outline-button" href="/bastionos">Explore Napoleon in action <ArrowUpRight size={17} /></Link>
+            </Reveal>
+          </div>
+          <div className="command-visual">
+            <img src="/images/spectra-command.png" alt="Napoleon intelligence layer" />
+            <div className="command-overlay">
+              <span>NAPOLEON / INFERENCE</span>
+              <strong>MODEL // RUNNING</strong>
+              <span>LATENCY 00:00:04</span>
+            </div>
+            <div className="command-marker marker-a"><i />PATTERN / 0041</div>
+            <div className="command-marker marker-b"><i />SIGNAL / CLASSIFIED</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Capabilities */}
+      <section className="page-section">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">WHAT NAPOLEON DOES</p><h3>From fragmented signals<br />to complete picture.</h3></Reveal>
+          <Reveal><p className="eyebrow">04 / WHAT NAPOLEON DOES</p><h3>From fragmented signals<br />to complete picture.</h3></Reveal>
         </div>
         <div className="card-grid">
           {capabilities.map(([index, title, copy]) => (
@@ -91,9 +116,10 @@ export default function NapoleonPage() {
         </div>
       </section>
 
-      <section className="page-section">
+      {/* Relationship + domain-agnostic */}
+      <section className="page-section page-section-alt">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">THE RELATIONSHIP</p><h3>Three roles,<br />one system.</h3></Reveal>
+          <Reveal><p className="eyebrow">05 / THE RELATIONSHIP</p><h3>Three roles,<br />one system.</h3></Reveal>
           <Reveal><p className="body-copy">Napoleon powers the Intelligence Operating Systems built on the Spectra platform.</p></Reveal>
         </div>
         <Reveal>
@@ -103,11 +129,8 @@ export default function NapoleonPage() {
             ))}
           </div>
         </Reveal>
-      </section>
-
-      <section className="page-section page-section-alt">
-        <div className="page-section-head">
-          <Reveal><p className="eyebrow">DOMAIN-AGNOSTIC</p><h3>One engine,<br />every industry.</h3></Reveal>
+        <div className="page-section-head" style={{ marginTop: 70 }}>
+          <Reveal><p className="eyebrow">06 / DOMAIN-AGNOSTIC</p><h3>One engine,<br />every industry.</h3></Reveal>
         </div>
         <Reveal>
           <div className="page-prose">
@@ -126,13 +149,17 @@ export default function NapoleonPage() {
         </Reveal>
       </section>
 
-      <section className="cta-band">
+      {/* Statement CTA */}
+      <section className="statement-section">
+        <div className="statement-rule" />
         <Reveal>
-          <p className="eyebrow">NEXT</p>
-          <h2>See it in action.<br />Enter the system.</h2>
-          <p className="body-copy">BastionOS puts Napoleon&apos;s intelligence to work for security operations.</p>
-          <Link className="outline-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></Link>
+          <p>NAPOLEON = THINKS, LEARNS, PREDICTS.<br />BASTIONOS = ORGANIZES, PRESENTS, ACTS.</p>
+          <h2>See it in action.<br /><em>Enter the system.</em></h2>
         </Reveal>
+        <div className="statement-foot">
+          <span>SCROLL / 07</span>
+          <Link className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></Link>
+        </div>
       </section>
 
       <SiteFooter />

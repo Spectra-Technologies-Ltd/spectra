@@ -29,7 +29,7 @@ export default function PartnersPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="PARTNERS / COLLABORATIONS" title="Build on the<br />Spectra architecture.">
+      <PageHero kicker="PARTNERS / COLLABORATIONS" title="Build on the<br />Spectra architecture." tag="PARTNERS / ECOSYSTEM">
         <p>
           Partnerships, integrations and collaborations — teams building on BastionOS, Napoleon and
           the infrastructure beneath them.
@@ -37,9 +37,20 @@ export default function PartnersPage() {
         <Link className="outline-button" href="/contact">Become a partner <ArrowUpRight size={17} /></Link>
       </PageHero>
 
+      {/* Manifesto rhythm */}
+      <section className="manifesto-section" style={{ paddingTop: 130 }}>
+        <div className="section-kicker"><span>01</span><span>THE ECOSYSTEM</span></div>
+        <Reveal><h2>Built to<br /><em>build on.</em></h2></Reveal>
+        <div className="manifesto-meta">
+          <span>01—03</span>
+          <p>An Intelligence Operating System is only as strong as what it connects to. Spectra partners extend the architecture — integrations, channels and co-development.</p>
+        </div>
+      </section>
+
+      {/* Programs */}
       <section className="page-section">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">PARTNERSHIP PROGRAMS</p><h3>Ways to work<br />together.</h3></Reveal>
+          <Reveal><p className="eyebrow">02 / PARTNERSHIP PROGRAMS</p><h3>Ways to work<br />together.</h3></Reveal>
         </div>
         <div className="card-grid">
           {programs.map(([index, title, copy]) => (
@@ -54,9 +65,10 @@ export default function PartnersPage() {
         </div>
       </section>
 
+      {/* What partners get */}
       <section className="page-section page-section-alt">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">WHAT PARTNERS GET</p><h3>Built to build on.</h3></Reveal>
+          <Reveal><p className="eyebrow">03 / WHAT PARTNERS GET</p><h3>Built to build on.</h3></Reveal>
         </div>
         <Reveal>
           <div className="spec-grid two-col">
@@ -67,13 +79,17 @@ export default function PartnersPage() {
         </Reveal>
       </section>
 
-      <section className="cta-band">
+      {/* Statement CTA */}
+      <section className="statement-section">
+        <div className="statement-rule" />
         <Reveal>
-          <p className="eyebrow">NEXT</p>
+          <p>PARTNERSHIPS · INTEGRATIONS ·<br />COLLABORATIONS</p>
           <h2>Build with us.</h2>
-          <p className="body-copy">Tell us what you&apos;re building — we&apos;ll show you what&apos;s possible on the platform.</p>
-          <Link className="outline-button" href="/contact">Start the conversation <ArrowUpRight size={17} /></Link>
         </Reveal>
+        <div className="statement-foot">
+          <span>SCROLL / 04</span>
+          <Link className="text-button" href="/contact">Start the conversation <ArrowUpRight size={17} /></Link>
+        </div>
       </section>
 
       <SiteFooter />

@@ -21,23 +21,25 @@ export default function ContactPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="CONTACT / DIRECT INQUIRIES" title="Let's talk about<br />the mission.">
+      <PageHero kicker="CONTACT / DIRECT INQUIRIES" title="Let's talk about<br />the mission." tag="SPECTRA / SIGNAL">
         <p>
           Direct business inquiries — partnerships, enterprise, government and press. Tell us what
           you&apos;re trying to see, understand or protect.
         </p>
       </PageHero>
 
+      {/* Form */}
       <section className="page-section">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">SEND AN INQUIRY</p><h3>Start a<br />conversation.</h3></Reveal>
+          <Reveal><p className="eyebrow">01 / SEND AN INQUIRY</p><h3>Start a<br />conversation.</h3></Reveal>
         </div>
         <Reveal><ContactForm /></Reveal>
       </section>
 
+      {/* Channels */}
       <section className="page-section page-section-alt">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">WHO TO REACH</p><h3>Every inquiry<br />goes somewhere.</h3></Reveal>
+          <Reveal><p className="eyebrow">02 / WHO TO REACH</p><h3>Every inquiry<br />goes somewhere.</h3></Reveal>
         </div>
         <div className="card-grid">
           {channels.map(([index, title, copy]) => (

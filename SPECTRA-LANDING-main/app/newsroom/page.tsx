@@ -22,44 +22,46 @@ export default function NewsRoomPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="NEWS ROOM / THE JOURNAL" title="From the frontier.">
+      <PageHero kicker="NEWS ROOM / THE JOURNAL" title="From the frontier." tag="SPECTRA / JOURNAL">
         <p>
           News, technical briefs and architecture notes from Spectra Technologies — BastionOS,
           Napoleon and the platform beneath.
         </p>
       </PageHero>
 
-      <section className="page-section" style={{ paddingTop: 40 }}>
-        <Reveal>
-          <div className="article-list">
-            {articles.map(([source, title, excerpt, date, href]) => (
-              <article key={title}>
-                <span className="eyebrow">{source}</span>
-                <div>
-                  <h4>{title}</h4>
-                  <p>{excerpt}</p>
-                </div>
-                <div className="article-date">
-                  <span>{date}</span>
-                  {href.startsWith('http') ? (
-                    <a href={href} target="_blank" rel="noopener noreferrer" aria-label={title}><ArrowUpRight size={17} /></a>
-                  ) : (
-                    <Link href={href} aria-label={title}><ArrowUpRight size={17} /></Link>
-                  )}
-                </div>
-              </article>
-            ))}
-          </div>
-        </Reveal>
+      {/* Press grid — the landing page light press-section concept */}
+      <section className="press-section" style={{ paddingTop: 110 }}>
+        <div className="section-kicker"><span>01</span><span>LATEST</span></div>
+        <div className="press-grid">
+          {articles.map(([source, title, excerpt, date, href]) => (
+            <article key={title}>
+              <p className="eyebrow">{source}</p>
+              <h3>{title}</h3>
+              <p style={{ color: '#51617b', fontSize: 13, lineHeight: 1.6, marginTop: 12 }}>{excerpt}</p>
+              <div>
+                <span>{date}</span>
+                {href.startsWith('http') ? (
+                  <a href={href} target="_blank" rel="noopener noreferrer" aria-label={title}><ArrowUpRight size={17} /></a>
+                ) : (
+                  <Link href={href} aria-label={title}><ArrowUpRight size={17} /></Link>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
-      <section className="cta-band">
+      {/* Statement CTA */}
+      <section className="statement-section">
+        <div className="statement-rule" />
         <Reveal>
-          <p className="eyebrow">PRESS</p>
-          <h2>Press &amp; media<br />inquiries.</h2>
-          <p className="body-copy">Reach the Spectra team directly for interviews, briefings and comments.</p>
-          <Link className="outline-button" href="/contact">Contact the team <ArrowUpRight size={17} /></Link>
+          <p>PRESS &amp; MEDIA<br />INQUIRIES</p>
+          <h2>Get the<br /><em>full picture.</em></h2>
         </Reveal>
+        <div className="statement-foot">
+          <span>SCROLL / 02</span>
+          <Link className="text-button" href="/contact">Contact the team <ArrowUpRight size={17} /></Link>
+        </div>
       </section>
 
       <SiteFooter />

@@ -325,6 +325,7 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 .page-hero { display: flex; flex-direction: column; justify-content: flex-end; min-height: 82vh; padding: 170px 7vw 54px; position: relative; }
 .page-hero .section-kicker { border-color: var(--border); }
 .page-hero h2 { font-size: clamp(52px, 7.5vw, 116px); margin: 40px 0 0; }
+.page-hero-bottom { bottom: 34px; left: 7vw; right: 7vw; }
 .page-hero-meta { align-items: flex-end; display: flex; gap: 6vw; justify-content: space-between; margin-top: 46px; }
 .page-hero-meta p { color: var(--muted-foreground); font-size: 14px; line-height: 1.7; margin: 0; max-width: 480px; }
 .page-hero-meta .outline-button { flex-shrink: 0; }
