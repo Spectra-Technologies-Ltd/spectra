@@ -103,7 +103,7 @@ export default function ClientsDirectoryPage() {
           </button>
           <button
             onClick={() => router.push('/clients/add')}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.25)]"
+            className="btn-accent flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
           >
             <Plus className="h-4 w-4" /> Add Client
           </button>
@@ -167,9 +167,9 @@ export default function ClientsDirectoryPage() {
                     <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((client: Client) => (
-                    <tr key={client.id} className="hover:bg-secondary/30 transition-colors group">
+                    <tr key={client.id} className="table-row-hover group">
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">

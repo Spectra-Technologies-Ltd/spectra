@@ -85,11 +85,11 @@ export default function PatrolsPage() {
                     <th className="px-6 py-4 font-medium tracking-wider">Completion %</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((record: PatrolRecord) => (
                     <tr
                       key={record.id}
-                      className="hover:bg-secondary/30 transition-colors group"
+                      className="table-row-hover group"
                     >
                       <td className="px-6 py-4 font-medium text-foreground">
                         {record.route.name}

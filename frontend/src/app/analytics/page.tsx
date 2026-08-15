@@ -210,24 +210,26 @@ export default function AnalyticsPage() {
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="hsl(215, 27.9%, 16.9%)"
+                  stroke="var(--color-border)"
                 />
                 <XAxis
                   dataKey="type"
-                  tick={{ fill: "#64748b", fontSize: 12 }}
+                  tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "#64748b", fontSize: 12 }}
+                  tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(224, 71%, 4%)",
-                    border: "1px solid hsl(215, 27.9%, 16.9%)",
+                    backgroundColor: "var(--color-card)",
+                    border: "1px solid var(--color-border)",
                     borderRadius: "8px",
+                    fontSize: "12px",
+                    color: "var(--color-foreground)",
                   }}
                 />
                 <Bar dataKey="count" fill="#f59e0b" radius={[4, 4, 0, 0]} />
@@ -253,24 +255,26 @@ export default function AnalyticsPage() {
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="hsl(215, 27.9%, 16.9%)"
+                  stroke="var(--color-border)"
                 />
                 <XAxis
                   dataKey="day"
-                  tick={{ fill: "#64748b", fontSize: 12 }}
+                  tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "#64748b", fontSize: 12 }}
+                  tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(224, 71%, 4%)",
-                    border: "1px solid hsl(215, 27.9%, 16.9%)",
+                    backgroundColor: "var(--color-card)",
+                    border: "1px solid var(--color-border)",
                     borderRadius: "8px",
+                    fontSize: "12px",
+                    color: "var(--color-foreground)",
                   }}
                 />
                 <Line
@@ -296,42 +300,54 @@ export default function AnalyticsPage() {
           </h3>
           {attendanceTrend && attendanceTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart
+              <AreaChart
                 data={attendanceTrend}
                 margin={{ top: 5, right: 0, left: -20, bottom: 5 }}
               >
+                <defs>
+                  <linearGradient id="analyticsAttendance" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.32} />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="hsl(215, 27.9%, 16.9%)"
+                  stroke="var(--color-border)"
                 />
                 <XAxis
                   dataKey="day"
-                  tick={{ fill: "#64748b", fontSize: 12 }}
+                  tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  domain={[0, 100]}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
+                  domain={[0, (dataMax: number) => Math.max(100, Math.ceil((dataMax + 10) / 10) * 10)]}
+                  tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(224, 71%, 4%)",
-                    border: "1px solid hsl(215, 27.9%, 16.9%)",
+                    backgroundColor: "var(--color-card)",
+                    border: "1px solid var(--color-border)",
                     borderRadius: "8px",
+                    fontSize: "12px",
+                    color: "var(--color-foreground)",
                   }}
                 />
-                <Line
+                <Area
                   type="monotone"
                   dataKey="rate"
                   name="Attendance %"
                   stroke="#10b981"
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
+                  strokeWidth={2.5}
+                  dot={{ r: 3.5, fill: "#10b981", stroke: "var(--color-card)", strokeWidth: 2 }}
+                  activeDot={{ r: 5.5, fill: "#10b981", stroke: "var(--color-card)", strokeWidth: 2 }}
+                  fill="url(#analyticsAttendance)"
+                  animationDuration={700}
+                  animationEasing="ease-out"
                 />
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[300px] text-muted-foreground text-sm">

@@ -5,7 +5,6 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { ClipboardCheck } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
 import { Pagination } from '@/components/ui/Pagination';
 import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
@@ -90,9 +89,9 @@ export default function AttendancePage() {
                     <th className="px-6 py-4 font-medium tracking-wider">Method</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((record: AttendanceRecord) => (
-                    <tr key={record.id} className="hover:bg-secondary/30 transition-colors group">
+                    <tr key={record.id} className="table-row-hover group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">

@@ -4,7 +4,7 @@ import React from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { Bell, BellOff, CheckCircle2 } from 'lucide-react';
+import { Bell, BellOff, CheckCircle2, Mail, Smartphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Notification {
@@ -42,11 +42,11 @@ export default function NotificationsPage() {
     });
   };
 
-  const getTypeIcon = (type: string) => {
+  const getTypeMeta = (type: string) => {
     switch (type) {
-      case 'EMAIL': return '📧';
-      case 'SMS': return '📱';
-      default: return '🔔';
+      case 'EMAIL': return { icon: Mail, tone: 'bg-blue-500/10 text-blue-500' };
+      case 'SMS': return { icon: Smartphone, tone: 'bg-emerald-500/10 text-emerald-500' };
+      default: return { icon: Bell, tone: 'bg-amber-500/10 text-amber-500' };
     }
   };
 
@@ -73,42 +73,47 @@ export default function NotificationsPage() {
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <BellOff className="h-12 w-12 mb-3 opacity-20" />
             <p>No notifications yet</p>
-            <p className="text-xs mt-1">You'll see alerts here when incidents are reported or attendance updates come in.</p>
+            <p className="text-xs mt-1">You&apos;ll see alerts here when incidents are reported or attendance updates come in.</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
-            {notifications.map((n) => (
-              <div
-                key={n.id}
-                className={cn(
-                  'flex items-start gap-4 px-6 py-4 transition-colors',
-                  n.status === 'UNREAD' ? 'bg-primary/5' : 'hover:bg-secondary/20'
-                )}
-              >
-                <span className="text-lg mt-0.5">{getTypeIcon(n.type)}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className={cn('text-sm', n.status === 'UNREAD' ? 'text-foreground font-semibold' : 'text-foreground')}>
-                      {n.title}
-                    </p>
-                    {n.status === 'UNREAD' && (
-                      <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
-                    )}
+            {notifications.map((n) => {
+              const { icon: TypeIcon, tone } = getTypeMeta(n.type);
+              return (
+                <div
+                  key={n.id}
+                  className={cn(
+                    'flex items-start gap-4 px-6 py-4 transition-colors',
+                    n.status === 'UNREAD' ? 'bg-primary/5' : 'hover:bg-secondary/20'
+                  )}
+                >
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${tone}`}>
+                    <TypeIcon className="h-4 w-4" />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className={cn('text-sm', n.status === 'UNREAD' ? 'text-foreground font-semibold' : 'text-foreground')}>
+                        {n.title}
+                      </p>
+                      {n.status === 'UNREAD' && (
+                        <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-0.5">{n.message}</p>
+                    <p className="text-xs text-muted-foreground mt-1.5">{formatDate(n.createdAt)}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-0.5">{n.message}</p>
-                  <p className="text-xs text-muted-foreground mt-1.5">{formatDate(n.createdAt)}</p>
+                  {n.status === 'UNREAD' && (
+                    <button
+                      onClick={() => markRead.mutate(n.id)}
+                      className="shrink-0 text-xs text-primary hover:underline flex items-center gap-1"
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Mark read
+                    </button>
+                  )}
                 </div>
-                {n.status === 'UNREAD' && (
-                  <button
-                    onClick={() => markRead.mutate(n.id)}
-                    className="shrink-0 text-xs text-primary hover:underline flex items-center gap-1"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    Mark read
-                  </button>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

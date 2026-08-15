@@ -103,9 +103,9 @@ export default function IncidentsPage() {
                     <th className="px-6 py-4 font-medium tracking-wider">Reported At</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((incident: Incident) => (
-                    <tr key={incident.id} className="hover:bg-secondary/30 transition-colors group">
+                    <tr key={incident.id} className="table-row-hover group">
                       <td className="px-6 py-4">
                         <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
                           {incident.title}

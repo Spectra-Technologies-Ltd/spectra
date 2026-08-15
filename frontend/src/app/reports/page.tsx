@@ -120,7 +120,7 @@ export default function ReportsPage() {
                 <button
                   onClick={() => downloadPdf(site.id, site.name)}
                   disabled={isDownloading(site.id)}
-                  className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.25)] disabled:opacity-50"
+                  className="btn-accent inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-50"
                 >
                   {isDownloading(site.id) ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />

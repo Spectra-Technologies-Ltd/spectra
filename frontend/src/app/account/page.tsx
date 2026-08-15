@@ -241,7 +241,7 @@ export default function AccountSettingsPage() {
               <button
                 type="submit"
                 disabled={updateMutation.isPending}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.25)] disabled:opacity-60 disabled:cursor-not-allowed"
+                className="btn-accent flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {updateMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
