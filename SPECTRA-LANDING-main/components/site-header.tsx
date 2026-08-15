@@ -90,7 +90,7 @@ export function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
-export default function SiteHeader() {
+export default function SiteHeader({ light = false }: { light?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [openNav, setOpenNav] = useState<string | null>(null)
   const pathname = usePathname()
@@ -141,7 +141,7 @@ export default function SiteHeader() {
 
   return (
     <>
-      <header className={`site-header ${menuOpen ? 'header-hidden' : ''}`}>
+      <header className={`site-header ${light ? 'site-header-light' : ''} ${menuOpen ? 'header-hidden' : ''}`}>
         <Link className="wordmark" href="/" onClick={goTop} aria-label="Spectra home">SPECTRA<span>.</span></Link>
         <div className="header-center">INTELLIGENT INFRASTRUCTURE / MACHINE INTELLIGENCE</div>
 

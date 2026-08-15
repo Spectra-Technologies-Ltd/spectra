@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { NewsletterForm } from './newsletter-form'
 import { scrollToSection } from './site-header'
 
-export default function SiteFooter() {
+export default function SiteFooter({ light = false }: { light?: boolean }) {
   const [miles, setMiles] = useState(0)
   const pathname = usePathname()
   const router = useRouter()
@@ -35,7 +35,7 @@ export default function SiteFooter() {
   }
 
   return (
-    <footer>
+    <footer className={light ? 'footer-light' : ''}>
       <div className="footer-top"><span className="wordmark">SPECTRA<span>.</span></span><span className="footer-tagline">BUILT FOR THE UNSEEN</span><span className="odometer"><strong>{String(miles).padStart(2, '0')}</strong><small>MI / SCROLLED</small></span></div>
       <div className="footer-links">
         <div><span>EXPLORE</span><button onClick={() => go('/bastionos')}>BastionOS</button><button onClick={() => go('/napoleon')}>Napoleon</button><button onClick={() => go('/newsroom')}>News Room</button></div>
