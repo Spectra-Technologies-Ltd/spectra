@@ -8,38 +8,36 @@ import { NewsletterForm } from './newsletter-form'
 
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
 
-/* ── Desktop mega-menu (Palantir-style dropdown) ── */
+/* ── Desktop mega-menu (Palantir-style full-width bar) ── */
 const NAV_GROUPS = [
   {
     label: 'BastionOS',
-    columns: [
-      { title: 'The Platform', links: [['Overview', '/bastionos'], ['Architecture', '/bastionos#system']] },
-      { title: 'Capabilities', links: [['Capabilities', '/bastionos#capabilities'], ['Applications', '/bastionos#stack']] },
-    ],
-    footer: ['Explore BastionOS', '/bastionos'] as const,
+    eyebrow: 'The Operating Foundation',
+    items: [['Overview', '/bastionos']],
   },
   {
     label: 'Napoleon',
-    columns: [
-      { title: 'The Intelligence Layer', links: [['Overview', '/napoleon'], ['Architecture', '/napoleon#inference']] },
-      { title: 'Capabilities', links: [['Intelligence capabilities', '/napoleon#capabilities'], ['Applications', '/napoleon#industries']] },
-    ],
-    footer: ['Explore Napoleon', '/napoleon'] as const,
+    eyebrow: 'The Intelligence Layer',
+    items: [['Overview', '/napoleon']],
   },
   {
     label: 'Work With Us',
-    columns: [
-      { title: 'Company', links: [['About Spectra', '/about'], ['News Room', '/newsroom']] },
-      { title: 'Collaborate', links: [['Partners', '/partners'], ['Contact Us', '/contact']] },
+    eyebrow: '',
+    items: [
+      ['Contact Us', '/contact'],
+      ['About Spectra', '/about'],
+      ['Partners', '/partners'],
+      ['News Room', '/newsroom'],
     ],
-    footer: ['Start a conversation', '/contact'] as const,
   },
   {
     label: 'Workspace',
-    columns: [
-      { title: 'The App', links: [['Open Workspace', `${APP_URL}/login`], ['Sign In', `${APP_URL}/login`], ['Create Account', `${APP_URL}/register`]] },
+    eyebrow: '',
+    items: [
+      ['Open Workspace', `${APP_URL}/login`],
+      ['Sign In', `${APP_URL}/login`],
+      ['Create Account', `${APP_URL}/register`],
     ],
-    footer: ['Enter the system', `${APP_URL}/login`] as const,
   },
 ] as const
 
@@ -137,27 +135,25 @@ export default function SiteHeader() {
                 {group.label} <ChevronDown size={12} />
               </button>
               <div className="mega-panel">
-                <div className="mega-columns">
-                  {group.columns.map((col) => (
-                    <div key={col.title} className="mega-col">
-                      <span className="mega-col-title">{col.title}</span>
-                      {col.links.map(([label, target]) => (
-                        <button key={label} className="mega-link" onClick={() => go(target)}>
-                          {label} <ArrowUpRight size={14} />
-                        </button>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-                <div className="mega-footer">
-                  <button onClick={() => go(group.footer[1])}>{group.footer[0]} <ArrowUpRight size={15} /></button>
+                <div className="mega-inner">
+                  {group.eyebrow && <span className="mega-eyebrow">{group.eyebrow}</span>}
+                  <div className="mega-columns">
+                    {group.items.map(([label, target]) => (
+                      <button key={label} className="mega-link" onClick={() => go(target)}>
+                        {label} <ArrowUpRight size={15} />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </nav>
 
-        <button className="menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Open menu"><span>MENU</span><Menu size={17} /></button>
+        <div className="header-actions">
+          <Link className="header-cta" href="/contact">Contact Us <ArrowUpRight size={14} /></Link>
+          <button className="menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Open menu"><span>MENU</span><Menu size={17} /></button>
+        </div>
       </header>
 
       {/* Mobile full-screen menu */}
@@ -166,11 +162,11 @@ export default function SiteHeader() {
         <nav className="menu-links">
           <div className="menu-group">
             <span className="menu-group-title">BastionOS — Operating Foundation</span>
-            {[['01', 'Overview', '/bastionos'], ['02', 'Architecture', '/bastionos#system'], ['03', 'Capabilities', '/bastionos#capabilities'], ['04', 'Applications', '/bastionos#stack']].map(([number, label, target]) => <button key={label} onClick={() => go(target)}><span>{number}</span><strong>{label}</strong><ArrowUpRight size={20} /></button>)}
+            <button onClick={() => go('/bastionos')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Napoleon — Intelligence Layer</span>
-            {[['01', 'Overview', '/napoleon'], ['02', 'Intelligence capabilities', '/napoleon#capabilities'], ['03', 'Architecture', '/napoleon#inference'], ['04', 'Applications', '/napoleon#industries']].map(([number, label, target]) => <button key={label} onClick={() => go(target)}><span>{number}</span><strong>{label}</strong><ArrowUpRight size={20} /></button>)}
+            <button onClick={() => go('/napoleon')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Work With Us</span>
