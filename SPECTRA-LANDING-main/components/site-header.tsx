@@ -104,13 +104,34 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
     const esc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpenNav(null)
     }
+    // Fallback: when the URL hash points at a homepage section (e.g. after a
+    // cross-page anchor navigation), settle the scroll once the page paints.
+    const onHashChange = () => {
+      const id = window.location.hash.replace('#', '')
+      if (id) setTimeout(() => scrollToSection(id), 80)
+    }
     document.addEventListener('mousedown', handler)
     document.addEventListener('keydown', esc)
+    window.addEventListener('hashchange', onHashChange)
     return () => {
       document.removeEventListener('mousedown', handler)
       document.removeEventListener('keydown', esc)
+      window.removeEventListener('hashchange', onHashChange)
     }
   }, [])
+
+  // Same-page anchor: smooth-scroll without a full reload; otherwise let the
+  // native <a href> navigation do its thing (works even without JS).
+  const handleMegaLink = (e: React.MouseEvent, target: string) => {
+    const [path, hash] = target.split('#')
+    if (hash && (path === '' || path === '/' || path === pathname)) {
+      e.preventDefault()
+      setOpenNav(null)
+      scrollToSection(hash)
+    } else {
+      setOpenNav(null)
+    }
+  }
 
   const go = (target: string) => {
     setMenuOpen(false)
@@ -163,9 +184,9 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
                   {group.links.length > 0 && (
                     <div className="mega-links">
                       {group.links.map(([label, target]) => (
-                        <button key={label} className="mega-link" onClick={() => go(target)}>
+                        <a key={label} className="mega-link" href={target} onClick={(e) => handleMegaLink(e, target)}>
                           {label} <ArrowUpRight size={15} />
-                        </button>
+                        </a>
                       ))}
                     </div>
                   )}
@@ -195,9 +216,9 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
                   <span className="mega-eyebrow">{NAV_NEWS.eyebrow}</span>
                   <div className="mega-links">
                     {NAV_NEWS.links.map(([label, target]) => (
-                      <button key={label} className="mega-link" onClick={() => go(target)}>
+                      <a key={label} className="mega-link" href={target} onClick={(e) => handleMegaLink(e, target)}>
                         {label} <ArrowUpRight size={15} />
-                      </button>
+                      </a>
                     ))}
                   </div>
                   <div className="mega-newsletter">

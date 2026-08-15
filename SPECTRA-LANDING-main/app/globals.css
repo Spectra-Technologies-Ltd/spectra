@@ -82,7 +82,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--accent); outlin
   .mega-inner { display: grid; gap: 26px; grid-template-columns: 1fr; margin: 0 auto; max-width: 1200px; padding: 34px 7vw; }
   .mega-eyebrow { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 9px; letter-spacing: .24em; text-transform: uppercase; }
   .mega-links { display: flex; flex-direction: column; gap: 2px; max-width: 420px; }
-  .mega-link { align-items: center; background: none; border: 0; color: #b9c8dc; cursor: pointer; display: flex; font-size: 14px; gap: 12px; justify-content: space-between; padding: 9px 0; text-align: left; transition: color .2s ease, padding-left .2s ease; width: 100%; }
+  .mega-link { align-items: center; background: none; border: 0; color: #b9c8dc; cursor: pointer; display: flex; font-size: 14px; gap: 12px; justify-content: space-between; padding: 9px 0; text-align: left; text-decoration: none; transition: color .2s ease, padding-left .2s ease; width: 100%; }
   .mega-link:hover { color: var(--accent); padding-left: 4px; }
   .mega-link svg { opacity: 0; transition: opacity .2s ease; }
   .mega-link:hover svg { opacity: 1; }
