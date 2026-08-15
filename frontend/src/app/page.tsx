@@ -246,6 +246,7 @@ export default function DashboardPage() {
     { name: "In Progress", value: inProgressPatrols, color: "#3b82f6" },
     { name: "Overdue", value: overduePatrols, color: "#ef4444" },
   ].filter((item) => item.value > 0);
+  const donutTotal = useCountUp(totalPatrols);
 
   const activities: DashboardActivity[] =
     recentActivities?.length > 0
@@ -334,9 +335,16 @@ export default function DashboardPage() {
     <DashboardLayout>
       <div className="animate-rise mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-            Command Center · {today}
-          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              Command Center · {today}
+            </span>
+            <span className="hidden h-1 w-1 rounded-full bg-muted-foreground/40 sm:inline-block" />
+            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-emerald-600 dark:text-emerald-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              All systems operational
+            </span>
+          </div>
           <h1 className="mt-1 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
             {greeting}, {user?.firstName ?? "Operator"}.
           </h1>
@@ -344,9 +352,11 @@ export default function DashboardPage() {
             Here&apos;s what&apos;s happening across your network.
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-600 dark:text-cyan-400">
-          <span className="live-dot h-1.5 w-1.5 rounded-full bg-cyan-500" />
-          Live
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-600 dark:text-cyan-400">
+            <span className="live-dot h-1.5 w-1.5 rounded-full bg-cyan-500" />
+            Live
+          </span>
         </div>
       </div>
 
@@ -356,7 +366,7 @@ export default function DashboardPage() {
         ))}
       </section>
 
-      <section className="animate-rise mt-3 dashboard-card overflow-hidden rounded-lg" style={{ animationDelay: "160ms" }}>
+      <section className="animate-rise mt-3 dashboard-card card-featured overflow-hidden rounded-lg" style={{ animationDelay: "160ms" }}>
         <div className="border-b border-border px-4 py-4 sm:px-5">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -507,7 +517,7 @@ export default function DashboardPage() {
                 </defs>
                 <CartesianGrid stroke="var(--color-border)" vertical={false} />
                 <XAxis dataKey="day" tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} tickMargin={8} />
-                <YAxis domain={[0, 100]} tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis domain={[0, (dataMax: number) => Math.max(100, Math.ceil((dataMax + 10) / 10) * 10)]} tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip
                   cursor={{ stroke: "var(--color-border)", strokeDasharray: "4 4" }}
                   contentStyle={{
@@ -564,20 +574,24 @@ export default function DashboardPage() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="donut-center">
-                <strong>{totalPatrols}</strong>
+                <strong>{Math.round(donutTotal)}</strong>
                 <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                  Total
+                  Patrols
                 </span>
               </div>
             </div>
             <div className="space-y-3">
-              {patrolData.map((item) => (
-                <div key={item.name} className="flex items-center gap-2.5 text-sm">
-                  <span className="h-2.5 w-2.5 rounded-full ring-4 ring-transparent" style={{ backgroundColor: item.color, boxShadow: `0 0 10px ${item.color}66` }} />
-                  <span className="flex-1 font-semibold text-foreground">{item.name}</span>
-                  <span className="font-mono text-sm font-bold text-foreground">{item.value}</span>
-                </div>
-              ))}
+              {patrolData.map((item) => {
+                const pct = Math.round((item.value / totalPatrols) * 100);
+                return (
+                  <div key={item.name} className="flex items-center gap-2.5 text-sm">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full ring-4 ring-transparent" style={{ backgroundColor: item.color, boxShadow: `0 0 10px ${item.color}66` }} />
+                    <span className="flex-1 font-semibold text-foreground">{item.name}</span>
+                    <span className="font-mono text-sm font-bold text-foreground tabular-nums">{item.value}</span>
+                    <span className="w-10 text-right font-mono text-xs text-muted-foreground tabular-nums">{pct}%</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -588,23 +602,38 @@ export default function DashboardPage() {
           </p>
           <h2 className="mt-1 text-base font-black tracking-tight text-foreground">Incidents</h2>
           <div className="mt-5 space-y-4">
-            {incidents.map((incident: { type: string; count: number }, index: number) => (
-              <div key={incident.type} className="flex gap-3">
-                <span
-                  className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ring-4 ${
-                    index === 1 ? "bg-amber-400 ring-amber-500/10" : "bg-red-500 ring-red-500/10"
-                  }`}
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-foreground">
-                    {typeLabels[incident.type] ?? incident.type}
-                  </p>
-                  <p className="mt-0.5 font-mono text-xs text-muted-foreground">
-                    {incident.count * 2 + index + 1} min ago
-                  </p>
-                </div>
-              </div>
-            ))}
+            {(() => {
+              const tones = [
+                { dot: "bg-red-500 ring-red-500/15", bar: "bg-red-500" },
+                { dot: "bg-amber-400 ring-amber-500/15", bar: "bg-amber-400" },
+                { dot: "bg-blue-500 ring-blue-500/15", bar: "bg-blue-500" },
+                { dot: "bg-rose-500 ring-rose-500/15", bar: "bg-rose-500" },
+              ];
+              const maxCount = Math.max(...incidents.map((i: { count: number }) => i.count), 1);
+              return incidents.map((incident: { type: string; count: number }, index: number) => {
+                const tone = tones[index % tones.length];
+                const pct = Math.max(Math.round((incident.count / maxCount) * 100), 8);
+                return (
+                  <div key={incident.type}>
+                    <div className="flex items-center gap-3">
+                      <span className={`h-2.5 w-2.5 shrink-0 rounded-full ring-4 ${tone.dot}`} />
+                      <p className="min-w-0 flex-1 truncate text-sm font-bold text-foreground">
+                        {typeLabels[incident.type] ?? incident.type}
+                      </p>
+                      <span className="font-mono text-xs font-bold text-foreground tabular-nums">
+                        {incident.count}
+                      </span>
+                    </div>
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className={`h-full rounded-full ${tone.bar}`}
+                        style={{ width: `${pct}%`, transition: "width 0.6s var(--ease-out)" }}
+                      />
+                    </div>
+                  </div>
+                );
+              });
+            })()}
           </div>
           <Link
             href="/incidents"
@@ -625,16 +654,16 @@ export default function DashboardPage() {
         </h2>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {[
-            { label: "Add Guard", href: "/guards/add", icon: UserCheck, chip: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
-            { label: "Create Patrol", href: "/patrols", icon: Route, chip: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
-            { label: "Report Incident", href: "/incidents", icon: AlertTriangle, chip: "bg-red-500/10 text-red-500" },
-            { label: "Add Client", href: "/clients/add", icon: Building2, chip: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
-            { label: "Open Reports", href: "/reports", icon: FileText, chip: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
+            { label: "Add Guard", href: "/guards/add", icon: UserCheck, chip: "bg-blue-500/10 text-blue-600 dark:text-blue-400", glow: "hover:border-blue-500/40 hover:shadow-blue-500/10" },
+            { label: "Create Patrol", href: "/patrols", icon: Route, chip: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400", glow: "hover:border-cyan-500/40 hover:shadow-cyan-500/10" },
+            { label: "Report Incident", href: "/incidents", icon: AlertTriangle, chip: "bg-red-500/10 text-red-500", glow: "hover:border-red-500/40 hover:shadow-red-500/10" },
+            { label: "Add Client", href: "/clients/add", icon: Building2, chip: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400", glow: "hover:border-emerald-500/40 hover:shadow-emerald-500/10" },
+            { label: "Open Reports", href: "/reports", icon: FileText, chip: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400", glow: "hover:border-cyan-500/40 hover:shadow-cyan-500/10" },
           ].map((action) => (
             <Link
               key={action.label}
               href={action.href}
-              className="tile-lift group flex min-h-[92px] flex-col items-center justify-center gap-2.5 rounded-lg border border-border bg-secondary/40 p-3 text-center hover:-translate-y-0.5 hover:border-cyan-500/30 hover:bg-secondary hover:shadow-md hover:shadow-cyan-500/5"
+              className={`tile-lift group flex min-h-[92px] flex-col items-center justify-center gap-2.5 rounded-lg border border-border bg-secondary/40 p-3 text-center hover:-translate-y-0.5 hover:bg-secondary hover:shadow-md ${action.glow}`}
             >
               <span className={`metric-chip flex h-9 w-9 items-center justify-center rounded-md ${action.chip}`}>
                 <action.icon className="h-4.5 w-4.5 transition-transform group-hover:scale-110" />
