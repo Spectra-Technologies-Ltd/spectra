@@ -70,12 +70,12 @@ export default function SiteHeader() {
       <header className={`site-header ${menuOpen ? 'header-hidden' : ''}`}>
         <Link className="wordmark" href="/" onClick={goTop} aria-label="Spectra home">SPECTRA<span>.</span></Link>
         <div className="header-center">INTELLIGENT INFRASTRUCTURE / MACHINE INTELLIGENCE</div>
-        <button className="menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Open menu"><span>MENU</span><Menu size={17} /></button>
+        <button className="menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={18} /></button>
       </header>
 
       {/* Full-screen dropdown menu (the former menu) */}
       <div className={`menu-panel ${menuOpen ? 'menu-open' : ''}`} aria-hidden={!menuOpen}>
-        <div className="menu-panel-top"><span>SPECTRA TECHNOLOGIES / INDEX</span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
+        <div className="menu-panel-top"><span className="menu-panel-brand">SPECTRA<span>.</span></span><span className="header-center">TECHNOLOGIES / INDEX</span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
         <nav className="menu-links">
           <div className="menu-group">
             <span className="menu-group-title">BastionOS — Operating Foundation</span>
