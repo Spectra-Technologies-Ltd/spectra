@@ -369,6 +369,21 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
   .capability-animation-wrap .iso-scene { height: 460px; }
 }
 
+/* ── BastionOS overview section (homepage mini-intro) ── */
+.bastion-intro { padding: 130px 7vw 120px; }
+.bastion-intro-grid { align-items: flex-end; display: flex; gap: 6vw; justify-content: space-between; margin-top: 60px; }
+.bastion-intro-grid h2 { margin: 0; max-width: 760px; }
+.bastion-intro-copy { max-width: 380px; }
+.bastion-intro-copy .body-copy { margin: 0 0 28px; }
+
+/* Keep anchored sections clear of the fixed header when scrolled to */
+section[id] { scroll-margin-top: 90px; }
+
+@media (max-width: 800px) {
+  .bastion-intro { padding: 78px 18px; }
+  .bastion-intro-grid { flex-direction: column; gap: 28px; }
+}
+
 /* ── Sub pages (BastionOS / Napoleon / About / Partners / Contact / News Room) ── */
 .page-hero { display: flex; flex-direction: column; justify-content: flex-end; min-height: 82vh; padding: 170px 7vw 54px; position: relative; }
 .page-hero .section-kicker { border-color: var(--border); }

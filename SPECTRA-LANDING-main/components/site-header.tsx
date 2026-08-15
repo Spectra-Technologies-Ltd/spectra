@@ -11,10 +11,10 @@ export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.
 /* ── Desktop inline nav (Palantir-style dropdowns) ── */
 const NAV_GROUPS = [
   {
-    label: 'Bastion',
+    label: 'BastionOS',
     eyebrow: 'The Operating Foundation',
     description: '',
-    links: [['Overview', '/#fleet']],
+    links: [['Overview', '/#bastion']],
     footer: ['Explore BastionOS', '/bastionos'],
   },
   {
@@ -230,8 +230,8 @@ export default function SiteHeader() {
         <div className="menu-panel-top"><span className="menu-panel-brand">SPECTRA<span>.</span></span><span className="header-center">TECHNOLOGIES / INDEX</span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
         <nav className="menu-links">
           <div className="menu-group">
-            <span className="menu-group-title">Bastion — Operating Foundation</span>
-            <button onClick={() => go('/#fleet')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
+            <span className="menu-group-title">BastionOS — Operating Foundation</span>
+            <button onClick={() => go('/#bastion')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Napoleon — Intelligence Layer</span>
