@@ -17,21 +17,21 @@ export default function SiteFooter() {
   }, [])
 
   const go = (target: string) => {
-    if (target.startsWith('/#')) {
-      const id = target.slice(2)
-      if (pathname === '/') {
-        scrollToSection(id)
-      } else {
-        router.push('/')
-        setTimeout(() => scrollToSection(id), 450)
-      }
-      return
-    }
     if (target.startsWith('http')) {
       window.open(target, '_blank', 'noopener,noreferrer')
       return
     }
-    router.push(target)
+    const [path, hash] = target.split('#')
+    if (hash && (path === '' || path === '/' || path === pathname)) {
+      scrollToSection(hash)
+      return
+    }
+    if (hash) {
+      router.push(`${path || '/'}#${hash}`)
+      setTimeout(() => scrollToSection(hash), 600)
+      return
+    }
+    router.push(path || '/')
   }
 
   return (

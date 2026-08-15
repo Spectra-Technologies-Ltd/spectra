@@ -99,7 +99,7 @@ export default function NapoleonPage() {
       </section>
 
       {/* Capabilities */}
-      <section className="page-section">
+      <section id="capabilities" className="page-section">
         <div className="page-section-head">
           <Reveal><p className="eyebrow">04 / WHAT NAPOLEON DOES</p><h3>From fragmented signals<br />to complete picture.</h3></Reveal>
         </div>
@@ -117,7 +117,7 @@ export default function NapoleonPage() {
       </section>
 
       {/* Relationship + domain-agnostic */}
-      <section className="page-section page-section-alt">
+      <section id="industries" className="page-section page-section-alt">
         <div className="page-section-head">
           <Reveal><p className="eyebrow">05 / THE RELATIONSHIP</p><h3>Three roles,<br />one system.</h3></Reveal>
           <Reveal><p className="body-copy">Napoleon powers the Intelligence Operating Systems built on the Spectra platform.</p></Reveal>

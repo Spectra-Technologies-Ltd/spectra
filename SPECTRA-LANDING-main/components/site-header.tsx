@@ -8,19 +8,17 @@ import { NewsletterForm } from './newsletter-form'
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
 
 const BASTION_GROUP = [
-  ['01', 'Overview', '/#capabilities'],
-  ['02', 'Architecture', '/#architecture'],
-  ['03', 'Capabilities', '/#capabilities'],
-  ['04', 'Applications', '/#fleet'],
-  ['05', 'Explore BastionOS', '/bastionos'],
+  ['01', 'Overview', '/bastionos'],
+  ['02', 'Architecture', '/bastionos#system'],
+  ['03', 'Capabilities', '/bastionos#capabilities'],
+  ['04', 'Applications', '/bastionos#stack'],
 ] as const
 
 const NAPOLEON_GROUP = [
-  ['01', 'Overview', '/#napoleon'],
-  ['02', 'Intelligence capabilities', '/#napoleon'],
-  ['03', 'Architecture', '/#architecture'],
-  ['04', 'Applications', '/#fleet'],
-  ['05', 'Explore Napoleon', '/napoleon'],
+  ['01', 'Overview', '/napoleon'],
+  ['02', 'Intelligence capabilities', '/napoleon#capabilities'],
+  ['03', 'Architecture', '/napoleon#inference'],
+  ['04', 'Applications', '/napoleon#industries'],
 ] as const
 
 const WORK_GROUP = [
@@ -55,21 +53,23 @@ export default function SiteHeader() {
 
   const go = (target: string) => {
     setMenuOpen(false)
-    if (target.startsWith('/#')) {
-      const id = target.slice(2)
-      if (pathname === '/') {
-        scrollToSection(id)
-      } else {
-        router.push('/')
-        setTimeout(() => scrollToSection(id), 450)
-      }
-      return
-    }
     if (target.startsWith('http')) {
       window.open(target, '_blank', 'noopener,noreferrer')
       return
     }
-    router.push(target)
+    const [path, hash] = target.split('#')
+    // Same-page anchor
+    if (hash && (path === '' || path === '/' || path === pathname)) {
+      scrollToSection(hash)
+      return
+    }
+    // Cross-page anchor: navigate, then settle the scroll once the page paints
+    if (hash) {
+      router.push(`${path || '/'}#${hash}`)
+      setTimeout(() => scrollToSection(hash), 600)
+      return
+    }
+    router.push(path || '/')
   }
 
   const goTop = () => {

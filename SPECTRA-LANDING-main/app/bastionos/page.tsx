@@ -84,7 +84,7 @@ export default function BastionOSPage() {
       </section>
 
       {/* Full-bleed mission card — the landing page architecture-card concept */}
-      <section className="missions-section" style={{ paddingTop: 110 }}>
+      <section id="capabilities" className="missions-section" style={{ paddingTop: 110 }}>
         <div className="section-kicker"><span>03</span><span>CORE CAPABILITIES</span></div>
         <div className="section-heading-row">
           <Reveal><h2>Everything your<br /><em>operation runs on.</em></h2></Reveal>
@@ -113,7 +113,7 @@ export default function BastionOSPage() {
       </section>
 
       {/* Stack specs */}
-      <section className="page-section">
+      <section id="stack" className="page-section">
         <div className="page-section-head">
           <Reveal><p className="eyebrow">04 / THE STACK</p><h3>BastionOS + Napoleon,<br />one system.</h3></Reveal>
           <Reveal><p className="body-copy">The operating foundation and the intelligence layer are built to work as a single architecture.</p></Reveal>
