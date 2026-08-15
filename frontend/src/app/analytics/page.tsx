@@ -144,7 +144,7 @@ export default function AnalyticsPage() {
         <div className="flex flex-wrap items-center gap-2">
           {/* Time period dropdown */}
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -tranzinc-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <select
               value={selectedPeriod.label}
               onChange={(e) => {
@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
 
           {/* Incident type filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -tranzinc-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <select
               value={incidentTypeFilter}
               onChange={(e) => setIncidentTypeFilter(e.target.value)}

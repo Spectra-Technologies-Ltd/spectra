@@ -94,6 +94,22 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 1px);
   --radius-sm: calc(var(--radius) - 2px);
+
+  /* ── Motion & depth tokens ── */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  --gradient-brand: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+  --gradient-danger: linear-gradient(135deg, #f43f5e 0%, #f97316 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #22d3ee 100%);
+
+  --elevation-1: 0 1px 2px rgba(2, 6, 23, 0.06), 0 1px 3px rgba(2, 6, 23, 0.08);
+  --elevation-2: 0 4px 12px -2px rgba(2, 6, 23, 0.1), 0 2px 4px rgba(2, 6, 23, 0.06);
+  --elevation-3: 0 12px 28px -8px rgba(2, 6, 23, 0.18), 0 6px 12px rgba(2, 6, 23, 0.08);
+  --elevation-4: 0 24px 48px -12px rgba(2, 6, 23, 0.28), 0 12px 20px rgba(2, 6, 23, 0.1);
 }
 
 @layer base {
@@ -197,9 +213,219 @@
   animation: fade-in 0.25s ease-out both;
 }
 
+/* Page-level transitions: fade + slight slide on route change */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.page-enter {
+  animation: page-enter 0.25s var(--ease-out) both;
+}
+
+/* Stat cards: hover lift with a soft cyan-tinted glow */
+.stat-card {
+  transition:
+    transform 0.2s var(--ease-out),
+    box-shadow 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out);
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(34, 211, 238, 0.25);
+  box-shadow:
+    0 14px 30px -10px rgba(2, 6, 23, 0.2),
+    0 0 0 1px rgba(34, 211, 238, 0.08),
+    0 8px 24px -12px rgba(34, 211, 238, 0.25);
+}
+
+/* Interactive tiles (quick actions) */
+.tile-lift {
+  transition:
+    transform 0.18s var(--ease-out),
+    box-shadow 0.18s var(--ease-out),
+    background-color 0.18s var(--ease-out),
+    border-color 0.18s var(--ease-out);
+}
+
+/* Header icon buttons */
+.icon-btn {
+  transition:
+    transform 0.15s var(--ease-out),
+    background-color 0.15s var(--ease-out),
+    color 0.15s var(--ease-out),
+    opacity 0.15s var(--ease-out);
+}
+
+.icon-btn:hover {
+  transform: scale(1.06);
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+/* ── Sidebar navigation ── */
+.nav-item {
+  transition:
+    background-color 0.18s var(--ease-out),
+    color 0.18s var(--ease-out),
+    box-shadow 0.18s var(--ease-out),
+    transform 0.18s var(--ease-out);
+}
+
+.nav-item:hover {
+  transform: translateX(2px);
+}
+
+.nav-item-active {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(224, 242, 254, 0.98) 100%
+  );
+  color: #09090b;
+  box-shadow:
+    0 8px 20px -8px rgba(2, 6, 23, 0.5),
+    0 0 0 1px rgba(34, 211, 238, 0.12),
+    0 0 18px -4px rgba(34, 211, 238, 0.3);
+}
+
+/* Active accent bar: slides/scales in when the item becomes active */
+@keyframes accent-in {
+  from {
+    transform: translateY(-50%) scaleY(0);
+  }
+  to {
+    transform: translateY(-50%) scaleY(1);
+  }
+}
+
+.accent-bar {
+  transform-origin: center;
+}
+
+.accent-bar-active {
+  animation: accent-in 0.25s var(--ease-out) both;
+}
+
+/* ── LIVE pulse dot ── */
+@keyframes live-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(34, 211, 238, 0);
+  }
+}
+
+.live-dot {
+  animation: live-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── Table / feed rows: animate in ── */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.row-enter {
+  animation: row-in 0.3s var(--ease-out) both;
+}
+
+/* ── Metric icon chips: soft glow matched to their color ── */
+.metric-chip {
+  box-shadow:
+    0 4px 14px -6px currentColor,
+    0 0 0 1px rgba(255, 255, 255, 0.4);
+  transition: transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+}
+
+.stat-card:hover .metric-chip {
+  transform: scale(1.08) rotate(-3deg);
+  box-shadow:
+    0 6px 18px -6px currentColor,
+    0 0 14px -2px currentColor;
+}
+
+/* ── Search input focus glow ── */
+.search-glow {
+  transition:
+    border-color 0.2s var(--ease-out),
+    box-shadow 0.2s var(--ease-out),
+    background-color 0.2s var(--ease-out);
+}
+
+.search-glow:focus-within {
+  border-color: rgba(34, 211, 238, 0.55);
+  box-shadow:
+    0 0 0 4px rgba(34, 211, 238, 0.12),
+    0 0 24px -8px rgba(34, 211, 238, 0.5);
+}
+
+/* ── Notification bell shake (new alert) ── */
+@keyframes bell-shake {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-11deg);
+  }
+  60% {
+    transform: rotate(7deg);
+  }
+  80% {
+    transform: rotate(-4deg);
+  }
+}
+
+.bell-shake {
+  animation: bell-shake 0.5s var(--ease-in-out) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-rise,
-  .animate-fade-in {
+  .animate-fade-in,
+  .page-enter,
+  .row-enter,
+  .accent-bar-active,
+  .bell-shake {
+    animation: none;
+  }
+  .stat-card,
+  .tile-lift,
+  .icon-btn,
+  .nav-item,
+  .metric-chip,
+  .search-glow {
+    transition: none;
+  }
+  .stat-card:hover,
+  .nav-item:hover {
+    transform: none;
+  }
+  .stat-card:hover .metric-chip {
+    transform: none;
+  }
+  .live-dot {
     animation: none;
   }
 }

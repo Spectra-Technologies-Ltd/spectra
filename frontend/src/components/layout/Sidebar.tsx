@@ -118,8 +118,8 @@ export default function Sidebar() {
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-50 flex h-screen supports-[height:100dvh]:h-dvh flex-col bg-gradient-to-b from-[#101014] via-[#0a0a0c] to-[#060607] text-zinc-200 shadow-2xl shadow-zinc-950/40 transition-transform duration-300 ease-in-out',
-          'lg:relative lg:z-auto lg:tranzinc-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out lg:border-r lg:border-white/[0.07]',
-          mobileOpen ? 'tranzinc-x-0' : '-tranzinc-x-full',
+          'lg:relative lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out lg:border-r lg:border-white/[0.07]',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full',
           collapsed ? 'w-[260px] lg:w-[76px]' : 'w-[260px]',
         )}
       >
@@ -152,7 +152,7 @@ export default function Sidebar() {
           aria-label={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
           aria-expanded={!collapsed}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -tranzinc-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#18181b] text-zinc-300 shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-cyan-400/50 hover:text-cyan-300 hover:shadow-cyan-950/40 lg:flex"
+          className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#18181b] text-zinc-300 shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-cyan-400/50 hover:text-cyan-300 hover:shadow-cyan-950/40 lg:flex"
         >
           {collapsed ? <ChevronsRight className="h-3.5 w-3.5" /> : <ChevronsLeft className="h-3.5 w-3.5" />}
         </button>
@@ -196,18 +196,18 @@ export default function Sidebar() {
                       title={collapsed ? item.label : undefined}
                       aria-current={isActive ? 'page' : undefined}
                       className={cn(
-                        'group relative flex items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-semibold transition-all duration-150',
+                        'group nav-item relative flex items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-semibold',
                         collapsed && 'lg:justify-center lg:px-0',
                         isActive
-                          ? 'bg-white text-black shadow-lg shadow-black/30'
+                          ? 'nav-item-active'
                           : 'text-zinc-400 hover:bg-white/[0.07] hover:text-white',
                       )}
                     >
                       {/* Active accent bar */}
                       <span
                         className={cn(
-                          'absolute left-0 top-1/2 h-5 w-[3px] -tranzinc-y-1/2 rounded-r-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.8)] transition-opacity duration-150',
-                          isActive ? 'opacity-100' : 'opacity-0',
+                          'accent-bar absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.8)] transition-opacity duration-150',
+                          isActive ? 'accent-bar-active opacity-100' : 'opacity-0',
                         )}
                       />
                       <item.icon

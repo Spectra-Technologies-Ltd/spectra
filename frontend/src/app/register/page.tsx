@@ -267,7 +267,7 @@ export default function RegisterPage() {
                   First Name
                 </label>
                 <div className="relative mt-1.5">
-                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
+                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                   <input
                     id="firstName"
                     type="text"
@@ -289,7 +289,7 @@ export default function RegisterPage() {
                   Last Name
                 </label>
                 <div className="relative mt-1.5">
-                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
+                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                   <input
                     id="lastName"
                     type="text"
@@ -312,7 +312,7 @@ export default function RegisterPage() {
                 Security Email
               </label>
               <div className="relative mt-1.5">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                 <input
                   id="email"
                   type="email"
@@ -334,7 +334,7 @@ export default function RegisterPage() {
                 Phone Number
               </label>
               <div className="relative mt-1.5">
-                <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
+                <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                 <input
                   id="phone"
                   type="tel"
@@ -356,7 +356,7 @@ export default function RegisterPage() {
                 Organization <span className="font-normal normal-case">(optional)</span>
               </label>
               <div className="relative mt-1.5">
-                <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
+                <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                 <input
                   id="organizationName"
                   type="text"
@@ -379,7 +379,7 @@ export default function RegisterPage() {
                   Password
                 </label>
                 <div className="relative mt-1.5">
-                  <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
+                  <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -429,7 +429,7 @@ export default function RegisterPage() {
                   Confirm
                 </label>
                 <div className="relative mt-1.5">
-                  <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
+                  <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
                   <input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -471,7 +471,7 @@ export default function RegisterPage() {
               ) : (
                 <>
                   Create Security Account
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:tranzinc-x-0.5" />
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </>
               )}
             </button>

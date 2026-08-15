@@ -5,9 +5,11 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { SidebarProvider } from './SidebarContext';
 import { useAuth } from '@/providers/AuthProvider';
+import { usePathname } from 'next/navigation';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
+  const pathname = usePathname();
 
   if (isLoading) {
     return (
@@ -34,7 +36,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <Header />
           <main className="flex-1 overflow-y-auto px-3 py-4 sm:px-5 lg:px-6">
-            <div className="mx-auto w-full max-w-[1440px]">{children}</div>
+            {/* key=pathname re-mounts the content on each route change so the
+                page-enter transition plays while the chrome stays static */}
+            <div key={pathname} className="page-enter mx-auto w-full max-w-[1440px]">
+              {children}
+            </div>
           </main>
         </div>
       </div>

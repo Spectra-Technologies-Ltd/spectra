@@ -96,6 +96,38 @@ function timeAgo(date: Date): string {
   return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 }
 
+/**
+ * Counts from 0 to `target` on first render.
+ * Falls back to an instant value when the user prefers reduced motion.
+ */
+function useCountUp(target: number, duration = 700) {
+  const [value, setValue] = React.useState(0);
+
+  React.useEffect(() => {
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      // Jump straight to the final value on the next frame (keeps reduced-motion
+      // users from seeing an animated count).
+      const raf = requestAnimationFrame(() => setValue(target));
+      return () => cancelAnimationFrame(raf);
+    }
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(target * eased);
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+
+  return value;
+}
+
 function MetricCard({
   label,
   value,
@@ -103,6 +135,7 @@ function MetricCard({
   trend,
   icon: Icon,
   tone,
+  delay = 0,
 }: {
   label: string;
   value: string;
@@ -110,19 +143,33 @@ function MetricCard({
   trend: "up" | "down";
   icon: React.ElementType;
   tone: string;
+  delay?: number;
 }) {
   const TrendIcon = trend === "up" ? TrendingUp : TrendingDown;
 
+  // Count up numeric values ("128" or "94.5%"); render other values as-is.
+  const parsed = /^(\d+(?:\.\d+)?)(%?)$/.exec(value);
+  const num = parsed ? Number(parsed[1]) : null;
+  const suffix = parsed?.[2] ?? "";
+  const decimals = num != null && num % 1 !== 0 ? String(num).split(".")[1].length : 0;
+  const count = useCountUp(num ?? 0);
+  const shown = num != null ? count.toFixed(decimals) + suffix : value;
+
   return (
-    <div className="dashboard-card rounded-lg p-4 transition-shadow hover:shadow-md">
+    <div
+      className="stat-card dashboard-card animate-rise rounded-lg p-4"
+      style={{ animationDelay: `${delay}ms` }}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500">
             {label}
           </p>
-          <p className="mt-1.5 text-2xl font-black tracking-tight text-zinc-950">{value}</p>
+          <p className="mt-1.5 text-2xl font-black tracking-tight text-zinc-950 tabular-nums">
+            {shown}
+          </p>
         </div>
-        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${tone}`}>
+        <div className={`metric-chip flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${tone}`}>
           <Icon className="h-4.5 w-4.5" />
         </div>
       </div>
@@ -298,14 +345,14 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-700">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-500" />
+          <span className="live-dot h-1.5 w-1.5 rounded-full bg-cyan-500" />
           Live
         </div>
       </div>
 
-      <section className="animate-rise grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-8" style={{ animationDelay: "80ms" }}>
-        {metricCards.map((card) => (
-          <MetricCard key={card.label} {...card} />
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-8">
+        {metricCards.map((card, i) => (
+          <MetricCard key={card.label} {...card} delay={80 + i * 40} />
         ))}
       </section>
 
@@ -321,7 +368,7 @@ export default function DashboardPage() {
               </h2>
             </div>
             <span className="flex items-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-700">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-500" />
+              <span className="live-dot h-1.5 w-1.5 rounded-full bg-cyan-500" />
               Live
             </span>
           </div>
@@ -365,7 +412,8 @@ export default function DashboardPage() {
                 return (
                   <tr
                     key={`${activity.description}-${index}`}
-                    className="transition-colors hover:bg-zinc-50"
+                    className="row-enter transition-colors hover:bg-zinc-50"
+                    style={{ animationDelay: `${Math.min(index * 45, 360)}ms` }}
                   >
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2.5">
@@ -401,7 +449,7 @@ export default function DashboardPage() {
         </div>
         <div className="divide-y divide-border/60 md:hidden">
           {activities.map((activity, index) => (
-            <div key={`${activity.description}-${index}`} className="p-4">
+            <div key={`${activity.description}-${index}`} className="row-enter p-4" style={{ animationDelay: `${Math.min(index * 45, 360)}ms` }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
@@ -443,7 +491,7 @@ export default function DashboardPage() {
               </h2>
             </div>
             <div className="flex items-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-cyan-700">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-500" />
+              <span className="live-dot h-1.5 w-1.5 rounded-full bg-cyan-500" />
               Present
             </div>
           </div>
@@ -551,7 +599,7 @@ export default function DashboardPage() {
             className="group mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-zinc-950 transition hover:text-cyan-600"
           >
             View all
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:tranzinc-x-0.5 group-hover:-tranzinc-y-0.5" />
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>
       </section>
@@ -574,7 +622,7 @@ export default function DashboardPage() {
             <Link
               key={action.label}
               href={action.href}
-              className="group flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-lg border border-transparent bg-zinc-50 p-3 text-center transition-all hover:-tranzinc-y-0.5 hover:border-zinc-200 hover:bg-white hover:shadow-md hover:shadow-zinc-950/5"
+              className="tile-lift group flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-lg border border-transparent bg-zinc-50 p-3 text-center hover:-translate-y-0.5 hover:border-zinc-200 hover:bg-white hover:shadow-md hover:shadow-zinc-950/5"
             >
               <action.icon className={`h-5 w-5 transition-transform group-hover:scale-110 ${action.color}`} />
               <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-700">

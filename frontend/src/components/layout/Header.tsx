@@ -113,6 +113,8 @@ export default function Header() {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const [bellRing, setBellRing] = useState(false);
+  const prevNotifCount = useRef(0);
 
   const { data: notifData } = useQuery({
     queryKey: ['unread-notifications'],
@@ -122,6 +124,17 @@ export default function Header() {
     },
     refetchInterval: 30000,
   });
+
+  // Shake the bell when a new unread notification arrives.
+  useEffect(() => {
+    const count = notifData?.count ?? 0;
+    const isNew = count > prevNotifCount.current && count > 0;
+    prevNotifCount.current = count;
+    if (!isNew) return;
+    setBellRing(true);
+    const timer = setTimeout(() => setBellRing(false), 600);
+    return () => clearTimeout(timer);
+  }, [notifData?.count]);
 
   const { data: recentNotifs } = useQuery({
     queryKey: ['recent-notifications'],
@@ -276,7 +289,7 @@ export default function Header() {
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         aria-expanded={!collapsed}
         title={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
-        className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900 lg:flex"
+        className="icon-btn hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 lg:flex"
       >
         {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
       </button>
@@ -285,7 +298,7 @@ export default function Header() {
       <button
         onClick={openMobile}
         aria-label="Open menu"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900 lg:hidden"
+        className="icon-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 lg:hidden"
       >
         <Menu className="h-5 w-5" />
       </button>
@@ -296,7 +309,7 @@ export default function Header() {
           <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">{crumb}</p>
         </div>
 
-        <div className="relative ml-auto flex w-full max-w-[250px] items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 transition-all focus-within:border-cyan-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-cyan-500/10 sm:max-w-xs md:max-w-md">
+        <div className="search-glow relative ml-auto flex w-full max-w-[250px] items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 focus-within:bg-white sm:max-w-xs md:max-w-md">
           {loading ? (
             <Loader2 className="h-4 w-4 shrink-0 animate-spin text-zinc-400" />
           ) : (
@@ -361,14 +374,14 @@ export default function Header() {
         <button
           onClick={toggleTheme}
           aria-label="Toggle theme"
-          className="hidden h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900 sm:flex"
+          className="icon-btn hidden h-9 w-9 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 sm:flex"
         >
           {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
 
         <button
           aria-label="Help"
-          className="hidden h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900 sm:flex"
+          className="icon-btn hidden h-9 w-9 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 sm:flex"
         >
           <CircleHelp className="h-4 w-4" />
         </button>
@@ -377,7 +390,10 @@ export default function Header() {
           <button
             onClick={() => setNotifOpen(!notifOpen)}
             aria-label="Notifications"
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-900"
+            className={cn(
+              'icon-btn relative flex h-9 w-9 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900',
+              bellRing && 'bell-shake',
+            )}
           >
             <Bell className="h-4 w-4" />
             {notifData?.count > 0 && (
