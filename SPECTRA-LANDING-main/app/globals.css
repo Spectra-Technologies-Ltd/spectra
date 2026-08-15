@@ -300,11 +300,11 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 @keyframes pill-pop {
   0% {
     opacity: 0;
-    transform: scale(0.85);
+    transform: translate(-50%, -50%) scale(0.85);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
@@ -336,6 +336,44 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 /* Drop the HUD grid overlay on diagram variants — it fights the scene */
 .command-visual.diagram-visual::after {
   display: none;
+}
+
+/* ── Napoleon page: full-width intelligence scene (demo-style) ── */
+.napoleon-scene {
+  background: var(--background);
+  border-top: 1px solid var(--border);
+  overflow-x: auto;
+  padding: 110px 7vw 90px;
+}
+
+.napoleon-scene-head {
+  align-items: flex-end;
+  display: flex;
+  gap: 6vw;
+  justify-content: space-between;
+  margin-bottom: 54px;
+}
+
+.napoleon-scene-head h2 {
+  font-size: clamp(54px, 6.5vw, 100px);
+}
+
+.napoleon-scene-head .body-copy {
+  margin: 0;
+  max-width: 420px;
+}
+
+.napoleon-scene-inner {
+  margin: 0 auto;
+  max-width: 1500px;
+  /* Keeps the scene legible on small screens — horizontal scroll instead of squash */
+  min-width: 880px;
+}
+
+@media (max-width: 900px) {
+  .napoleon-scene { padding: 78px 18px 60px; }
+  .napoleon-scene-head { align-items: flex-start; flex-direction: column; gap: 18px; }
+  .napoleon-scene-head h2 { font-size: 52px; }
 }
 
 @layer base { * { @apply border-border outline-ring/50; } }
