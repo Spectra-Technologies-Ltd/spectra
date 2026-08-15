@@ -31,19 +31,21 @@ const NAV_GROUPS = [
     links: [],
     footer: ['', ''],
   },
-  {
-    label: 'Work With Us',
-    eyebrow: '',
-    description: 'Partnerships, enterprise, government and press — direct access to the Spectra team.',
-    links: [
-      ['Contact Us', '/contact'],
-      ['About Spectra', '/about'],
-      ['Partners', '/partners'],
-      ['News Room', '/newsroom'],
-    ],
-    footer: ['Start a conversation', '/contact'],
-  },
 ] as const
+
+/* Work With Us — rendered after Newsroom in the nav order */
+const WORK_WITH_US_NAV = {
+  label: 'Work With Us',
+  eyebrow: '',
+  description: 'Partnerships, enterprise, government and press — direct access to the Spectra team.',
+  links: [
+    ['Contact Us', '/contact'],
+    ['About Spectra', '/about'],
+    ['Partners', '/partners'],
+    ['News Room', '/newsroom'],
+  ],
+  footer: ['Start a conversation', '/contact'],
+} as const
 
 const NAV_NEWS = {
   label: 'Newsroom',
@@ -248,6 +250,35 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
                       <span className="news-card-tag">{item.tag} <ArrowUpRight size={13} /></span>
                     </button>
                   ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Work With Us — after Newsroom */}
+          <div key={WORK_WITH_US_NAV.label} className={`site-nav-item ${openNav === WORK_WITH_US_NAV.label ? 'is-open' : ''}`}>
+            <button
+              className="site-nav-trigger"
+              aria-haspopup="true"
+              aria-expanded={openNav === WORK_WITH_US_NAV.label}
+              onClick={() => setOpenNav(openNav === WORK_WITH_US_NAV.label ? null : WORK_WITH_US_NAV.label)}
+            >
+              {WORK_WITH_US_NAV.label} <ChevronDown size={12} />
+            </button>
+            <div className="mega-panel">
+              <div className="mega-inner">
+                {WORK_WITH_US_NAV.links.length > 0 && (
+                  <div className="mega-links">
+                    {WORK_WITH_US_NAV.links.map(([label, target]) => (
+                      <a key={label} className="mega-link" href={target} onClick={(e) => handleMegaLink(e, target)}>
+                        {label} <ArrowUpRight size={15} />
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {WORK_WITH_US_NAV.description && <p className="mega-desc">{WORK_WITH_US_NAV.description}</p>}
+                <div className="mega-footer">
+                  <button onClick={() => go(WORK_WITH_US_NAV.footer[1])}>{WORK_WITH_US_NAV.footer[0]} <ArrowUpRight size={15} /></button>
                 </div>
               </div>
             </div>

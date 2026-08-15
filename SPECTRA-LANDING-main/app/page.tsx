@@ -76,8 +76,8 @@ export default function Page() {
       <section id="top" className="hero-section">
         <CeaserScene />
         <div className="hero-scrim" />
-        <div className="hero-copy"><p className="eyebrow">SPECTRA TECHNOLOGIES / FOUNDATIONAL SYSTEMS</p><h1>Intelligence.<br /><em>Engineered.</em></h1><p className="hero-description">Spectra builds the operating infrastructure and machine intelligence for systems that reason, learn, and act in complex, high-stakes environments.</p><a className="outline-button" href={`${APP_URL}/register`}>Enter the System <MoveRight size={17} /></a></div>
-        <div className="hero-bottom"><span>LONG BEACH, CA / 33.76° N 118.19° W</span><span className="hero-scroll"><span className="scroll-line" /> SCROLL TO DISCOVER</span><span>LIVE / AUTONOMOUS</span></div>
+        <div className="hero-copy"><p className="eyebrow">SPECTRA TECHNOLOGIES</p><h1>Intelligence.<br /><em>Engineered.</em></h1><p className="hero-description">Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems.</p><a className="outline-button" href={`${APP_URL}/request-demo`}>Get Started <MoveRight size={17} /></a></div>
+        <div className="hero-bottom"><span>LONG BEACH, CA / 33.76° N 118.19° W</span><span className="hero-scroll"><span className="scroll-line" /> SCROLL TO DISCOVER</span><span>AUTONOMOUS SYSTEM</span></div>
       </section>
 
       <section className="manifesto-section" id="company"><div className="section-kicker"><span>01</span><span>WHAT IS SPECTRA</span></div><Reveal><h2>The infrastructure<br /><em>for intelligence.</em></h2></Reveal><div className="manifesto-meta"><span>01—03</span><p>Spectra Technologies builds deep technology — operating environments, machine intelligence, and autonomous systems — engineered for the places where the hardest problems live.</p><ArrowDownRight size={28} /></div></section>
@@ -105,6 +105,18 @@ export default function Page() {
       <section id="napoleon" className="command-section"><div className="section-kicker"><span>05</span><span>NAPOLEON</span></div><div className="command-layout"><div className="command-copy"><Reveal><p className="eyebrow">MACHINE INTELLIGENCE LAYER</p><h2>Signals in.<br /><em>Intelligence out.</em></h2><p className="body-copy">Napoleon is Spectra&apos;s machine-learning layer. It turns raw signals — sensor, environmental, operational — into models that reason, learn and coordinate across the system.</p><a className="outline-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a></Reveal></div><div className="command-visual"><img src="/images/spectra-command.png" alt="Napoleon intelligence layer" /><div className="command-overlay"><span>NAPOLEON / INFERENCE</span><strong>MODEL // RUNNING</strong><span>LATENCY 00:00:04</span></div><div className="command-marker marker-a"><i />TRACK / 0041</div><div className="command-marker marker-b"><i />SIGNAL / CLASSIFIED</div></div></div></section>
 
       <section id="company-team" className="team-section"><div className="section-kicker"><span>06</span><span>THE PEOPLE</span></div><div className="team-grid"><div><Reveal><p className="eyebrow">BUILT DIFFERENT</p><h2>Small team.<br /><em>Big horizon.</em></h2><p className="body-copy">Engineers, operators, and builders working on the hard problems of intelligent infrastructure — infrastructure that has to work.</p><a className="text-button" href="/about">Meet the team <ArrowUpRight size={17} /></a></Reveal></div><img src="/images/spectra-team.png" alt="Spectra team in an operations room" /></div></section>
+
+      {/* Partners — before news, per brand structure */}
+      <section id="partners" className="bastion-intro">
+        <div className="section-kicker"><span>PARTNERS</span><span>BUILD WITH US</span></div>
+        <div className="bastion-intro-grid">
+          <Reveal><h2>Built to<br /><em>build on.</em></h2></Reveal>
+          <Reveal><div className="bastion-intro-copy">
+            <p className="body-copy">Technology integrations, channel partnerships and co-development — teams building on the Spectra architecture, from first signal to final decision.</p>
+            <a className="text-button" href="/partners">Explore partnerships <ArrowUpRight size={17} /></a>
+          </div></Reveal>
+        </div>
+      </section>
 
       <section className="press-section"><div className="section-kicker"><span>07</span><span>NEWS &amp; ARTICLES</span></div><div className="press-grid">{newsItems.slice(0, pressExpanded ? 3 : 2).map(([source, title, date]) => <article key={source}><p className="eyebrow">{source}</p><h3>{title}</h3><div><span>{date}</span><ArrowUpRight size={17} /></div></article>)}</div><div className="press-actions"><button className="outline-button center-button" onClick={() => setPressExpanded(!pressExpanded)}>{pressExpanded ? 'Show less' : 'View all articles'} <Plus size={17} /></button><a className="text-button" href="/newsroom">Open the News Room <ArrowUpRight size={17} /></a></div></section>
 
