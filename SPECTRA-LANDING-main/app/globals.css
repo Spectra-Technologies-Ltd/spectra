@@ -101,16 +101,18 @@ section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 .manifesto-meta p, .body-copy { color: var(--muted-foreground); font-size: 14px; line-height: 1.7; max-width: 390px; }
 .manifesto-section .manifesto-meta p { color: #59677e; }
 .capabilities-layout { display: grid; gap: 9vw; grid-template-columns: .75fr 1.25fr; margin-top: 75px; }
-.capability-sticky { align-self: start; position: sticky; top: 110px; }
+/* Left copy scrolls naturally; the 3D scene below is sticky so it follows
+   the viewport down the page while the section scrolls. */
+.capability-sticky { align-self: start; }
 .capability-sticky h2, .fleet-intro h2, .team-grid h2, .contact-section h2 { font-size: clamp(54px, 6.5vw, 100px); }
 .capability-tabs { margin-top: 80px; }
 .capability-tabs button { background: none; border: 0; color: #71809c; cursor: pointer; display: block; font-family: var(--font-geist-mono), monospace; font-size: 11px; letter-spacing: .12em; padding: 10px 0; text-align: left; width: 100%; }
 .capability-tabs button.active { color: var(--foreground); }
 .tab-bar { background: var(--border); display: block; height: 1px; margin-top: 11px; position: relative; }
-.active .tab-bar::after { background: var(--accent); content: ''; inset: 0; position: absolute; transform-origin: left; animation: load-bar .5s ease; }
+.active .tab-bar::after { background: var(--accent); content: ''; inset: 0; position: absolute; transform-origin: left; animation: load-bar .35s ease; }
 @keyframes load-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .capability-image-wrap { aspect-ratio: 1.12; overflow: hidden; position: relative; }
-.capability-image { animation: image-in .65s ease both; }
+.capability-image { animation: image-in .45s ease both; }
 @keyframes image-in { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
 .image-corner { bottom: 15px; color: #b8c9e2; font-family: var(--font-geist-mono), monospace; font-size: 9px; left: 15px; position: absolute; }
 .capability-detail { display: flex; gap: 40px; justify-content: space-between; padding-top: 28px; }
@@ -145,7 +147,7 @@ section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 .product-nav button.active { border-color: var(--accent); color: var(--foreground); }
 .product-layout { display: grid; gap: 7vw; grid-template-columns: 1.45fr .75fr; padding-top: 48px; }
 .product-visual { aspect-ratio: 1.4; background: #070b1b; overflow: hidden; position: relative; }
-.product-visual img { height: 100%; object-fit: cover; opacity: .84; transition: filter .4s ease, opacity .4s ease; width: 100%; }
+.product-visual img { height: 100%; object-fit: cover; opacity: .84; transition: filter .3s ease, opacity .3s ease; width: 100%; }
 .product-visual.xray img { filter: grayscale(1) sepia(1) hue-rotate(120deg) saturate(1.8) contrast(1.5); opacity: .46; }
 .radar-lines { background-image: radial-gradient(circle at center, transparent 0 19%, rgba(87,215,212,.2) 19.2% 19.4%, transparent 19.7% 34%, rgba(87,215,212,.17) 34.2% 34.4%, transparent 34.7% 49%, rgba(87,215,212,.14) 49.2% 49.4%, transparent 49.7%); border: 1px solid rgba(87,215,212,.15); border-radius: 50%; height: 80%; left: 10%; position: absolute; top: 10%; width: 80%; }
 .xray-toggle { align-items: center; background: rgba(7,10,28,.65); border: 1px solid var(--border); bottom: 18px; color: var(--foreground); cursor: pointer; display: flex; font-family: var(--font-geist-mono), monospace; font-size: 9px; gap: 8px; left: 18px; padding: 10px 11px; position: absolute; }
@@ -179,7 +181,7 @@ section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 .careers-section { align-items: flex-end; display: flex; min-height: 85vh; overflow: hidden; padding: 8vw; position: relative; }.careers-section > img { filter: saturate(.7); }.careers-overlay { background: linear-gradient(90deg, rgba(4,8,24,.9), rgba(4,8,24,.08)); inset: 0; position: absolute; }.careers-content { position: relative; }.careers-content h2 { font-size: clamp(56px, 8vw, 120px); margin: 20px 0 30px; }
 .contact-section { min-height: 76vh; }.contact-section h2 { font-size: clamp(68px, 11vw, 170px); margin: 95px 0 80px; }.contact-bottom { align-items: flex-end; display: flex; justify-content: space-between; }.contact-bottom p { color: var(--muted-foreground); font-size: 14px; line-height: 1.6; max-width: 300px; }
 footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items: flex-start; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding-bottom: 45px; }.footer-tagline { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; }.odometer { align-items: flex-end; display: flex; flex-direction: column; }.odometer strong { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 38px; font-weight: 350; letter-spacing: -.1em; }.footer-links { display: grid; gap: 12vw; grid-template-columns: 1fr 1fr 1fr; padding: 45px 0 80px; }.footer-links > div { display: flex; flex-direction: column; gap: 9px; }.footer-links button, .footer-links p { background: none; border: 0; color: #a9b7cc; cursor: pointer; font-size: 13px; padding: 0; text-align: left; }.footer-links p { line-height: 1.6; margin: 0; }.footer-bottom { border-top: 1px solid var(--border); display: flex; justify-content: space-between; padding-top: 18px; }
-.reveal { opacity: 0; transform: translateY(22px); transition: opacity .8s ease, transform .8s ease; }.reveal.is-visible { opacity: 1; transform: translateY(0); }
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .55s ease, transform .55s ease; }.reveal.is-visible { opacity: 1; transform: translateY(0); }
 @media (max-width: 800px) { .site-header { padding: 0 18px; }.header-center { display: none; } .menu-panel { padding: 22px 18px; }.menu-links { margin-top: 12vh; }.menu-links button { grid-template-columns: 45px 1fr 25px; padding: 15px 0; }.hero-copy { padding: 0 18px 17vh; }.hero-copy h1 { font-size: clamp(54px, 16vw, 92px); }.hero-bottom { bottom: 18px; left: 18px; right: 18px; }.hero-bottom > span:first-child, .hero-bottom > span:last-child { display: none; } section:not(.hero-section):not(.careers-section) { padding: 78px 18px; }.manifesto-section h2 { font-size: 52px; }.manifesto-meta { margin-top: 48px; }.capabilities-layout, .product-layout, .team-grid { display: flex; flex-direction: column; gap: 55px; }.capability-sticky { position: static; }.capability-tabs { margin-top: 40px; }.capability-detail { display: block; }.cap-stat { border-left: 0; border-top: 1px solid var(--border); margin-top: 26px; padding: 15px 0 0; }.section-heading-row, .fleet-intro, .contact-bottom { align-items: flex-start; flex-direction: column; gap: 28px; }.filter-list { flex-wrap: wrap; }.mission-card { aspect-ratio: .88; }.mission-content { bottom: 28px; left: 20px; right: 20px; }.mission-number { font-size: 42vw; }.carousel-controls { bottom: 20px; right: 20px; }.product-nav { gap: 18px; overflow-x: auto; }.product-nav button { min-width: max-content; }.product-visual { aspect-ratio: 1; }.hotspot span { display: none; }.statement-section { min-height: 70vh; }.statement-rule { margin-bottom: 60px; }.team-grid img { order: -1; }.press-grid { display: block; margin-top: 55px; }.press-grid article { margin-bottom: 25px; min-height: 190px; }.careers-section { min-height: 75vh; padding: 18px; }.contact-section h2 { margin: 65px 0 55px; }.footer-top { flex-wrap: wrap; gap: 24px; }.footer-tagline { order: 3; width: 100%; }.footer-links { gap: 40px; grid-template-columns: 1fr 1fr; padding-bottom: 55px; }.footer-links > div:last-child { grid-column: span 2; }.footer-bottom { flex-direction: column; gap: 10px; }.footer-bottom span:last-child { display: none; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
@@ -289,10 +291,28 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
   50% { opacity: 0.25; }
 }
 
-/* Container for the animation inside the capabilities stage */
-.capability-animation-wrap { position: relative; }
+/* Container for the animation inside the capabilities stage.
+   The stage is taller than the viewport so the pinned scene has room to
+   "travel" down the page before it releases. */
+.capability-stage { display: flex; flex-direction: column; min-height: 155vh; }
+.capability-animation-wrap { align-self: flex-start; position: sticky; top: 110px; width: 100%; }
 .capability-animation-wrap .iso-scene { margin-top: -8px; }
 
+/* Fast crossfade used when switching product layers / capability tabs */
+@keyframes fade-swap {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.fade-swap { animation: fade-swap .35s cubic-bezier(.22, 1, .36, 1) both; }
+
+@keyframes product-in {
+  from { opacity: 0; transform: scale(1.03); }
+  to { opacity: 1; transform: scale(1); }
+}
+.product-in { animation: product-in .4s cubic-bezier(.22, 1, .36, 1) both; }
+
 @media (max-width: 800px) {
+  .capability-stage { min-height: 0; }
+  .capability-animation-wrap { position: static; }
   .capability-animation-wrap .iso-scene { height: 460px; }
 }

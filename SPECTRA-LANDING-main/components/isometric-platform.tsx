@@ -143,7 +143,7 @@ function Connector({ x, y, from, to, delay = 0 }: { x: number; y: number; from: 
         <div className="absolute inset-0 bg-neutral-500/40" />
         <span
           className="absolute left-1/2 h-3 w-[3px] -translate-x-1/2 rounded-full bg-neutral-800"
-          style={{ animation: `iso-pulse 2.4s linear ${delay}s infinite` }}
+          style={{ animation: `iso-pulse 1.6s linear ${delay}s infinite` }}
         />
       </div>
     </div>
@@ -179,13 +179,13 @@ function Chip({
           "--cx": `${x}px`,
           "--cy": `${y}px`,
           "--cz": `${z}px`,
-          animation: `iso-float 6s ease-in-out ${delay}s infinite`,
+          animation: `iso-float 4s ease-in-out ${delay}s infinite`,
         } as CSSProperties
       }
     >
       <div className="flex h-[70px] w-[108px] flex-col gap-1.5 rounded-[3px] border border-neutral-500/60 bg-white/95 p-2.5 shadow-[0_18px_30px_-18px_rgba(0,0,0,0.5)]">
         <div className="flex items-center gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-neutral-800" style={{ animation: `iso-blink 2s ${delay}s infinite` }} />
+          <span className="h-1.5 w-1.5 rounded-full bg-neutral-800" style={{ animation: `iso-blink 1.4s ${delay}s infinite` }} />
           <span className="h-[3px] flex-1 rounded-full bg-neutral-400/50" />
         </div>
 
@@ -236,7 +236,7 @@ function Node({ x, y, accent = false, blink = false }: { x: number; y: number; a
       className={`absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-[2px] border ${
         accent ? "border-neutral-700 bg-neutral-300" : "border-neutral-500/60 bg-white"
       }`}
-      style={{ left: `${x}%`, top: `${y}%`, animation: blink ? "iso-blink 1.8s infinite" : undefined }}
+      style={{ left: `${x}%`, top: `${y}%`, animation: blink ? "iso-blink 1.2s infinite" : undefined }}
     />
   )
 }
@@ -263,18 +263,18 @@ export function IsometricPlatform() {
       <div className="iso-stage absolute left-1/2 top-[52%]">
         {/* -------- connectors + floating chips above BastionOS -------- */}
         <Connector x={-110} y={-60} from={bastionTop} to={bastionTop + 96} delay={0} />
-        <Connector x={70} y={-95} from={bastionTop} to={bastionTop + 130} delay={0.6} />
-        <Connector x={115} y={35} from={bastionTop} to={bastionTop + 82} delay={1.2} />
-        <Connector x={-70} y={95} from={bastionTop} to={bastionTop + 112} delay={1.8} />
-        <Connector x={25} y={125} from={bastionTop} to={bastionTop + 150} delay={0.9} />
-        <Connector x={-140} y={30} from={bastionTop} to={bastionTop + 60} delay={1.5} />
+        <Connector x={70} y={-95} from={bastionTop} to={bastionTop + 130} delay={0.4} />
+        <Connector x={115} y={35} from={bastionTop} to={bastionTop + 82} delay={0.8} />
+        <Connector x={-70} y={95} from={bastionTop} to={bastionTop + 112} delay={1.2} />
+        <Connector x={25} y={125} from={bastionTop} to={bastionTop + 150} delay={0.6} />
+        <Connector x={-140} y={30} from={bastionTop} to={bastionTop + 60} delay={1} />
 
         <Chip x={-110} y={-60} z={bastionTop + 96} label="Automation" variant="lines" lines={3} delay={0} />
-        <Chip x={70} y={-95} z={bastionTop + 130} label="Agent" variant="node" delay={1.4} />
-        <Chip x={115} y={35} z={bastionTop + 82} label="Telemetry" variant="chart" delay={0.7} />
-        <Chip x={-70} y={95} z={bastionTop + 112} label="Workflow" variant="grid" delay={2.1} />
-        <Chip x={25} y={125} z={bastionTop + 150} label="Model" variant="node" delay={1.1} />
-        <Chip x={-140} y={30} z={bastionTop + 60} label="Signal" variant="lines" lines={2} delay={1.7} />
+        <Chip x={70} y={-95} z={bastionTop + 130} label="Agent" variant="node" delay={0.9} />
+        <Chip x={115} y={35} z={bastionTop + 82} label="Telemetry" variant="chart" delay={0.5} />
+        <Chip x={-70} y={95} z={bastionTop + 112} label="Workflow" variant="grid" delay={1.4} />
+        <Chip x={25} y={125} z={bastionTop + 150} label="Model" variant="node" delay={0.7} />
+        <Chip x={-140} y={30} z={bastionTop + 60} label="Signal" variant="lines" lines={2} delay={1.1} />
 
         {/* ============ BastionOS : application layer ============ */}
         <Box
@@ -348,8 +348,8 @@ export function IsometricPlatform() {
 
         {/* glowing intelligence cores on Napoleon */}
         <IntelCore x={0} y={0} base={napoleonTop} delay={0} />
-        <IntelCore x={-58} y={40} base={napoleonTop} delay={0.8} />
-        <IntelCore x={54} y={-46} base={napoleonTop} delay={1.6} />
+        <IntelCore x={-58} y={40} base={napoleonTop} delay={0.5} />
+        <IntelCore x={54} y={-46} base={napoleonTop} delay={1.1} />
 
         {/* ============ Foundation : infrastructure layer ============ */}
         <Box
@@ -406,7 +406,7 @@ function IntelCore({ x, y, base, delay = 0 }: { x: number; y: number; base: numb
       <div className="relative">
         <span
           className="absolute left-1/2 top-1/2 h-9 w-9 rounded-full bg-neutral-200 blur-[6px]"
-          style={{ animation: `iso-glow 2.6s ease-in-out ${delay}s infinite` }}
+          style={{ animation: `iso-glow 1.8s ease-in-out ${delay}s infinite` }}
         />
         <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-800 ring-2 ring-white/70" />
       </div>
