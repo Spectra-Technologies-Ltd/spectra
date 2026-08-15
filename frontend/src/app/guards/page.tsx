@@ -74,7 +74,7 @@ export default function GuardsDirectoryPage() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" /> Guard Personnel
@@ -102,7 +102,7 @@ export default function GuardsDirectoryPage() {
           </button>
           <button
             onClick={() => router.push('/guards/add')}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(34,211,238,0.25)]"
+            className="btn-accent flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
           >
             <Plus className="h-4 w-4" /> Add Guard
           </button>
@@ -171,12 +171,12 @@ export default function GuardsDirectoryPage() {
                     <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((guard: Guard) => (
-                    <tr key={guard.id} className="hover:bg-secondary/30 transition-colors group">
+                    <tr key={guard.id} className="table-row-hover group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 ring-1 ring-primary/25">
                             {guard.fullName.substring(0, 2).toUpperCase()}
                           </div>
                           <button
@@ -242,7 +242,7 @@ export default function GuardsDirectoryPage() {
             <div className="md:hidden divide-y divide-border">
               {data?.data?.map((guard: Guard) => (
                 <div key={guard.id} className="p-4 flex items-start gap-3 active:bg-secondary/30">
-                  <div className="h-10 w-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 ring-1 ring-primary/25">
                     {guard.fullName.substring(0, 2).toUpperCase()}
                   </div>
                   <button

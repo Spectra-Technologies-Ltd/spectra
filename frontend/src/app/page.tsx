@@ -162,10 +162,10 @@ function MetricCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500">
+          <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
             {label}
           </p>
-          <p className="mt-1.5 text-2xl font-black tracking-tight text-zinc-950 tabular-nums">
+          <p className="mt-1.5 text-2xl font-black tracking-tight text-foreground tabular-nums">
             {shown}
           </p>
         </div>
@@ -177,8 +177,8 @@ function MetricCard({
         <TrendIcon
           className={`h-3.5 w-3.5 ${trend === "up" ? "text-emerald-500" : "text-red-500"}`}
         />
-        <span className={trend === "up" ? "text-emerald-600" : "text-red-500"}>{delta}</span>
-        <span className="font-medium text-zinc-400">vs yesterday</span>
+        <span className={trend === "up" ? "text-emerald-600 dark:text-emerald-500" : "text-red-500"}>{delta}</span>
+        <span className="font-medium text-muted-foreground">vs yesterday</span>
       </div>
     </div>
   );
@@ -235,7 +235,7 @@ export default function DashboardPage() {
     day: "numeric",
     month: "long",
   });
-  const trendData = attendanceTrend ?? fallbackAttendanceTrend;
+  const trendData = Array.isArray(attendanceTrend) ? attendanceTrend : fallbackAttendanceTrend;
   const incidents = (incidentsByType ?? fallbackIncidentsByType).slice(0, 4);
   const totalPatrols = Math.max(s.totalSites + s.activeGuards + s.openIncidents, 1);
   const completedPatrols = Math.max(s.totalSites + s.activeGuards, 0);
@@ -270,7 +270,7 @@ export default function DashboardPage() {
       delta: "+12%",
       trend: "up" as const,
       icon: Users,
-      tone: "bg-blue-50 text-blue-600",
+      tone: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
     },
     {
       label: "Active Patrols",
@@ -278,7 +278,7 @@ export default function DashboardPage() {
       delta: "+20%",
       trend: "up" as const,
       icon: Route,
-      tone: "bg-blue-50 text-blue-600",
+      tone: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
     },
     {
       label: "Open Incidents",
@@ -286,7 +286,7 @@ export default function DashboardPage() {
       delta: "-17%",
       trend: "down" as const,
       icon: ShieldAlert,
-      tone: "bg-red-50 text-red-500",
+      tone: "bg-red-500/10 text-red-500",
     },
     {
       label: "Attendance Today",
@@ -294,7 +294,7 @@ export default function DashboardPage() {
       delta: "+8%",
       trend: "up" as const,
       icon: ClipboardCheck,
-      tone: "bg-emerald-50 text-emerald-600",
+      tone: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     },
     {
       label: "Late Check-Ins",
@@ -302,7 +302,7 @@ export default function DashboardPage() {
       delta: "-5%",
       trend: "down" as const,
       icon: Clock,
-      tone: "bg-amber-50 text-amber-600",
+      tone: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
     },
     {
       label: "Absent Today",
@@ -310,7 +310,7 @@ export default function DashboardPage() {
       delta: "-3%",
       trend: "down" as const,
       icon: UserX,
-      tone: "bg-rose-50 text-rose-600",
+      tone: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
     },
     {
       label: "Sites Online",
@@ -318,7 +318,7 @@ export default function DashboardPage() {
       delta: "+4%",
       trend: "up" as const,
       icon: MapPin,
-      tone: "bg-cyan-50 text-cyan-600",
+      tone: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
     },
     {
       label: "High Risk Sites",
@@ -326,7 +326,7 @@ export default function DashboardPage() {
       delta: "+0%",
       trend: "up" as const,
       icon: AlertTriangle,
-      tone: "bg-orange-50 text-orange-600",
+      tone: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
     },
   ];
 
@@ -334,17 +334,17 @@ export default function DashboardPage() {
     <DashboardLayout>
       <div className="animate-rise mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
             Command Center · {today}
           </p>
-          <h1 className="mt-1 text-2xl font-black tracking-tight text-zinc-950 sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
             {greeting}, {user?.firstName ?? "Operator"}.
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Here&apos;s what&apos;s happening across your network.
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-700">
+        <div className="flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-600 dark:text-cyan-400">
           <span className="live-dot h-1.5 w-1.5 rounded-full bg-cyan-500" />
           Live
         </div>
@@ -360,14 +360,14 @@ export default function DashboardPage() {
         <div className="border-b border-border px-4 py-4 sm:px-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                 LIVE FEED
               </p>
-              <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">
+              <h2 className="mt-1 text-base font-black tracking-tight text-foreground">
                 Recent Activity
               </h2>
             </div>
-            <span className="flex items-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-700">
+            <span className="flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-600 dark:text-cyan-400">
               <span className="live-dot h-1.5 w-1.5 rounded-full bg-cyan-500" />
               Live
             </span>
@@ -375,7 +375,7 @@ export default function DashboardPage() {
         </div>
         <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="border-b border-border font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+            <thead className="border-b border-border font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
               <tr>
                 <th className="px-5 py-3 font-bold">Type</th>
                 <th className="px-5 py-3 font-bold">Description</th>
@@ -396,23 +396,23 @@ export default function DashboardPage() {
                         : FileText;
                 const activityTone =
                   activity.type === "Incident"
-                    ? "bg-red-50 text-red-600"
+                    ? "bg-red-500/10 text-red-500"
                     : activity.type === "Attendance"
-                      ? "bg-emerald-50 text-emerald-600"
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                       : activity.type === "Patrol"
-                        ? "bg-blue-50 text-blue-600"
-                        : "bg-cyan-50 text-cyan-600";
+                        ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                        : "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400";
                 const statusTone =
                   activity.status === "Open"
-                    ? "bg-red-50 text-red-600 ring-1 ring-red-100"
+                    ? "bg-red-500/10 text-red-500 ring-1 ring-red-500/20"
                     : activity.status === "Completed"
-                      ? "bg-blue-50 text-blue-600 ring-1 ring-blue-100"
-                      : "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100";
+                      ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 ring-1 ring-blue-500/20"
+                      : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20";
 
                 return (
                   <tr
                     key={`${activity.description}-${index}`}
-                    className="row-enter transition-colors hover:bg-zinc-50"
+                    className="row-enter table-row-hover"
                     style={{ animationDelay: `${Math.min(index * 45, 360)}ms` }}
                   >
                     <td className="px-5 py-3">
@@ -422,16 +422,16 @@ export default function DashboardPage() {
                         >
                           <ActivityIcon className="h-3.5 w-3.5" />
                         </span>
-                        <span className="text-xs font-bold uppercase tracking-wide text-zinc-700">
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
                           {activity.type}
                         </span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 font-medium text-zinc-700">
+                    <td className="px-5 py-3 font-medium text-foreground">
                       {activity.description}
                     </td>
-                    <td className="px-5 py-3 text-zinc-500">{activity.location}</td>
-                    <td className="px-5 py-3 font-mono text-xs text-zinc-500">
+                    <td className="px-5 py-3 text-muted-foreground">{activity.location}</td>
+                    <td className="px-5 py-3 font-mono text-xs text-muted-foreground">
                       {activity.time}
                     </td>
                     <td className="px-5 py-3">
@@ -452,26 +452,26 @@ export default function DashboardPage() {
             <div key={`${activity.description}-${index}`} className="row-enter p-4" style={{ animationDelay: `${Math.min(index * 45, 360)}ms` }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                     {activity.type}
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-zinc-950">
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {activity.description}
                   </p>
                 </div>
                 <span
                   className={`inline-flex rounded-md px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] ${
                     activity.status === "Open"
-                      ? "bg-red-50 text-red-600"
+                      ? "bg-red-500/10 text-red-500"
                       : activity.status === "Completed"
-                        ? "bg-blue-50 text-blue-600"
-                        : "bg-emerald-50 text-emerald-600"
+                        ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                        : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                   }`}
                 >
                   {activity.status}
                 </span>
               </div>
-              <p className="mt-3 font-mono text-xs text-zinc-500">
+              <p className="mt-3 font-mono text-xs text-muted-foreground">
                 {activity.location} · {activity.time}
               </p>
             </div>
@@ -483,14 +483,14 @@ export default function DashboardPage() {
         <div className="dashboard-card rounded-lg p-4 sm:p-5">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                 LAST 7 DAYS
               </p>
-              <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">
+              <h2 className="mt-1 text-base font-black tracking-tight text-foreground">
                 Attendance Overview
               </h2>
             </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-cyan-700">
+            <div className="flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-cyan-600 dark:text-cyan-400">
               <span className="live-dot h-1.5 w-1.5 rounded-full bg-cyan-500" />
               Present
             </div>
@@ -500,42 +500,54 @@ export default function DashboardPage() {
               <AreaChart data={trendData} margin={{ left: -16, right: 8, top: 10, bottom: 0 }}>
                 <defs>
                   <linearGradient id="attendanceBlue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.22} />
-                    <stop offset="95%" stopColor="#22d3ee" stopOpacity={0.02} />
+                    <stop offset="0%" stopColor="#22d3ee" stopOpacity={0.35} />
+                    <stop offset="60%" stopColor="#3b82f6" stopOpacity={0.14} />
+                    <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="day" tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="day" tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} tickMargin={8} />
+                <YAxis domain={[0, 100]} tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip
+                  cursor={{ stroke: "var(--color-border)", strokeDasharray: "4 4" }}
                   contentStyle={{
                     backgroundColor: "var(--color-card)",
                     border: "1px solid var(--color-border)",
-                    borderRadius: "6px",
-                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.10)",
+                    borderRadius: "8px",
+                    boxShadow: "0 12px 30px rgba(15, 23, 42, 0.18)",
                     fontSize: "12px",
                     color: "var(--color-foreground)",
                   }}
                 />
-                <Area type="monotone" dataKey="rate" stroke="#06b6d4" strokeWidth={2.5} fill="url(#attendanceBlue)" />
+                <Area
+                  type="monotone"
+                  dataKey="rate"
+                  stroke="#06b6d4"
+                  strokeWidth={3}
+                  dot={{ r: 3, fill: "#22d3ee", stroke: "var(--color-card)", strokeWidth: 2 }}
+                  activeDot={{ r: 5.5, fill: "#22d3ee", stroke: "var(--color-card)", strokeWidth: 2 }}
+                  fill="url(#attendanceBlue)"
+                  animationDuration={700}
+                  animationEasing="ease-out"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="dashboard-card rounded-lg p-4 sm:p-5">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
             LAST 7 DAYS
           </p>
-          <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">
+          <h2 className="mt-1 text-base font-black tracking-tight text-foreground">
             Patrols Overview
           </h2>
-          <p className="mt-1 text-xs font-medium text-zinc-400">Completed vs in progress</p>
+          <p className="mt-1 text-xs font-medium text-muted-foreground">Completed vs in progress</p>
           <div className="mt-3 grid min-h-[250px] grid-cols-1 items-center gap-4 sm:grid-cols-[1fr_0.9fr] xl:grid-cols-1 2xl:grid-cols-[1fr_0.9fr]">
             <div className="relative h-[190px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={patrolData} innerRadius={60} outerRadius={82} paddingAngle={2} dataKey="value">
+                  <Pie data={patrolData} innerRadius={60} outerRadius={82} paddingAngle={2} dataKey="value" animationDuration={700}>
                     {patrolData.map((entry) => (
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
@@ -551,19 +563,19 @@ export default function DashboardPage() {
                   />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-black tracking-tight text-zinc-950">{totalPatrols}</span>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
+              <div className="donut-center">
+                <strong>{totalPatrols}</strong>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                   Total
                 </span>
               </div>
             </div>
             <div className="space-y-3">
               {patrolData.map((item) => (
-                <div key={item.name} className="flex items-center gap-2 text-sm">
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span className="flex-1 font-semibold text-zinc-700">{item.name}</span>
-                  <span className="font-mono text-sm font-bold text-zinc-950">{item.value}</span>
+                <div key={item.name} className="flex items-center gap-2.5 text-sm">
+                  <span className="h-2.5 w-2.5 rounded-full ring-4 ring-transparent" style={{ backgroundColor: item.color, boxShadow: `0 0 10px ${item.color}66` }} />
+                  <span className="flex-1 font-semibold text-foreground">{item.name}</span>
+                  <span className="font-mono text-sm font-bold text-foreground">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -571,23 +583,23 @@ export default function DashboardPage() {
         </div>
 
         <div className="dashboard-card rounded-lg p-4 sm:p-5">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
             RECENT
           </p>
-          <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">Incidents</h2>
+          <h2 className="mt-1 text-base font-black tracking-tight text-foreground">Incidents</h2>
           <div className="mt-5 space-y-4">
             {incidents.map((incident: { type: string; count: number }, index: number) => (
               <div key={incident.type} className="flex gap-3">
                 <span
                   className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ring-4 ${
-                    index === 1 ? "bg-amber-400 ring-amber-50" : "bg-red-500 ring-red-50"
+                    index === 1 ? "bg-amber-400 ring-amber-500/10" : "bg-red-500 ring-red-500/10"
                   }`}
                 />
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-zinc-950">
+                  <p className="truncate text-sm font-bold text-foreground">
                     {typeLabels[incident.type] ?? incident.type}
                   </p>
-                  <p className="mt-0.5 font-mono text-xs text-zinc-500">
+                  <p className="mt-0.5 font-mono text-xs text-muted-foreground">
                     {incident.count * 2 + index + 1} min ago
                   </p>
                 </div>
@@ -596,7 +608,7 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/incidents"
-            className="group mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-zinc-950 transition hover:text-cyan-600"
+            className="group mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-foreground transition hover:text-cyan-600"
           >
             View all
             <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -605,27 +617,29 @@ export default function DashboardPage() {
       </section>
 
       <section className="animate-rise mt-4 dashboard-card rounded-lg p-4 sm:p-5" style={{ animationDelay: "320ms" }}>
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
           SHORTCUTS
         </p>
-        <h2 className="mt-1 text-base font-black tracking-tight text-zinc-950">
+        <h2 className="mt-1 text-base font-black tracking-tight text-foreground">
           Quick Actions
         </h2>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {[
-            { label: "Add Guard", href: "/guards/add", icon: UserCheck, color: "text-blue-600" },
-            { label: "Create Patrol", href: "/patrols", icon: Route, color: "text-cyan-600" },
-            { label: "Report Incident", href: "/incidents", icon: AlertTriangle, color: "text-red-500" },
-            { label: "Add Client", href: "/clients/add", icon: Building2, color: "text-emerald-600" },
-            { label: "Open Reports", href: "/reports", icon: FileText, color: "text-cyan-600" },
+            { label: "Add Guard", href: "/guards/add", icon: UserCheck, chip: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
+            { label: "Create Patrol", href: "/patrols", icon: Route, chip: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
+            { label: "Report Incident", href: "/incidents", icon: AlertTriangle, chip: "bg-red-500/10 text-red-500" },
+            { label: "Add Client", href: "/clients/add", icon: Building2, chip: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
+            { label: "Open Reports", href: "/reports", icon: FileText, chip: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
           ].map((action) => (
             <Link
               key={action.label}
               href={action.href}
-              className="tile-lift group flex min-h-[92px] flex-col items-center justify-center gap-2 rounded-lg border border-transparent bg-zinc-50 p-3 text-center hover:-translate-y-0.5 hover:border-zinc-200 hover:bg-white hover:shadow-md hover:shadow-zinc-950/5"
+              className="tile-lift group flex min-h-[92px] flex-col items-center justify-center gap-2.5 rounded-lg border border-border bg-secondary/40 p-3 text-center hover:-translate-y-0.5 hover:border-cyan-500/30 hover:bg-secondary hover:shadow-md hover:shadow-cyan-500/5"
             >
-              <action.icon className={`h-5 w-5 transition-transform group-hover:scale-110 ${action.color}`} />
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-700">
+              <span className={`metric-chip flex h-9 w-9 items-center justify-center rounded-md ${action.chip}`}>
+                <action.icon className="h-4.5 w-4.5 transition-transform group-hover:scale-110" />
+              </span>
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                 {action.label}
               </span>
             </Link>
