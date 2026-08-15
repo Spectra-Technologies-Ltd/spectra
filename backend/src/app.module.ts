@@ -14,6 +14,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { ReportsModule } from './modules/reports/reports.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { LeadsModule } from './modules/leads/leads.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { UploadsModule } from './modules/uploads/uploads.module';
     ReportsModule,
     DashboardModule,
     UploadsModule,
+    LeadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
