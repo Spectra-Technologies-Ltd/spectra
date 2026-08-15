@@ -583,3 +583,92 @@ section[id] { scroll-margin-top: 90px; }
   .article-list article { grid-template-columns: 1fr; gap: 10px; }
   .cta-band { padding: 78px 18px; }
 }
+
+/* ── Accessibility: respect reduced-motion preferences ── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* ── Page-wide motion system ── */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Page-hero entrance — kicker, headline, meta and footer rise in sequence */
+.page-hero .section-kicker,
+.page-hero h2,
+.page-hero-meta,
+.page-hero-bottom,
+.hero-copy,
+.hero-bottom {
+  animation: hero-rise .75s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.page-hero .section-kicker { animation-delay: .05s; }
+.page-hero h2 { animation-delay: .16s; }
+.page-hero-meta { animation-delay: .3s; }
+.page-hero-bottom { animation-delay: .44s; }
+.hero-copy { animation-delay: .2s; }
+.hero-bottom { animation-delay: .45s; }
+
+/* Card hover lift + soft accent glow */
+.page-card,
+.press-grid article,
+.news-card {
+  transition: transform .3s ease, border-color .25s ease, background-color .25s ease, box-shadow .3s ease;
+}
+
+.page-card:hover {
+  box-shadow: 0 14px 34px -18px rgba(87, 215, 212, .35);
+  transform: translateY(-4px);
+}
+
+.press-grid article:hover {
+  box-shadow: 0 14px 34px -18px rgba(6, 21, 43, .28);
+  transform: translateY(-4px);
+}
+
+/* Animated ticker strip used between sections */
+.ticker {
+  align-items: center;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  display: flex;
+  overflow: hidden;
+  padding: 12px 0;
+  position: relative;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.ticker-track {
+  animation: ticker-scroll 26s linear infinite;
+  display: inline-flex;
+  min-width: max-content;
+}
+
+.ticker-track span {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  padding: 0 28px;
+  text-transform: uppercase;
+}
+
+.ticker-track span em {
+  font-style: normal;
+  opacity: .55;
+}

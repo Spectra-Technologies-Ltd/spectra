@@ -5,6 +5,7 @@ import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 import { IsometricPlatform } from '@/components/isometric-platform'
+import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'BastionOS — Spectra Technologies',
@@ -45,6 +46,8 @@ export default function BastionOSPage() {
         </p>
         <Link className="outline-button" href={`${APP_URL}/register`}>Enter the Spectra Workplace <ArrowUpRight size={17} /></Link>
       </PageHero>
+
+      <Ticker items={['BASTIONOS', 'THE OPERATING FOUNDATION', 'SECURE · OBSERVABLE · BUILT FOR OPERATIONS', 'POWERED BY NAPOLEON']} />
 
       {/* Manifesto — the landing page rhythm: statement, then the system */}
       <section className="manifesto-section" style={{ paddingTop: 130 }}>
@@ -100,8 +103,8 @@ export default function BastionOSPage() {
           </div>
         </div>
         <div className="card-grid" style={{ marginTop: 40 }}>
-          {capabilities.map(([index, title, copy]) => (
-            <Reveal key={title}>
+          {capabilities.map(([index, title, copy], i) => (
+            <Reveal key={title} delay={i * 70}>
               <div className="page-card">
                 <span className="card-index">{index}</span>
                 <h4>{title}</h4>

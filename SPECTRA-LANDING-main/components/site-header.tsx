@@ -42,7 +42,7 @@ const WORK_WITH_US_NAV = {
     ['Contact Us', '/contact'],
     ['About Spectra', '/about'],
     ['Partners', '/partners'],
-    ['The Spectra Journal', '/newsroom'],
+    ['The Spectra Journal', '/journal'],
   ],
   footer: ['Start a conversation', '/contact'],
 } as const
@@ -52,8 +52,9 @@ const NAV_NEWS = {
   eyebrow: 'Newsroom / The Journal',
   links: [
     ['Latest News', '/newsroom'],
+    ['The Spectra Journal', '/journal'],
+    ['Research & Insights', '/research'],
     ['About Spectra', '/about'],
-    ['The Spectra Journal', '/newsroom'],
   ],
   featured: [
     {
@@ -76,7 +77,7 @@ const WORK_GROUP = [
   ['01', 'Contact Us', '/contact'],
   ['02', 'About Spectra', '/about'],
   ['03', 'Partners', '/partners'],
-  ['04', 'The Spectra Journal', '/newsroom'],
+  ['04', 'The Spectra Journal', '/journal'],
 ] as const
 
 const MORE_LINKS = [
@@ -84,6 +85,9 @@ const MORE_LINKS = [
   ['BastionOS', '/bastionos'],
   ['Napoleon', '/napoleon'],
   ['Spectra Workplace', `${APP_URL}/login`],
+  ['News', '/newsroom'],
+  ['The Journal', '/journal'],
+  ['Research', '/research'],
   ['Work with us', '/contact'],
   ['Contact', '/contact'],
 ] as const

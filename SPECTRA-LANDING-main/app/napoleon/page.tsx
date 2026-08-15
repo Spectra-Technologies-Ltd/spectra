@@ -5,6 +5,7 @@ import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 import { IntelligenceDiagram } from '@/components/napoleon/intelligence-diagram'
+import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'Napoleon — Spectra Technologies',
@@ -46,6 +47,8 @@ export default function NapoleonPage() {
         </p>
         <Link className="outline-button" href="/bastionos">See it power BastionOS <ArrowUpRight size={17} /></Link>
       </PageHero>
+
+      <Ticker items={['NAPOLEON', 'THE INTELLIGENCE LAYER', 'THINKS · LEARNS · PREDICTS', 'FROM SIGNAL TO ACTION']} />
 
       {/* Manifesto rhythm */}
       <section className="manifesto-section" style={{ paddingTop: 130 }}>
@@ -98,8 +101,8 @@ export default function NapoleonPage() {
           <Reveal><p className="eyebrow">04 / WHAT NAPOLEON DOES</p><h3>From fragmented signals<br />to complete picture.</h3></Reveal>
         </div>
         <div className="card-grid">
-          {capabilities.map(([index, title, copy]) => (
-            <Reveal key={title}>
+          {capabilities.map(([index, title, copy], i) => (
+            <Reveal key={title} delay={i * 70}>
               <div className="page-card">
                 <span className="card-index">{index}</span>
                 <h4>{title}</h4>

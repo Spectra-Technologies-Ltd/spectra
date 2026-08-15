@@ -4,6 +4,7 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
+import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'About Spectra — Spectra Technologies',
@@ -31,6 +32,8 @@ export default function AboutPage() {
         <Link className="outline-button" href="/contact">Work with us <ArrowUpRight size={17} /></Link>
       </PageHero>
 
+      <Ticker items={['SPECTRA TECHNOLOGIES', 'DEEP TECHNOLOGY', 'INTELLIGENT INFRASTRUCTURE', 'MACHINE INTELLIGENCE']} />
+
       {/* Manifesto — light section, same as the landing page */}
       <section className="manifesto-section" style={{ paddingTop: 130 }}>
         <div className="section-kicker"><span>01</span><span>WHAT WE BUILD</span></div>
@@ -48,8 +51,8 @@ export default function AboutPage() {
           <Reveal><p className="eyebrow">02 / THE STACK</p><h3>Three layers,<br />one company.</h3></Reveal>
         </div>
         <div className="card-grid">
-          {pillars.map(([index, title, copy]) => (
-            <Reveal key={title}>
+          {pillars.map(([index, title, copy], i) => (
+            <Reveal key={title} delay={i * 80}>
               <div className="page-card">
                 <span className="card-index">{index}</span>
                 <h4>{title}</h4>

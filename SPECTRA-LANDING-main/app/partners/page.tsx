@@ -4,6 +4,7 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
+import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'Partners — Spectra Technologies',
@@ -37,6 +38,8 @@ export default function PartnersPage() {
         <Link className="outline-button" href="/contact">Become a partner <ArrowUpRight size={17} /></Link>
       </PageHero>
 
+      <Ticker items={['PARTNERS', 'BUILT TO BUILD ON', 'INTEGRATIONS · CHANNELS · CO-DEVELOPMENT', 'SPECTRA ARCHITECTURE']} />
+
       {/* Manifesto rhythm */}
       <section className="manifesto-section" style={{ paddingTop: 130 }}>
         <div className="section-kicker"><span>01</span><span>THE ECOSYSTEM</span></div>
@@ -53,8 +56,8 @@ export default function PartnersPage() {
           <Reveal><p className="eyebrow">02 / PARTNERSHIP PROGRAMS</p><h3>Ways to work<br />together.</h3></Reveal>
         </div>
         <div className="card-grid">
-          {programs.map(([index, title, copy]) => (
-            <Reveal key={title}>
+          {programs.map(([index, title, copy], i) => (
+            <Reveal key={title} delay={i * 80}>
               <div className="page-card">
                 <span className="card-index">{index}</span>
                 <h4>{title}</h4>
