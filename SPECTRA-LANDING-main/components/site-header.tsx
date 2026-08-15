@@ -11,18 +11,25 @@ export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.
 /* ── Desktop inline nav (Palantir-style dropdowns) ── */
 const NAV_GROUPS = [
   {
-    label: 'BastionOS',
+    label: 'Bastion',
     eyebrow: 'The Operating Foundation',
     description: '',
-    links: [['Overview', '/bastionos']],
+    links: [['Overview', '/#fleet']],
     footer: ['Explore BastionOS', '/bastionos'],
   },
   {
     label: 'Napoleon',
     eyebrow: 'The Intelligence Layer',
     description: '',
-    links: [['Overview', '/napoleon']],
+    links: [['Overview', '/#napoleon']],
     footer: ['Explore Napoleon', '/napoleon'],
+  },
+  {
+    label: 'Workspace',
+    eyebrow: 'Workspace',
+    description: 'Workspace access is coming soon.',
+    links: [],
+    footer: ['', ''],
   },
   {
     label: 'Work With Us',
@@ -36,12 +43,6 @@ const NAV_GROUPS = [
     ],
     footer: ['Start a conversation', '/contact'],
   },
-] as const
-
-const NAV_DIRECT = [
-  ['Architecture', '/#architecture'],
-  ['Workspace', `${APP_URL}/login`],
-  ['Careers', '/#careers'],
 ] as const
 
 const NAV_NEWS = {
@@ -74,12 +75,6 @@ const WORK_GROUP = [
   ['02', 'About Spectra', '/about'],
   ['03', 'Partners', '/partners'],
   ['04', 'News Room', '/newsroom'],
-] as const
-
-const WORKSPACE_GROUP = [
-  ['01', 'Open Workspace', `${APP_URL}/login`],
-  ['02', 'Sign In', `${APP_URL}/login`],
-  ['03', 'Create Account', `${APP_URL}/register`],
 ] as const
 
 const MORE_LINKS = [
@@ -167,17 +162,21 @@ export default function SiteHeader() {
               <div className="mega-panel">
                 <div className="mega-inner">
                   <span className="mega-eyebrow">{group.eyebrow}</span>
-                  <div className="mega-links">
-                    {group.links.map(([label, target]) => (
-                      <button key={label} className="mega-link" onClick={() => go(target)}>
-                        {label} <ArrowUpRight size={15} />
-                      </button>
-                    ))}
-                  </div>
+                  {group.links.length > 0 && (
+                    <div className="mega-links">
+                      {group.links.map(([label, target]) => (
+                        <button key={label} className="mega-link" onClick={() => go(target)}>
+                          {label} <ArrowUpRight size={15} />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   {group.description && <p className="mega-desc">{group.description}</p>}
-                  <div className="mega-footer">
-                    <button onClick={() => go(group.footer[1])}>{group.footer[0]} <ArrowUpRight size={15} /></button>
-                  </div>
+                  {group.footer[0] && group.footer[1] && (
+                    <div className="mega-footer">
+                      <button onClick={() => go(group.footer[1])}>{group.footer[0]} <ArrowUpRight size={15} /></button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -220,12 +219,6 @@ export default function SiteHeader() {
               </div>
             </div>
           </div>
-
-          {NAV_DIRECT.map(([label, target]) => (
-            <button key={label} className="site-nav-trigger" onClick={() => go(target)}>
-              {label}
-            </button>
-          ))}
         </nav>
 
         <div className="header-actions">
@@ -239,20 +232,20 @@ export default function SiteHeader() {
         <div className="menu-panel-top"><span className="menu-panel-brand">SPECTRA<span>.</span></span><span className="header-center">TECHNOLOGIES / INDEX</span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
         <nav className="menu-links">
           <div className="menu-group">
-            <span className="menu-group-title">BastionOS — Operating Foundation</span>
-            <button onClick={() => go('/bastionos')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
+            <span className="menu-group-title">Bastion — Operating Foundation</span>
+            <button onClick={() => go('/#fleet')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Napoleon — Intelligence Layer</span>
-            <button onClick={() => go('/napoleon')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
+            <button onClick={() => go('/#napoleon')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
+          </div>
+          <div className="menu-group">
+            <span className="menu-group-title">Workspace</span>
+            <button onClick={() => go(`${APP_URL}/login`)}><span>01</span><strong>Open Workspace</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Work With Us</span>
             {WORK_GROUP.map(([number, label, target]) => <button key={label} onClick={() => go(target)}><span>{number}</span><strong>{label}</strong><ArrowUpRight size={20} /></button>)}
-          </div>
-          <div className="menu-group">
-            <span className="menu-group-title">Spectra Workspace</span>
-            {WORKSPACE_GROUP.map(([number, label, target]) => <button key={label} onClick={() => go(target)}><span>{number}</span><strong>{label}</strong><ArrowUpRight size={20} /></button>)}
           </div>
         </nav>
         <div className="menu-more">
