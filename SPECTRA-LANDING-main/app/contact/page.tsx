@@ -5,7 +5,6 @@ import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 import { StandardForm } from '@/components/standard-form'
 import { NewsletterInline } from '@/components/newsletter-inline'
-import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'Contact — Spectra Technologies',
@@ -25,8 +24,6 @@ export default function ContactPage() {
 
       {/* Hero — Contact Us / Get In Touch */}
       <PageHero kicker="CONTACT / GET IN TOUCH" title="Contact" em="Us." hideBottom />
-
-      <Ticker items={['WORK WITH US', 'DIRECT BUSINESS INQUIRIES', 'PARTNERSHIPS · ENTERPRISE · GOVERNMENT', 'START A CONVERSATION']} />
 
       {/* Contact form */}
       <section className="page-section" style={{ paddingTop: 40 }}>

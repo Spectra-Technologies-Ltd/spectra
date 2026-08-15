@@ -40,9 +40,7 @@ const WORK_WITH_US_NAV = {
   description: 'Partnerships, enterprise, government and press — direct access to the Spectra team.',
   links: [
     ['Contact Us', '/contact'],
-    ['About Spectra', '/about'],
     ['Partners', '/partners'],
-    ['The Spectra Journal', '/journal'],
   ],
   footer: ['Start a conversation', '/contact'],
 } as const
@@ -54,7 +52,6 @@ const NAV_NEWS = {
     ['Latest News', '/newsroom'],
     ['The Spectra Journal', '/journal'],
     ['Research & Insights', '/research'],
-    ['About Spectra', '/about'],
   ],
   featured: [
     {
@@ -75,9 +72,7 @@ const NAV_NEWS = {
 /* ── Mobile full-screen menu ── */
 const WORK_GROUP = [
   ['01', 'Contact Us', '/contact'],
-  ['02', 'About Spectra', '/about'],
-  ['03', 'Partners', '/partners'],
-  ['04', 'The Spectra Journal', '/journal'],
+  ['02', 'Partners', '/partners'],
 ] as const
 
 const MORE_LINKS = [

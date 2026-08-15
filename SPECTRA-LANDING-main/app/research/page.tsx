@@ -4,7 +4,6 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
-import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'Research & Insights — Spectra Technologies',
@@ -26,8 +25,6 @@ const topics = [
   ['03', 'Architecture', 'How the layers fit together — from first signal to final decision, end to end.'],
 ] as const
 
-const ticker = ['RESEARCH & INSIGHTS', 'TECHNICAL BRIEFS', 'ARCHITECTURE NOTES', 'FROM FIRST SIGNAL', 'TO FINAL DECISION']
-
 export default function ResearchPage() {
   return (
     <main className="spectra-shell">
@@ -39,8 +36,6 @@ export default function ResearchPage() {
           engineering behind BastionOS, Napoleon and the platform beneath them.
         </p>
       </PageHero>
-
-      <Ticker items={ticker} />
 
       {/* Focus areas */}
       <section className="page-section" style={{ paddingTop: 110 }}>

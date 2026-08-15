@@ -4,7 +4,6 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
-import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'About Spectra — Spectra Technologies',
@@ -31,8 +30,6 @@ export default function AboutPage() {
         </p>
         <Link className="outline-button" href="/contact">Work with us <ArrowUpRight size={17} /></Link>
       </PageHero>
-
-      <Ticker items={['SPECTRA TECHNOLOGIES', 'DEEP TECHNOLOGY', 'INTELLIGENT INFRASTRUCTURE', 'MACHINE INTELLIGENCE']} />
 
       {/* Manifesto — light section, same as the landing page */}
       <section className="manifesto-section" style={{ paddingTop: 130 }}>

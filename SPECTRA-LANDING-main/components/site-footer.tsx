@@ -40,7 +40,7 @@ export default function SiteFooter({ light = false }: { light?: boolean }) {
       <div className="footer-links">
         <div><span>EXPLORE</span><button onClick={() => go('/bastionos')}>BastionOS</button><button onClick={() => go('/napoleon')}>Napoleon</button><button onClick={() => go('/journal')}>The Spectra Journal</button></div>
         <div><span>CONNECT</span><button onClick={() => go('https://www.linkedin.com')}>LinkedIn</button><button onClick={() => go('https://www.instagram.com')}>Instagram</button><button onClick={() => go('/contact')}>Contact</button></div>
-        <div><span>COMPANY</span><button onClick={() => go('/about')}>About Spectra</button><button onClick={() => go('/partners')}>Partners</button><button onClick={() => go('/contact')}>Work with us</button></div>
+        <div><span>COMPANY</span><button onClick={() => go('/partners')}>Partners</button><button onClick={() => go('/contact')}>Work with us</button><button onClick={() => go('/contact')}>Contact</button></div>
         <div><span>MEDIA</span><button onClick={() => go('/newsroom')}>News</button><button onClick={() => go('/research')}>Research &amp; Insights</button><button onClick={() => go('/journal')}>The Journal</button></div>
       </div>
       <div className="footer-newsletter"><span>BRIEFINGS / MONTHLY</span><NewsletterForm /></div>

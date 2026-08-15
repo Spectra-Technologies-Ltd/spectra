@@ -4,7 +4,6 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
-import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'Partners — Spectra Technologies',
@@ -37,8 +36,6 @@ export default function PartnersPage() {
         </p>
         <Link className="outline-button" href="/contact">Become a partner <ArrowUpRight size={17} /></Link>
       </PageHero>
-
-      <Ticker items={['PARTNERS', 'BUILT TO BUILD ON', 'INTEGRATIONS · CHANNELS · CO-DEVELOPMENT', 'SPECTRA ARCHITECTURE']} />
 
       {/* Manifesto rhythm */}
       <section className="manifesto-section" style={{ paddingTop: 130 }}>

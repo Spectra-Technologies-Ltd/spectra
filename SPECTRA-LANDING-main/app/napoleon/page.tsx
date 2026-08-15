@@ -5,7 +5,6 @@ import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 import { IntelligenceDiagram } from '@/components/napoleon/intelligence-diagram'
-import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'Napoleon — Spectra Technologies',
@@ -45,10 +44,8 @@ export default function NapoleonPage() {
           strategist, it represents the power of intelligence, adaptability and precision in
           decision-making.
         </p>
-        <Link className="outline-button" href="/bastionos">See it power BastionOS <ArrowUpRight size={17} /></Link>
+        <Link className="outline-button" href="#inference">Explore the intelligence layer <ArrowUpRight size={17} /></Link>
       </PageHero>
-
-      <Ticker items={['NAPOLEON', 'THE INTELLIGENCE LAYER', 'THINKS · LEARNS · PREDICTS', 'FROM SIGNAL TO ACTION']} />
 
       {/* Full-width intelligence scene — the animated Napoleon layer */}
       <section id="inference" className="napoleon-scene">

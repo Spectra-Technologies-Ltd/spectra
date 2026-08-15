@@ -4,7 +4,6 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
-import { Ticker } from '@/components/ticker'
 
 export const metadata = {
   title: 'News — Spectra Technologies',
@@ -20,8 +19,6 @@ const headlines = [
   ['ANNOUNCEMENT', 'The Spectra partners program opens.', 'Technology integrations, channel partnerships and co-development — teams building on the Spectra architecture can now apply.', '01.20.26', '/partners'],
 ] as const
 
-const ticker = ['SPECTRA NEWS', 'PRODUCT UPDATES', 'ANNOUNCEMENTS', 'THE SPECTRA WORKPLACE', 'BASTIONOS · NAPOLEON']
-
 export default function NewsPage() {
   return (
     <main className="spectra-shell">
@@ -33,8 +30,6 @@ export default function NewsPage() {
           the Spectra Workplace.
         </p>
       </PageHero>
-
-      <Ticker items={ticker} />
 
       {/* Featured story */}
       <section className="page-section" style={{ paddingTop: 110 }}>
