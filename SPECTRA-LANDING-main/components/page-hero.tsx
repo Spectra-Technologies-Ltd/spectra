@@ -32,7 +32,6 @@ export function PageHero({
       {children && <div className="page-hero-meta">{children}</div>}
       {!hideBottom && (
         <div className="hero-bottom page-hero-bottom">
-          <span>LONG BEACH, CA / 33.76° N 118.19° W</span>
           <span className="hero-scroll">
             <span className="scroll-line" /> SCROLL TO DISCOVER
           </span>

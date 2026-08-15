@@ -25,9 +25,9 @@ const NAV_GROUPS = [
     footer: ['Explore Napoleon', '/napoleon'],
   },
   {
-    label: 'Workspace',
-    eyebrow: 'Workspace',
-    description: 'Workspace access is coming soon.',
+    label: 'Spectra Workplace',
+    eyebrow: 'Spectra Workplace',
+    description: 'Spectra Workplace access is coming soon.',
     links: [],
     footer: ['', ''],
   },
@@ -42,7 +42,7 @@ const WORK_WITH_US_NAV = {
     ['Contact Us', '/contact'],
     ['About Spectra', '/about'],
     ['Partners', '/partners'],
-    ['News Room', '/newsroom'],
+    ['The Spectra Journal', '/newsroom'],
   ],
   footer: ['Start a conversation', '/contact'],
 } as const
@@ -53,7 +53,7 @@ const NAV_NEWS = {
   links: [
     ['Latest News', '/newsroom'],
     ['About Spectra', '/about'],
-    ['News Room', '/newsroom'],
+    ['The Spectra Journal', '/newsroom'],
   ],
   featured: [
     {
@@ -76,14 +76,14 @@ const WORK_GROUP = [
   ['01', 'Contact Us', '/contact'],
   ['02', 'About Spectra', '/about'],
   ['03', 'Partners', '/partners'],
-  ['04', 'News Room', '/newsroom'],
+  ['04', 'The Spectra Journal', '/newsroom'],
 ] as const
 
 const MORE_LINKS = [
   ['Home', '/'],
   ['BastionOS', '/bastionos'],
   ['Napoleon', '/napoleon'],
-  ['Workspace', `${APP_URL}/login`],
+  ['Spectra Workplace', `${APP_URL}/login`],
   ['Work with us', '/contact'],
   ['Contact', '/contact'],
 ] as const
@@ -304,8 +304,8 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
             <button onClick={() => go('/#fleet-napoleon')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
-            <span className="menu-group-title">Workspace</span>
-            <button onClick={() => go(`${APP_URL}/login`)}><span>01</span><strong>Open Workspace</strong><ArrowUpRight size={20} /></button>
+            <span className="menu-group-title">Spectra Workplace</span>
+            <button onClick={() => go(`${APP_URL}/login`)}><span>01</span><strong>Open Spectra Workplace</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Work With Us</span>

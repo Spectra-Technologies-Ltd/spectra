@@ -12,7 +12,7 @@ export const metadata = {
 }
 
 const details = [
-  { icon: MapPin, label: 'Meet Us', value: 'Long Beach, CA', sub: '33° 46′ N / 118° 11′ W' },
+  { icon: MapPin, label: 'Meet Us', value: 'Remote / Global', sub: 'Operating across time zones' },
   { icon: Phone, label: 'Call Us', value: '+1 (555) 000-0000', sub: 'Direct business line' },
   { icon: Mail, label: 'Email Us', value: 'hello@spectra.tech', sub: 'Direct business inquiries' },
 ] as const

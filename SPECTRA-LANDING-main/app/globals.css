@@ -25,6 +25,10 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-mint: var(--mint);
+  --color-mint-strong: var(--mint-strong);
+  --color-mint-ink: var(--mint-ink);
+  --color-hairline: var(--hairline);
 }
 
 :root {
@@ -47,6 +51,11 @@
   --input: rgba(197, 216, 245, .18);
   --ring: #57d7d4;
   --radius: 0px;
+  /* Napoleon intelligence diagram tokens (dark-adapted) */
+  --mint: rgba(87, 215, 212, .14);
+  --mint-strong: #57d7d4;
+  --mint-ink: #04252c;
+  --hairline: rgba(197, 216, 245, .24);
 }
 
 * { box-sizing: border-box; }
@@ -236,7 +245,87 @@ section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items: flex-start; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding-bottom: 45px; }.footer-tagline { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; }.odometer { align-items: flex-end; display: flex; flex-direction: column; }.odometer strong { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 38px; font-weight: 350; letter-spacing: -.1em; }.footer-links { display: grid; gap: 12vw; grid-template-columns: 1fr 1fr 1fr; padding: 45px 0 80px; }.footer-links > div { display: flex; flex-direction: column; gap: 9px; }.footer-links button, .footer-links p { background: none; border: 0; color: #a9b7cc; cursor: pointer; font-size: 13px; padding: 0; text-align: left; }.footer-links p { line-height: 1.6; margin: 0; }.footer-bottom { border-top: 1px solid var(--border); display: flex; justify-content: space-between; padding-top: 18px; }
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .55s ease, transform .55s ease; }.reveal.is-visible { opacity: 1; transform: translateY(0); }
 @media (max-width: 800px) { .site-header { padding: 0 18px; }.header-center { display: none; } .menu-panel { padding: 22px 18px; }.menu-links { margin-top: 12vh; }.menu-links button { grid-template-columns: 45px 1fr 25px; padding: 15px 0; }.hero-copy { padding: 0 18px 17vh; }.hero-copy h1 { font-size: clamp(54px, 16vw, 92px); }.hero-bottom { bottom: 18px; left: 18px; right: 18px; }.hero-bottom > span:first-child, .hero-bottom > span:last-child { display: none; } section:not(.hero-section):not(.careers-section) { padding: 78px 18px; }.manifesto-section h2 { font-size: 52px; }.manifesto-meta { margin-top: 48px; }.capabilities-layout, .product-layout, .team-grid { display: flex; flex-direction: column; gap: 55px; }.capability-sticky { position: static; }.capability-tabs { margin-top: 40px; }.capability-detail { display: block; }.cap-stat { border-left: 0; border-top: 1px solid var(--border); margin-top: 26px; padding: 15px 0 0; }.section-heading-row, .fleet-intro, .contact-bottom { align-items: flex-start; flex-direction: column; gap: 28px; }.filter-list { flex-wrap: wrap; }.mission-card { aspect-ratio: .88; }.mission-content { bottom: 28px; left: 20px; right: 20px; }.mission-number { font-size: 42vw; }.carousel-controls { bottom: 20px; right: 20px; }.product-nav { gap: 18px; overflow-x: auto; }.product-nav button { min-width: max-content; }.product-visual { aspect-ratio: 1; }.hotspot span { display: none; }.statement-section { min-height: 70vh; }.statement-rule { margin-bottom: 60px; }.team-grid img { order: -1; }.press-grid { display: block; margin-top: 55px; }.press-grid article { margin-bottom: 25px; min-height: 190px; }.careers-section { min-height: 75vh; padding: 18px; }.contact-section h2 { margin: 65px 0 55px; }.footer-top { flex-wrap: wrap; gap: 24px; }.footer-tagline { order: 3; width: 100%; }.footer-links { gap: 40px; grid-template-columns: 1fr 1fr; padding-bottom: 55px; }.footer-links > div:last-child { grid-column: span 2; }.footer-bottom { flex-direction: column; gap: 10px; }.footer-bottom span:last-child { display: none; } }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+/* Napoleon intelligence diagram — animation keyframes */
+@keyframes flow-up {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+@keyframes edge-dash {
+  to {
+    stroke-dashoffset: -60;
+  }
+}
+
+@keyframes token-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes heart-beat {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  15% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.25);
+  }
+}
+
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pill-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.flow-line {
+  animation: flow-up 2.4s linear infinite;
+}
+
+.edge-line {
+  animation: edge-dash 3s linear infinite;
+}
+
+/* Visual boxes that host the IntelligenceDiagram let the diagram set its own height */
+.command-visual.diagram-visual,
+.product-visual.diagram-visual {
+  aspect-ratio: auto;
+  padding: clamp(10px, 1.6vw, 26px);
+}
+
+.command-visual.diagram-visual .intelligence-diagram {
+  display: block;
+}
 
 @layer base { * { @apply border-border outline-ring/50; } }
 

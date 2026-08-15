@@ -43,7 +43,7 @@ export default function BastionOSPage() {
           operations, patrols, attendance, incidents, reporting and analytics into a single,
           automated, real-time platform.
         </p>
-        <Link className="outline-button" href={`${APP_URL}/register`}>Enter the Workspace <ArrowUpRight size={17} /></Link>
+        <Link className="outline-button" href={`${APP_URL}/register`}>Enter the Spectra Workplace <ArrowUpRight size={17} /></Link>
       </PageHero>
 
       {/* Manifesto — the landing page rhythm: statement, then the system */}

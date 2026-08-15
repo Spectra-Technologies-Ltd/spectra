@@ -38,9 +38,9 @@ export default function SiteFooter({ light = false }: { light?: boolean }) {
     <footer className={light ? 'footer-light' : ''}>
       <div className="footer-top"><span className="wordmark">SPECTRA<span>.</span></span><span className="footer-tagline">BUILT FOR THE UNSEEN</span><span className="odometer"><strong>{String(miles).padStart(2, '0')}</strong><small>MI / SCROLLED</small></span></div>
       <div className="footer-links">
-        <div><span>EXPLORE</span><button onClick={() => go('/bastionos')}>BastionOS</button><button onClick={() => go('/napoleon')}>Napoleon</button><button onClick={() => go('/newsroom')}>News Room</button></div>
-        <div><span>CONNECT</span><button onClick={() => go('https://www.linkedin.com')}>LinkedIn</button><button onClick={() => go('https://www.instagram.com')}>Instagram</button><button onClick={() => go('/newsroom')}>News Room</button></div>
-        <div><span>OFFICE</span><p>Long Beach, CA<br />33° 46′ N / 118° 11′ W</p></div>
+        <div><span>EXPLORE</span><button onClick={() => go('/bastionos')}>BastionOS</button><button onClick={() => go('/napoleon')}>Napoleon</button><button onClick={() => go('/newsroom')}>The Spectra Journal</button></div>
+        <div><span>CONNECT</span><button onClick={() => go('https://www.linkedin.com')}>LinkedIn</button><button onClick={() => go('https://www.instagram.com')}>Instagram</button><button onClick={() => go('/contact')}>Contact</button></div>
+        <div><span>COMPANY</span><button onClick={() => go('/about')}>About Spectra</button><button onClick={() => go('/partners')}>Partners</button><button onClick={() => go('/contact')}>Work with us</button></div>
       </div>
       <div className="footer-newsletter"><span>BRIEFINGS / MONTHLY</span><NewsletterForm /></div>
       <div className="footer-bottom"><span>© 2026 SPECTRA SYSTEMS, INC.</span><span>PRIVACY / TERMS</span><span>NO DECISION LEFT BEHIND</span></div>

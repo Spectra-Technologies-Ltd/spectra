@@ -4,6 +4,7 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
+import { IntelligenceDiagram } from '@/components/napoleon/intelligence-diagram'
 
 export const metadata = {
   title: 'Napoleon — Spectra Technologies',
@@ -85,15 +86,8 @@ export default function NapoleonPage() {
               <Link className="outline-button" href="/bastionos">Explore Napoleon in action <ArrowUpRight size={17} /></Link>
             </Reveal>
           </div>
-          <div className="command-visual">
-            <img src="/images/spectra-command.png" alt="Napoleon intelligence layer" />
-            <div className="command-overlay">
-              <span>NAPOLEON / INFERENCE</span>
-              <strong>MODEL // RUNNING</strong>
-              <span>LATENCY 00:00:04</span>
-            </div>
-            <div className="command-marker marker-a"><i />PATTERN / 0041</div>
-            <div className="command-marker marker-b"><i />SIGNAL / CLASSIFIED</div>
+          <div className="command-visual diagram-visual">
+            <IntelligenceDiagram />
           </div>
         </div>
       </section>
