@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, MoveRight, Plus } from 'lucide-react'
 import SiteHeader from '../components/site-header'
@@ -50,6 +50,24 @@ export default function Page() {
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
+
+  // Nav "Overview" links land on the "Built on two layers" section and select
+  // the matching layer (BastionOS or Napoleon) via the URL hash.
+  useEffect(() => {
+    const handleLayerHash = () => {
+      const hash = window.location.hash.replace('#', '')
+      if (hash === 'fleet-bastion') {
+        setProduct(0)
+        scrollTo('fleet')
+      } else if (hash === 'fleet-napoleon') {
+        setProduct(1)
+        scrollTo('fleet')
+      }
+    }
+    handleLayerHash()
+    window.addEventListener('hashchange', handleLayerHash)
+    return () => window.removeEventListener('hashchange', handleLayerHash)
+  }, [])
 
   return (
     <main className="spectra-shell">

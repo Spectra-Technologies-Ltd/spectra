@@ -14,14 +14,14 @@ const NAV_GROUPS = [
     label: 'BastionOS',
     eyebrow: 'The Operating Foundation',
     description: '',
-    links: [['Overview', '/#bastion']],
+    links: [['Overview', '/#fleet-bastion']],
     footer: ['Explore BastionOS', '/bastionos'],
   },
   {
     label: 'Napoleon',
     eyebrow: 'The Intelligence Layer',
     description: '',
-    links: [['Overview', '/#napoleon']],
+    links: [['Overview', '/#fleet-napoleon']],
     footer: ['Explore Napoleon', '/napoleon'],
   },
   {
@@ -124,7 +124,8 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
   // native <a href> navigation do its thing (works even without JS).
   const handleMegaLink = (e: React.MouseEvent, target: string) => {
     const [path, hash] = target.split('#')
-    if (hash && (path === '' || path === '/' || path === pathname)) {
+    const layerHash = hash === 'fleet-bastion' || hash === 'fleet-napoleon'
+    if (hash && (path === '' || path === '/' || path === pathname) && !layerHash) {
       e.preventDefault()
       setOpenNav(null)
       scrollToSection(hash)
@@ -141,6 +142,19 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
       return
     }
     const [path, hash] = target.split('#')
+    // Layer-switch hashes: set the URL hash so the homepage can select the
+    // matching layer and scroll to the "Built on two layers" section.
+    if (hash === 'fleet-bastion' || hash === 'fleet-napoleon') {
+      if (path === '' || path === '/' || path === pathname) {
+        window.location.hash = hash
+      } else {
+        router.push(`${path || '/'}#${hash}`)
+        setTimeout(() => {
+          if (window.location.hash === `#${hash}`) window.dispatchEvent(new Event('hashchange'))
+        }, 600)
+      }
+      return
+    }
     if (hash && (path === '' || path === '/' || path === pathname)) {
       scrollToSection(hash)
       return
@@ -252,11 +266,11 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
         <nav className="menu-links">
           <div className="menu-group">
             <span className="menu-group-title">BastionOS — Operating Foundation</span>
-            <button onClick={() => go('/#bastion')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
+            <button onClick={() => go('/#fleet-bastion')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Napoleon — Intelligence Layer</span>
-            <button onClick={() => go('/#napoleon')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
+            <button onClick={() => go('/#fleet-napoleon')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Workspace</span>

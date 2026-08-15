@@ -3,7 +3,6 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
-import { ContactForm } from '@/components/contact-form'
 import { StandardForm } from '@/components/standard-form'
 import { NewsletterInline } from '@/components/newsletter-inline'
 
@@ -24,25 +23,14 @@ export default function ContactPage() {
       <SiteHeader />
 
       {/* Hero — Contact Us / Get In Touch */}
-      <PageHero kicker="CONTACT / GET IN TOUCH" title="Contact" em="Us." tag="SPECTRA / SIGNAL" />
+      <PageHero kicker="CONTACT / GET IN TOUCH" title="Contact" em="Us." hideBottom />
 
-      {/* Contact Form Demo — wizard + standard form, side by side */}
+      {/* Contact form */}
       <section className="page-section" style={{ paddingTop: 40 }}>
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">CONTACT FORM DEMO</p><h3>Get in<br />touch.</h3></Reveal>
+          <Reveal><p className="eyebrow">CONTACT FORM</p><h3>Get in<br />touch.</h3></Reveal>
         </div>
-        <Reveal>
-          <div className="contact-form-demo">
-            <div>
-              <p className="contact-form-demo-label">Multi-Step Form</p>
-              <ContactForm />
-            </div>
-            <div>
-              <p className="contact-form-demo-label">Standard Form</p>
-              <StandardForm />
-            </div>
-          </div>
-        </Reveal>
+        <Reveal><StandardForm /></Reveal>
       </section>
 
       {/* Contact details */}
