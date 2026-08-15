@@ -135,7 +135,7 @@ function PlaneLabel({
   const pos = toPct({ x: p.cx + nudgeX, y: p.cy + dy })
   return (
     <span
-      className="absolute font-mono text-[clamp(11px,1.5vw,22px)] font-medium uppercase tracking-[0.15em] text-foreground"
+      className="absolute font-mono text-[clamp(11px,1.5cqw,22px)] font-medium uppercase tracking-[0.15em] text-foreground"
       style={{
         left: pos.left,
         top: pos.top,
@@ -158,8 +158,8 @@ function NodeToken({ node, index }: { node: OntNode; index: number }) {
       <div
         className="grid place-items-center rounded-[6px] border shadow-sm"
         style={{
-          width: 'clamp(30px,3.4vw,50px)',
-          height: 'clamp(30px,3.4vw,50px)',
+          width: 'clamp(30px,3.4cqw,50px)',
+          height: 'clamp(30px,3.4cqw,50px)',
           borderColor: 'var(--foreground)',
           background: node.hot ? 'var(--mint)' : 'var(--card)',
           animation: `token-float 4s ease-in-out ${index * 0.3}s infinite`,
@@ -187,7 +187,7 @@ function RelPill({
   const pos = toPct({ x, y })
   return (
     <span
-      className="absolute whitespace-nowrap rounded-full px-2 py-[3px] font-mono text-[clamp(7px,0.72vw,11px)] leading-none"
+      className="absolute whitespace-nowrap rounded-full px-2 py-[3px] font-mono text-[clamp(7px,0.72cqw,11px)] leading-none"
       style={{
         left: pos.left,
         top: pos.top,
@@ -230,8 +230,8 @@ function TileGrid({
             style={{
               left: pos.left,
               top: pos.top,
-              width: 'clamp(20px,2.3vw,34px)',
-              height: 'clamp(20px,2.3vw,34px)',
+              width: 'clamp(20px,2.3cqw,34px)',
+              height: 'clamp(20px,2.3cqw,34px)',
               transform: 'translate(-50%,-70%)',
               borderColor: 'var(--foreground)',
               background: isHot ? 'var(--mint)' : 'var(--card)',
@@ -257,7 +257,7 @@ function MiniScreen({ x, y, w = 96 }: { x: number; y: number; w?: number }) {
       style={{
         left: pos.left,
         top: pos.top,
-        width: `clamp(52px,${w / 15}vw,${w}px)`,
+        width: `clamp(52px,${w / 15}cqw,${w}px)`,
         transform: 'translate(-50%,-64%)',
         borderColor: 'var(--foreground)',
       }}
@@ -266,7 +266,7 @@ function MiniScreen({ x, y, w = 96 }: { x: number; y: number; w?: number }) {
         <span className="size-1 rounded-full" style={{ background: 'var(--mint-strong)' }} />
         <span className="h-1 w-6 rounded-full bg-border" />
       </div>
-      <div className="flex items-end gap-[3px] p-1.5" style={{ height: 'clamp(22px,3vw,44px)' }}>
+      <div className="flex items-end gap-[3px] p-1.5" style={{ height: 'clamp(22px,3cqw,44px)' }}>
         {[40, 70, 30, 90, 55, 75].map((h, i) => (
           <span
             key={i}
@@ -306,7 +306,7 @@ function TopSurfaces() {
         {['API', 'API', 'API', 'API'].map((t, i) => (
           <span
             key={i}
-            className="rounded-full border px-2 py-[3px] font-mono text-[clamp(6px,0.7vw,10px)]"
+            className="rounded-full border px-2 py-[3px] font-mono text-[clamp(6px,0.7cqw,10px)]"
             style={{ borderColor: 'var(--foreground)', background: 'var(--card)', color: 'var(--foreground)' }}
           >
             {t}
@@ -321,7 +321,7 @@ function Chip({ x, y, label, hot }: { x: number; y: number; label: string; hot?:
   const pos = toPct({ x, y })
   return (
     <span
-      className="absolute rounded-[3px] border px-2 py-[2px] font-mono text-[clamp(6px,0.7vw,10px)] tracking-wide"
+      className="absolute rounded-[3px] border px-2 py-[2px] font-mono text-[clamp(6px,0.7cqw,10px)] tracking-wide"
       style={{
         ...pos,
         transform: 'translate(-50%,-50%)',

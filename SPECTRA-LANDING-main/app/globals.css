@@ -327,6 +327,17 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
   display: block;
 }
 
+/* The diagram is a CSS container: overlay tokens/labels scale with cqw units
+   against its own width, so it renders correctly at any container size. */
+.intelligence-diagram {
+  container-type: inline-size;
+}
+
+/* Drop the HUD grid overlay on diagram variants — it fights the scene */
+.command-visual.diagram-visual::after {
+  display: none;
+}
+
 @layer base { * { @apply border-border outline-ring/50; } }
 
 /* ── Menu groups (BastionOS / Napoleon / Architecture / Work With Us) ── */

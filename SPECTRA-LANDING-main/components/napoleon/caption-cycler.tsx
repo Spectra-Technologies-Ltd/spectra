@@ -46,7 +46,7 @@ export function CaptionCycler() {
 
   return (
     <div
-      className="relative w-[min(24rem,30vw)] bg-background/95 px-6 pb-6 pt-5 backdrop-blur-sm"
+      className="relative w-[min(24rem,42cqw)] bg-background/95 px-6 pb-6 pt-5 backdrop-blur-sm"
       style={{
         clipPath: 'polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%)',
         boxShadow: '0 -1px 0 var(--hairline), 1px 0 0 var(--hairline)',
