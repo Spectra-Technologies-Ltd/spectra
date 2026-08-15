@@ -22,17 +22,13 @@ export default function ContactPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="CONTACT / GET IN TOUCH" title="Contact" em="us." tag="SPECTRA / SIGNAL">
-        <p>
-          Tell us what you&apos;re trying to see, understand or protect — partnerships, enterprise,
-          government or press. We&apos;ll show you what&apos;s possible.
-        </p>
-      </PageHero>
+      {/* Contact Us */}
+      <PageHero kicker="CONTACT / DIRECT INQUIRIES" title="Contact" em="Us." tag="SPECTRA / SIGNAL" />
 
-      {/* Form */}
-      <section className="page-section">
+      {/* Get In Touch */}
+      <section className="page-section" style={{ paddingTop: 40 }}>
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">01 / SEND AN INQUIRY</p><h3>Get in<br />touch.</h3></Reveal>
+          <Reveal><p className="eyebrow">GET IN TOUCH</p><h3>Send us<br />a message.</h3></Reveal>
         </div>
         <Reveal><ContactForm /></Reveal>
       </section>
@@ -40,7 +36,7 @@ export default function ContactPage() {
       {/* Contact details */}
       <section className="page-section page-section-alt">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">02 / CONTACT DETAILS</p><h3>Reach us<br />directly.</h3></Reveal>
+          <Reveal><p className="eyebrow">CONTACT DETAILS</p><h3>Reach us<br />directly.</h3></Reveal>
         </div>
         <div className="card-grid">
           {details.map(({ icon: Icon, label, value, sub }) => (
@@ -59,10 +55,15 @@ export default function ContactPage() {
       {/* Newsletter */}
       <section className="page-section">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">03 / NEWSLETTER</p><h3>Subscribe<br />now.</h3></Reveal>
-          <Reveal><p className="body-copy">Join our briefings to get the latest news, updates and technical notes delivered straight to your inbox.</p></Reveal>
+          <Reveal><p className="eyebrow">NEWSLETTER</p><h3>Subscribe<br />now.</h3></Reveal>
+          <Reveal><p className="body-copy">Join our newsletter to get the latest news, updates, and technical notes delivered straight to your inbox.</p></Reveal>
         </div>
-        <Reveal><NewsletterForm /></Reveal>
+        <Reveal>
+          <div className="newsletter-block">
+            <span className="newsletter-kicker">Sign up now!</span>
+            <NewsletterForm />
+          </div>
+        </Reveal>
       </section>
 
       <SiteFooter />

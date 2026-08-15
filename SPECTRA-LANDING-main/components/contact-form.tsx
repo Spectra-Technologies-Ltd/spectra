@@ -3,13 +3,15 @@
 import { useState } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 
-export function ContactForm() {
-  const [sent, setSent] = useState(false)
+const STEPS = ['Name', 'Email', 'Message']
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setSent(true)
-  }
+/** Multi-step contact form, modeled on the innov8hub contact wizard. */
+export function ContactForm() {
+  const [step, setStep] = useState(1)
+  const [sent, setSent] = useState(false)
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
 
   if (sent) {
     return (
@@ -25,39 +27,53 @@ export function ContactForm() {
   }
 
   return (
-    <form className="contact-form" onSubmit={onSubmit}>
-      <div className="contact-form-row">
-        <div className="field">
-          <label htmlFor="name">Full Name</label>
-          <input id="name" name="name" type="text" required placeholder="Alex Mercer" />
-        </div>
-        <div className="field">
-          <label htmlFor="email">Work Email</label>
-          <input id="email" name="email" type="email" required placeholder="you@company.com" />
-        </div>
+    <form
+      className="contact-form"
+      onSubmit={(e) => {
+        e.preventDefault()
+        setSent(true)
+      }}
+    >
+      {/* Step indicators */}
+      <div className="contact-steps">
+        {STEPS.map((label, i) => {
+          const n = i + 1
+          return (
+            <span key={label} className={n === step ? 'active' : n < step ? 'done' : ''}>
+              {n} {label}
+            </span>
+          )
+        })}
       </div>
-      <div className="contact-form-row">
+
+      {step === 1 && (
         <div className="field">
-          <label htmlFor="org">Organization</label>
-          <input id="org" name="org" type="text" placeholder="Organization name" />
+          <label htmlFor="name">Name</label>
+          <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your full name" />
         </div>
+      )}
+      {step === 2 && (
         <div className="field">
-          <label htmlFor="topic">Inquiry Type</label>
-          <select id="topic" name="topic" defaultValue="Business inquiry">
-            <option>Business inquiry</option>
-            <option>Partnership</option>
-            <option>Enterprise</option>
-            <option>Government</option>
-            <option>Press / Media</option>
-          </select>
+          <label htmlFor="email">Email</label>
+          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
         </div>
-      </div>
-      <div className="field">
-        <label htmlFor="message">Message</label>
-        <textarea id="message" name="message" required placeholder="Tell us what you're trying to see, understand or protect." />
-      </div>
-      <div>
-        <button className="solid-button" type="submit">Send message</button>
+      )}
+      {step === 3 && (
+        <div className="field">
+          <label htmlFor="message">Message</label>
+          <textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Tell us what you're trying to see, understand or protect." />
+        </div>
+      )}
+
+      <div className="contact-form-nav">
+        {step > 1 && (
+          <button type="button" className="form-nav-btn" onClick={() => setStep(step - 1)}>Previous</button>
+        )}
+        {step < 3 ? (
+          <button type="button" className="form-nav-btn form-nav-primary" onClick={() => setStep(step + 1)}>Next</button>
+        ) : (
+          <button type="submit" className="form-nav-btn form-nav-primary">Send</button>
+        )}
       </div>
     </form>
   )

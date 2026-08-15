@@ -427,6 +427,21 @@ section[id] { scroll-margin-top: 90px; }
 .contact-form label { color: #9aa9c7; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .contact-form-row { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
 
+/* Multi-step wizard (innov8hub contact concept) */
+.contact-steps { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-bottom: 6px; }
+.contact-steps span { color: #5a6b7d; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; transition: color .2s ease; }
+.contact-steps span.active { color: var(--accent); }
+.contact-steps span.done { color: var(--foreground); }
+.contact-form-nav { display: flex; gap: 12px; margin-top: 6px; }
+.form-nav-btn { background: none; border: 1px solid rgba(220, 235, 255, .3); color: var(--foreground); cursor: pointer; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .16em; padding: 12px 22px; text-transform: uppercase; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+.form-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.form-nav-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-foreground); }
+.form-nav-primary:hover { color: var(--accent-foreground); filter: brightness(1.08); }
+
+/* Newsletter block (innov8hub subscribe concept) */
+.newsletter-block { align-items: center; border: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 20px 34px; justify-content: space-between; max-width: 760px; padding: 26px 26px; }
+.newsletter-kicker { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
+
 .article-list { border-top: 1px solid var(--border); }
 .article-list article { border-bottom: 1px solid var(--border); display: grid; gap: 24px; grid-template-columns: 160px 1fr auto; padding: 30px 0; transition: background-color .2s ease; }
 .article-list article:hover { background: rgba(87, 215, 212, .03); }
