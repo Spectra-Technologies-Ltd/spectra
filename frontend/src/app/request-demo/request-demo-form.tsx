@@ -21,10 +21,10 @@ const requestDemoSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   phone: z.string().min(1, { message: "Phone number is required" }),
   jobTitle: z.string().min(1, { message: "Job title is required" }),
-  organizationName: z.string().min(1, { message: "Organization / client name is required" }),
+  organizationName: z.string().min(1, { message: "Organization / company name is required" }),
   country: z.string().min(1, { message: "Please select a country" }),
-  sites: z.string().optional(),
-  message: z.string().min(10, { message: "Tell us a little about your operations" }),
+  context: z.string().optional(),
+  message: z.string().min(10, { message: "Tell us a little about what you're working on" }),
 });
 
 type RequestDemoFormData = z.infer<typeof requestDemoSchema>;
@@ -58,14 +58,24 @@ export default function RequestDemoForm() {
     `w-full rounded-md border bg-white py-2.5 px-3 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
       hasError
         ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-        : "border-zinc-200 focus:border-black focus:ring-black/10"
+        : "border-zinc-200 focus:border-blue-500 focus:ring-blue-100"
     }`;
 
   const onSubmit = async (data: RequestDemoFormData) => {
     setError(null);
     setIsSubmitting(true);
     try {
-      await api.post("/leads", data);
+      await api.post("/leads", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        jobTitle: data.jobTitle,
+        organizationName: data.organizationName,
+        country: data.country,
+        sites: data.context,
+        message: data.message,
+      });
       setSubmitted(true);
     } catch (err: any) {
       setError(
@@ -89,12 +99,12 @@ export default function RequestDemoForm() {
             Thanks — we&apos;ll be in touch shortly.
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-zinc-500">
-            A member of the Spectra team will follow up with you shortly to schedule your
-            demo and answer any questions.
+            A member of the Spectra team will follow up with you shortly to discuss what
+            you&apos;re working on and how we can help.
           </p>
           <Link
             href="/"
-            className="mt-8 inline-flex items-center gap-2 rounded-md bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-zinc-950/10 transition-all hover:bg-zinc-800"
+            className="mt-8 inline-flex items-center gap-2 rounded-md bg-gradient-to-br from-cyan-500 to-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition-all hover:brightness-110"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Homepage
           </Link>
@@ -108,7 +118,7 @@ export default function RequestDemoForm() {
       {/* Simple top bar */}
       <header className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-8">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-950 text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-md shadow-blue-600/25">
             <Shield className="h-4 w-4" />
           </div>
           <span className="font-mono text-sm font-bold tracking-[0.25em] text-zinc-900">
@@ -117,7 +127,7 @@ export default function RequestDemoForm() {
         </div>
         <Link
           href="/"
-          className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 transition-colors hover:text-zinc-900"
+          className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 transition-colors hover:text-blue-600"
         >
           Home
         </Link>
@@ -125,15 +135,15 @@ export default function RequestDemoForm() {
 
       <main className="flex flex-1 justify-center px-4 py-12 sm:px-8">
         <div className="w-full max-w-[560px]">
-          <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-zinc-400">
-            REQUEST A DEMO
+          <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-blue-600">
+            CONTACT · DEMO REQUEST · PARTNERSHIP INQUIRIES
           </p>
           <h1 className="mt-3 text-3xl font-black tracking-tight text-zinc-950">
-            See Spectra in action.
+            Interested in solving a problem with Spectra?
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-            Tell us about your security operations — we&apos;ll show you what&apos;s possible across
-            patrols, incident tracking, attendance and multi-site visibility.
+            Tell us what you&apos;re trying to build, operate or solve — we&apos;ll show you what
+            Spectra&apos;s intelligent systems can do for you.
           </p>
 
           {error && (
@@ -217,7 +227,7 @@ export default function RequestDemoForm() {
                   id="jobTitle"
                   type="text"
                   autoComplete="organization-title"
-                  placeholder="Security Director"
+                  placeholder="Director of Operations"
                   {...register("jobTitle")}
                   className={`mt-1.5 ${inputClass(!!errors.jobTitle)}`}
                 />
@@ -226,12 +236,12 @@ export default function RequestDemoForm() {
                 )}
               </div>
               <div>
-                <label htmlFor="organizationName" className={labelClass}>Organization / Client Name</label>
+                <label htmlFor="organizationName" className={labelClass}>Organization / Company</label>
                 <input
                   id="organizationName"
                   type="text"
                   autoComplete="organization"
-                  placeholder="Meridian Security"
+                  placeholder="Acme Industries"
                   {...register("organizationName")}
                   className={`mt-1.5 ${inputClass(!!errors.organizationName)}`}
                 />
@@ -263,25 +273,25 @@ export default function RequestDemoForm() {
                 )}
               </div>
               <div>
-                <label htmlFor="sites" className={labelClass}>
-                  Number of Sites / Guards <span className="text-zinc-400">(optional)</span>
+                <label htmlFor="context" className={labelClass}>
+                  Additional Context <span className="text-zinc-400">(optional)</span>
                 </label>
                 <input
-                  id="sites"
+                  id="context"
                   type="text"
-                  placeholder="e.g. 12 sites, 240 guards"
-                  {...register("sites")}
-                  className={`mt-1.5 ${inputClass(!!errors.sites)}`}
+                  placeholder="e.g. scale, timeline, related projects"
+                  {...register("context")}
+                  className={`mt-1.5 ${inputClass(!!errors.context)}`}
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="message" className={labelClass}>Tell us about your security operations</label>
+              <label htmlFor="message" className={labelClass}>Tell us what you&apos;re working on</label>
               <textarea
                 id="message"
                 rows={4}
-                placeholder="Mention patrols, incident tracking, attendance, multi-site visibility, and anything else your operation relies on."
+                placeholder="Describe the problem you're trying to solve — what you're building, operating or improving."
                 {...register("message")}
                 className={`mt-1.5 ${inputClass(!!errors.message)} resize-none`}
               />
@@ -293,21 +303,17 @@ export default function RequestDemoForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-zinc-950/10 transition-all hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-50"
+              className="group flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-br from-cyan-500 to-blue-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition-all hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" /> Submitting...
                 </>
               ) : (
-                "Request Demo"
+                "Submit"
               )}
             </button>
           </form>
-
-          <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-zinc-400">
-            PROTECTED BY SPECTRA CRYPTOGRAPHIC PROTOCOL
-          </p>
         </div>
       </main>
     </div>
