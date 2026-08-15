@@ -61,16 +61,19 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--accent); outlin
 .wordmark span { color: var(--accent); }
 .header-center, .eyebrow, .section-kicker, .hero-bottom, .menu-panel-top, .menu-foot, .filter-list, .product-nav, .spec-list span, .footer-links > div > span, .footer-bottom, .odometer small { color: #9aa9c7; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
 .menu-trigger { align-items: center; background: none; border: 0; color: var(--foreground); cursor: pointer; display: flex; gap: 9px; letter-spacing: .14em; font-family: var(--font-geist-mono), monospace; font-size: 10px; }
-.menu-panel { background: #07102a; inset: 0; opacity: 0; padding: 28px 34px; pointer-events: none; position: fixed; transform: translateY(-100%); transition: opacity .5s ease, transform .5s cubic-bezier(.77,0,.18,1); z-index: 30; }
+.menu-panel { background: #07102a; inset: 0; opacity: 0; overflow-y: auto; padding: 28px 34px; pointer-events: none; position: fixed; transform: translateY(-100%); transition: opacity .5s ease, transform .5s cubic-bezier(.77,0,.18,1); z-index: 30; }
 .menu-open { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .menu-panel-top, .menu-foot { display: flex; justify-content: space-between; }
+.menu-panel-top { position: sticky; top: 0; z-index: 2; }
 .menu-panel-top button { background: none; border: 0; color: var(--foreground); cursor: pointer; }
-.menu-links { margin: 11vh auto 0; max-width: 1000px; }
-.menu-links button { align-items: center; background: none; border: 0; border-bottom: 1px solid var(--border); color: var(--foreground); cursor: pointer; display: grid; grid-template-columns: 80px 1fr 30px; padding: 20px 0; text-align: left; width: 100%; }
-.menu-links button span { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 11px; }
-.menu-links strong { font-size: clamp(34px, 6vw, 86px); font-weight: 350; letter-spacing: -.07em; transition: color .25s ease; }
-.menu-links button:hover strong { color: var(--accent); }
-.menu-foot { bottom: 28px; left: 34px; position: absolute; right: 34px; }
+.menu-links { display: grid; gap: 0 70px; grid-template-columns: 1fr 1fr; margin: 7vh auto 0; max-width: 1100px; }
+.menu-links button { align-items: center; background: none; border: 0; border-bottom: 1px solid var(--border); color: var(--foreground); cursor: pointer; display: flex; gap: 18px; padding: 14px 0; text-align: left; width: 100%; }
+.menu-links button span { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .12em; min-width: 30px; }
+.menu-links button strong { font-size: clamp(16px, 1.6vw, 22px); font-weight: 400; letter-spacing: -.02em; transition: color .25s ease; }
+.menu-links button svg { color: #71809c; margin-left: auto; transition: color .25s ease, transform .25s ease; }
+.menu-links button:hover strong, .menu-links button:hover svg { color: var(--accent); }
+.menu-links button:hover svg { transform: translate(2px, -2px); }
+.menu-foot { margin-top: 44px; padding: 0 0 36px; position: static; }
 
 .hero-section { min-height: 100vh; position: relative; display: flex; align-items: flex-end; }
 .hero-image, .careers-section > img, .mission-card > img, .capability-image { height: 100%; inset: 0; object-fit: cover; position: absolute; width: 100%; }
@@ -217,6 +220,16 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 @media (max-width: 800px) {
   .menu-group { margin-bottom: 22px; }
   .menu-more { margin-top: 26px; }
+}
+
+/* ── Menu: mobile overrides (single column, compact) ── */
+@media (max-width: 800px) {
+  .menu-links { display: block; margin-top: 9vh; }
+  .menu-links button { gap: 14px; padding: 12px 0; }
+  .menu-links button strong { font-size: 17px; }
+  .menu-panel { padding: 20px 18px; }
+  .menu-more-links { gap: 6px; }
+  .menu-more-links button, .menu-more-links a { padding: 8px 12px; }
 }
 
 /* ── Isometric platform architecture animation ── */
