@@ -7,10 +7,10 @@ export function PageHero({
   hideBottom = false,
   children,
 }: {
-  kicker: string
+  kicker: React.ReactNode
   title: string
   em?: string
-  tag?: string
+  tag?: React.ReactNode
   hideBottom?: boolean
   children?: React.ReactNode
 }) {

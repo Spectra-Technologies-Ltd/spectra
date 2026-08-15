@@ -73,7 +73,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--accent); outlin
   .header-center { display: none; }
   .site-nav { align-items: center; display: flex; gap: 30px; margin: 0 auto; }
   .site-nav-item { position: static; }
-  .site-nav-trigger { align-items: center; background: none; border: 0; color: #9aa9c7; cursor: pointer; display: flex; font-family: var(--font-geist-mono), monospace; font-size: 10px; gap: 6px; letter-spacing: .16em; padding: 10px 0; text-transform: uppercase; transition: color .2s ease; }
+  .site-nav-trigger { align-items: center; background: none; border: 0; color: #9aa9c7; cursor: pointer; display: flex; font-family: var(--font-geist-mono), monospace; font-size: 11px; gap: 6px; letter-spacing: .08em; padding: 10px 0; transition: color .2s ease; }
   .site-nav-trigger svg { transition: transform .2s ease; }
   .site-nav-item:hover .site-nav-trigger, .site-nav-item.is-open .site-nav-trigger, .site-nav-trigger:hover { color: var(--foreground); }
   .site-nav-item.is-open .site-nav-trigger svg { transform: rotate(180deg); }
@@ -243,6 +243,7 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 /* ── Menu groups (BastionOS / Napoleon / Architecture / Work With Us) ── */
 .menu-group { margin-bottom: 30px; }
 .menu-group-title { color: var(--accent); display: block; font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .2em; margin-bottom: 4px; text-transform: uppercase; }
+.menu-group-title--brand { text-transform: none; letter-spacing: .06em; }
 
 /* ── More dropdown pills ── */
 .menu-more { margin-top: 36px; }
@@ -371,6 +372,8 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 }
 
 /* ── BastionOS overview section (homepage mini-intro) ── */
+/* Product names render in title case (BastionOS), even inside uppercase labels */
+.brand-name { letter-spacing: .04em; text-transform: none; }
 .bastion-intro { padding: 130px 7vw 120px; }
 .bastion-intro-grid { align-items: flex-end; display: flex; gap: 6vw; justify-content: space-between; margin-top: 60px; }
 .bastion-intro-grid h2 { margin: 0; max-width: 760px; }

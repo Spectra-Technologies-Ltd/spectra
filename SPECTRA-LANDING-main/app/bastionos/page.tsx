@@ -37,7 +37,7 @@ export default function BastionOSPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="BASTIONOS / THE OPERATING FOUNDATION" title="Security operations," em="unified." tag="BASTIONOS / LIVE">
+      <PageHero kicker={<><span className="brand-name">BastionOS</span> / THE OPERATING FOUNDATION</>} title="Security operations," em="unified." tag={<><span className="brand-name">BastionOS</span> / LIVE</>}>
         <p>
           The operational command center for private security companies. BastionOS unifies guard
           operations, patrols, attendance, incidents, reporting and analytics into a single,
@@ -48,7 +48,7 @@ export default function BastionOSPage() {
 
       {/* Manifesto — the landing page rhythm: statement, then the system */}
       <section className="manifesto-section" style={{ paddingTop: 130 }}>
-        <div className="section-kicker"><span>01</span><span>WHAT IS BASTIONOS</span></div>
+        <div className="section-kicker"><span>01</span><span>WHAT IS <span className="brand-name">BastionOS</span></span></div>
         <Reveal><h2>The operating system<br /><em>for security operations.</em></h2></Reveal>
         <div className="manifesto-meta">
           <span>01—04</span>
@@ -62,7 +62,7 @@ export default function BastionOSPage() {
         <div className="capabilities-layout">
           <div className="capability-sticky">
             <Reveal>
-              <p className="eyebrow">BASTIONOS · NAPOLEON · FOUNDATION</p>
+              <p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · FOUNDATION</p>
               <h2>One platform.<br /><em>Three layers.</em></h2>
               <p className="body-copy">Built on top of Spectra&apos;s proprietary machine learning and AI model — Napoleon — BastionOS delivers predictive insights, intelligent automation and decision support.</p>
             </Reveal>
@@ -95,7 +95,7 @@ export default function BastionOSPage() {
           <div className="mission-shade" />
           <div className="mission-number">06</div>
           <div className="mission-content">
-            <p className="eyebrow">BASTIONOS / MODULES</p>
+            <p className="eyebrow"><span className="brand-name">BastionOS</span> / MODULES</p>
             <h3>Guard operations to analytics — the modules that run the operation.</h3>
           </div>
         </div>

@@ -265,11 +265,11 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
         <div className="menu-panel-top"><span className="menu-panel-brand">SPECTRA<span>.</span></span><span className="header-center">TECHNOLOGIES / INDEX</span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
         <nav className="menu-links">
           <div className="menu-group">
-            <span className="menu-group-title">BastionOS — Operating Foundation</span>
+            <span className="menu-group-title menu-group-title--brand">BastionOS — Operating Foundation</span>
             <button onClick={() => go('/#fleet-bastion')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">
-            <span className="menu-group-title">Napoleon — Intelligence Layer</span>
+            <span className="menu-group-title menu-group-title--brand">Napoleon — Intelligence Layer</span>
             <button onClick={() => go('/#fleet-napoleon')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
           </div>
           <div className="menu-group">

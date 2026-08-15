@@ -153,7 +153,7 @@ export default function NapoleonPage() {
       <section className="statement-section">
         <div className="statement-rule" />
         <Reveal>
-          <p>NAPOLEON = THINKS, LEARNS, PREDICTS.<br />BASTIONOS = ORGANIZES, PRESENTS, ACTS.</p>
+          <p><span className="brand-name">Napoleon</span> = THINKS, LEARNS, PREDICTS.<br /><span className="brand-name">BastionOS</span> = ORGANIZES, PRESENTS, ACTS.</p>
           <h2>See it in action.<br /><em>Enter the system.</em></h2>
         </Reveal>
         <div className="statement-foot">
