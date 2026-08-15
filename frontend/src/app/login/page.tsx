@@ -85,7 +85,7 @@ function LoginForm() {
               <Shield className="h-6 w-6" />
             </div>
             <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
-              BASTIONOS
+              BastionOS
             </p>
           </div>
 
@@ -216,7 +216,7 @@ function LoginForm() {
           </div>
 
           <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-zinc-400">
-            PROTECTED BY BASTIONOS CRYPTOGRAPHIC PROTOCOL
+            PROTECTED BY BastionOS CRYPTOGRAPHIC PROTOCOL
           </p>
         </div>
       </div>

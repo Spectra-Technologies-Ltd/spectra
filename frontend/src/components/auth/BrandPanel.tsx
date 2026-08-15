@@ -19,7 +19,7 @@ export default function BrandPanel() {
           <Shield className="h-6 w-6" />
         </div>
         <div>
-          <p className="font-mono text-sm font-bold tracking-[0.3em] text-white">BASTIONOS</p>
+          <p className="font-mono text-sm font-bold tracking-[0.3em] text-white">BastionOS</p>
           <p className="font-mono text-[10px] tracking-[0.24em] text-zinc-400">
             SECURITY PLATFORM
           </p>
@@ -70,7 +70,7 @@ export default function BrandPanel() {
       </div>
 
       <p className="relative font-mono text-[10px] tracking-[0.2em] text-zinc-500">
-        © 2026 BASTIONOS SYSTEMS, INC.
+        © 2026 BastionOS SYSTEMS, INC.
       </p>
     </aside>
   );

@@ -130,7 +130,7 @@ export default function Sidebar() {
           </div>
           <div className={cn('min-w-0 overflow-hidden whitespace-nowrap', collapsed && 'lg:hidden')}>
             <p className="text-[15px] font-black leading-tight tracking-[0.18em] text-white">
-              BASTIONOS
+              BastionOS
             </p>
             <p className="truncate text-[10px] font-medium tracking-[0.14em] text-zinc-400">
               Security Platform

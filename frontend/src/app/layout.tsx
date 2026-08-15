@@ -4,14 +4,14 @@ import QueryProvider from "@/providers/QueryProvider";
 import AuthProvider from "@/providers/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "BASTIONOS | Operations Intelligence Platform",
+  title: "BastionOS | Operations Intelligence Platform",
   description:
     "Enterprise operations intelligence platform for private security companies, connecting guards, clients, sites, and analytics.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "BASTIONOS",
+    title: "BastionOS",
   },
   icons: {
     apple: "/apple-touch-icon.png",

@@ -158,7 +158,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <p className="font-mono text-sm font-bold tracking-[0.3em] text-white">
-                BASTIONOS
+                BastionOS
               </p>
               <p className="font-mono text-[10px] tracking-[0.24em] text-zinc-400">
                 SECURITY PLATFORM
@@ -222,7 +222,7 @@ export default function RegisterPage() {
           </div>
 
           <p className="relative font-mono text-[10px] tracking-[0.2em] text-zinc-500">
-            © 2026 BASTIONOS SYSTEMS, INC.
+            © 2026 BastionOS SYSTEMS, INC.
           </p>
         </div>
 
@@ -234,7 +234,7 @@ export default function RegisterPage() {
               <Shield className="h-6 w-6" />
             </div>
             <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
-              BASTIONOS
+              BastionOS
             </p>
           </div>
 
