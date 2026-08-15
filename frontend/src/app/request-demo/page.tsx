@@ -14,7 +14,6 @@ import {
   Globe,
 } from "lucide-react";
 import api from "@/lib/api";
-import BrandPanel from "@/components/auth/BrandPanel";
 
 const requestDemoSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
@@ -81,46 +80,51 @@ export default function RequestDemoPage() {
   /* ── Success state — swapped in place, no page navigation ── */
   if (submitted) {
     return (
-      <div className="flex min-h-screen min-h-dvh bg-[#f9fafb]">
-        <BrandPanel />
-        <div className="flex flex-1 items-center justify-center px-4 py-12 sm:px-8">
-          <div className="w-full max-w-[460px] text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
-              <CheckCircle2 className="h-7 w-7 text-emerald-600" />
-            </div>
-            <h1 className="mt-6 text-2xl font-black tracking-tight text-zinc-950">
-              Thanks — we&apos;ll be in touch shortly.
-            </h1>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-500">
-              A member of the BastionOS team will follow up with you shortly to schedule your
-              demo and answer any questions.
-            </p>
-            <Link
-              href="/"
-              className="mt-8 inline-flex items-center gap-2 rounded-md bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-zinc-950/10 transition-all hover:bg-zinc-800"
-            >
-              <ArrowLeft className="h-4 w-4" /> Back to Homepage
-            </Link>
+      <div className="flex min-h-screen min-h-dvh items-center justify-center bg-white px-4 py-12">
+        <div className="w-full max-w-[460px] text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
+            <CheckCircle2 className="h-7 w-7 text-emerald-600" />
           </div>
+          <h1 className="mt-6 text-2xl font-black tracking-tight text-zinc-950">
+            Thanks — we&apos;ll be in touch shortly.
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed text-zinc-500">
+            A member of the BastionOS team will follow up with you shortly to schedule your
+            demo and answer any questions.
+          </p>
+          <Link
+            href="/"
+            className="mt-8 inline-flex items-center gap-2 rounded-md bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-zinc-950/10 transition-all hover:bg-zinc-800"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Homepage
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen min-h-dvh bg-[#f9fafb]">
-      <BrandPanel />
-
-      <div className="flex flex-1 justify-center overflow-y-auto px-4 py-10 sm:px-8">
-        <div className="w-full max-w-[560px]">
-          {/* Mobile brand */}
-          <div className="mb-8 flex flex-col items-center gap-3 lg:hidden">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-black text-white shadow-lg">
-              <Shield className="h-6 w-6" />
-            </div>
-            <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">BastionOS</p>
+    <div className="flex min-h-screen min-h-dvh flex-col bg-white">
+      {/* Simple top bar */}
+      <header className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-8">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-zinc-950 text-white">
+            <Shield className="h-4 w-4" />
           </div>
+          <span className="font-mono text-sm font-bold tracking-[0.25em] text-zinc-900">
+            BastionOS
+          </span>
+        </div>
+        <Link
+          href="/"
+          className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 transition-colors hover:text-zinc-900"
+        >
+          Home
+        </Link>
+      </header>
 
+      <main className="flex flex-1 justify-center px-4 py-12 sm:px-8">
+        <div className="w-full max-w-[560px]">
           <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-zinc-400">
             REQUEST A DEMO
           </p>
@@ -305,7 +309,7 @@ export default function RequestDemoPage() {
             PROTECTED BY BASTIONOS CRYPTOGRAPHIC PROTOCOL
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
