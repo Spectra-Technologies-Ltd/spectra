@@ -1,16 +1,19 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, Menu, MoveRight, Plus, Scan, X } from 'lucide-react'
-import CeaserScene from '../components/CeaserScene'
-import { IsometricPlatform } from '../components/isometric-platform'
+import dynamic from 'next/dynamic'
+import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, Menu, MoveRight, Plus, X } from 'lucide-react'
+
+// Heavy 3D scenes are code-split so three.js and the isometric scene don't slow
+// down every edit/build of the page.
+const CeaserScene = dynamic(() => import('../components/CeaserScene'), { ssr: false })
+const IsometricPlatform = dynamic(() => import('../components/isometric-platform').then((m) => m.IsometricPlatform))
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
 
 const products = [
-  { name: 'SKYFIN', type: 'AERIAL / VTOL', image: '/images/spectra-drone-fleet.png', description: 'A persistent aerial scout for mapping, inspection and perimeter awareness across complex terrain.', stats: [['Range', '120 km'], ['Endurance', '18 hr'], ['Payload', '18 kg'], ['Launch', 'VTOL']] },
-  { name: 'SEAFIN', type: 'MARITIME / USV', image: '/images/spectra-product.png', description: 'A modular surface vehicle that turns coastlines, ports and offshore infrastructure into observable territory.', stats: [['Range', '900 nm'], ['Endurance', '30 days'], ['Payload', '450 kg'], ['Top speed', '18 kn']] },
-  { name: 'COMMAND NODE', type: 'SOFTWARE / MISSION OS', image: '/images/spectra-command.png', description: 'The operating layer for every asset, operator and signal — one live picture from first tasking to final decision.', stats: [['Assets', '1,000+'], ['Latency', '< 90 sec'], ['Users', 'Multi-domain'], ['Uptime', '99.99%']] },
+  { name: 'BASTIONOS', type: 'OPERATING FOUNDATION / INFRASTRUCTURE', image: '/images/spectra-infrastructure.png', description: 'The secure operating environment where Spectra\u2019s systems run — infrastructure that is observable, resilient, and built for autonomy.', stats: [['Uptime', '99.99%'], ['Security', 'Zero trust'], ['Deployment', 'Edge + cloud'], ['Observability', 'Native']] },
+  { name: 'NAPOLEON', type: 'INTELLIGENCE LAYER / MACHINE LEARNING', image: '/images/spectra-command.png', description: 'Spectra\u2019s machine-intelligence layer. Models that turn raw signals — video, radar, AIS, acoustic — into capability the system can act on.', stats: [['Inference', '< 90 sec'], ['Signals', 'Multi-sensor'], ['Learning', 'Continuous'], ['Latency', 'Real time']] },
 ]
 
 const capabilities = [
@@ -40,7 +43,6 @@ export default function Page() {
   const [capability, setCapability] = useState(0)
   const [product, setProduct] = useState(1)
   const [missionIndex, setMissionIndex] = useState(0)
-  const [xray, setXray] = useState(false)
   const [pressExpanded, setPressExpanded] = useState(false)
   const [newsletterSent, setNewsletterSent] = useState(false)
   const [miles, setMiles] = useState(0)
@@ -137,7 +139,7 @@ export default function Page() {
 
       <section id="architecture" className="missions-section"><div className="section-kicker"><span>03</span><span>THE ARCHITECTURE</span></div><div className="section-heading-row"><Reveal><h2>How Spectra&apos;s<br /><em>systems fit together.</em></h2></Reveal><p className="body-copy">Infrastructure, intelligence, data and applications — engineered as one connected system, from first signal to final decision.</p></div><div className="mission-card"><img src={activeArch.image} alt={`${activeArch.layer} architecture layer`} /><div className="mission-shade" /><div className="mission-number">{activeArch.number}</div><div className="mission-content"><p className="eyebrow">{activeArch.layer} / {activeArch.tag}</p><h3>{activeArch.title}</h3><p className="mission-copy">{activeArch.copy}</p><button className="text-button" onClick={() => scrollTo(activeArch.anchor)}>Explore {activeArch.layer} <ArrowUpRight size={17} /></button></div><div className="carousel-controls"><button onClick={() => setMissionIndex((index) => (index - 1 + architectureCards.length) % architectureCards.length)} aria-label="Previous layer"><ChevronLeft /></button><button onClick={() => setMissionIndex((index) => (index + 1) % architectureCards.length)} aria-label="Next layer"><ChevronRight /></button></div></div></section>
 
-      <section id="fleet" className="fleet-section"><div className="section-kicker"><span>04</span><span>THE FLEET</span></div><div className="fleet-intro"><Reveal><h2>One system.<br /><em>Every domain.</em></h2></Reveal><p className="body-copy">A family of autonomous systems, designed to work alone or together. Select a platform to explore the architecture.</p></div><div className="product-switcher"><div className="product-nav">{products.map((item, index) => <button key={item.name} className={product === index ? 'active' : ''} onClick={() => setProduct(index)}><span>0{index + 1}</span>{item.name}</button>)}</div><div className="product-layout"><div className={`product-visual ${xray ? 'xray' : ''}`}><img src={activeProduct.image} alt={`${activeProduct.name} autonomous vessel`} /><div className="radar-lines" /><button className="xray-toggle" onClick={() => setXray(!xray)}><Scan size={15} /> {xray ? 'SOLID VIEW' : 'X-RAY VIEW'}</button><div className="hotspot hotspot-one"><button aria-label="View propulsion hotspot"><Plus /></button><span>PROPULSION / 02</span></div><div className="hotspot hotspot-two"><button aria-label="View sensor hotspot"><Plus /></button><span>SENSOR ARRAY / 04</span></div></div><div className="product-info"><p className="eyebrow">{activeProduct.type}</p><h3>{activeProduct.name}<sup>™</sup></h3><p className="body-copy">{activeProduct.description}</p><div className="spec-list">{activeProduct.stats.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}</div><button className="outline-button">View technical specs <ArrowUpRight size={17} /></button></div></div></div></section>
+      <section id="fleet" className="fleet-section"><div className="section-kicker"><span>04</span><span>THE PLATFORM</span></div><div className="fleet-intro"><Reveal><h2>Built on<br /><em>two layers.</em></h2></Reveal><p className="body-copy">BastionOS and Napoleon — the operating foundation and the intelligence layer at the core of the Spectra architecture. Select a layer.</p></div><div className="product-switcher"><div className="product-nav">{products.map((item, index) => <button key={item.name} className={product === index ? 'active' : ''} onClick={() => setProduct(index)}><span>0{index + 1}</span>{item.name}</button>)}</div><div className="product-layout"><div className="product-visual"><img src={activeProduct.image} alt={`${activeProduct.name} product layer`} /><div className="image-corner">{activeProduct.name} / SPECTRA</div></div><div className="product-info"><p className="eyebrow">{activeProduct.type}</p><h3>{activeProduct.name}</h3><p className="body-copy">{activeProduct.description}</p><div className="spec-list">{activeProduct.stats.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}</div><button className="outline-button">View technical specs <ArrowUpRight size={17} /></button></div></div></div></section>
 
       <section className="statement-section"><div className="statement-rule" /><Reveal><p>WE DON&apos;T BUILD SYSTEMS<br />FOR A SINGLE DOMAIN.</p><h2>We build<br /><em>for what&apos;s next.</em></h2></Reveal><div className="statement-foot"><span>SCROLL / 05</span><span>THE SPECTRA WAY</span></div></section>
 
