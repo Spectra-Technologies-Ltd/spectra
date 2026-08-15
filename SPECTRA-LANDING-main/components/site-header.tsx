@@ -81,9 +81,7 @@ const MORE_LINKS = [
   ['Home', '/'],
   ['BastionOS', '/bastionos'],
   ['Napoleon', '/napoleon'],
-  ['Architecture', '/#architecture'],
   ['Workspace', `${APP_URL}/login`],
-  ['Careers', '/#careers'],
   ['Work with us', '/contact'],
   ['Contact', '/contact'],
 ] as const
