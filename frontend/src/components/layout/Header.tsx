@@ -318,7 +318,7 @@ export default function Header() {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search Bastion..."
+            placeholder="Search BastionOS..."
             value={query}
             onChange={(e) => {
               const nextQuery = e.target.value;

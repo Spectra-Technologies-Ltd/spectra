@@ -117,7 +117,7 @@ export default function RegisterPage() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        organizationName: data.organizationName || "Bastion Operations",
+        organizationName: data.organizationName || "BastionOS Operations",
         password: data.password,
       });
       router.push("/login?registered=1");
@@ -147,7 +147,7 @@ export default function RegisterPage() {
         <div className="relative hidden flex-col justify-between overflow-hidden bg-[#09090b] p-10 lg:flex">
           <img
             src="/spectra-operator.png"
-            alt="Bastion operators coordinating a mission"
+            alt="BastionOS operators coordinating a mission"
             className="absolute inset-0 h-full w-full object-cover opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#09090b]/75 via-[#09090b]/85 to-[#09090b]" />
@@ -158,7 +158,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <p className="font-mono text-sm font-bold tracking-[0.3em] text-white">
-                BASTION
+                BASTIONOS
               </p>
               <p className="font-mono text-[10px] tracking-[0.24em] text-zinc-400">
                 SECURITY PLATFORM
@@ -222,7 +222,7 @@ export default function RegisterPage() {
           </div>
 
           <p className="relative font-mono text-[10px] tracking-[0.2em] text-zinc-500">
-            © 2026 BASTION SYSTEMS, INC.
+            © 2026 BASTIONOS SYSTEMS, INC.
           </p>
         </div>
 
@@ -234,7 +234,7 @@ export default function RegisterPage() {
               <Shield className="h-6 w-6" />
             </div>
             <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
-              BASTION
+              BASTIONOS
             </p>
           </div>
 
@@ -317,7 +317,7 @@ export default function RegisterPage() {
                   id="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="operator@bastion.com"
+                  placeholder="operator@bastionos.com"
                   {...register("email")}
                   className={inputClass(!!errors.email)}
                 />
@@ -361,7 +361,7 @@ export default function RegisterPage() {
                   id="organizationName"
                   type="text"
                   autoComplete="organization"
-                  placeholder="Bastion Operations"
+                  placeholder="BastionOS Operations"
                   {...register("organizationName")}
                   className={inputClass(!!errors.organizationName)}
                 />
@@ -486,7 +486,7 @@ export default function RegisterPage() {
           </div>
 
           <p className="mt-5 text-center text-sm text-zinc-500">
-            Protected by Bastion Cryptographic Protocol. All attempts logged.
+            Protected by BastionOS Cryptographic Protocol. All attempts logged.
           </p>
         </div>
       </div>

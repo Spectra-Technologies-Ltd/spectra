@@ -85,7 +85,7 @@ function LoginForm() {
               <Shield className="h-6 w-6" />
             </div>
             <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
-              BASTION
+              BASTIONOS
             </p>
           </div>
 
@@ -96,7 +96,7 @@ function LoginForm() {
             Welcome back
           </h2>
           <p className="animate-rise mt-2 text-sm text-zinc-500" style={{ animationDelay: "120ms" }}>
-            Sign in to the Bastion Operations Command Center.
+            Sign in to the BastionOS Operations Command Center.
           </p>
 
           <AuthModeSwitch mode="signin" />
@@ -135,7 +135,7 @@ function LoginForm() {
                   type="email"
                   autoComplete="email"
                   autoFocus
-                  placeholder="operator@bastion.com"
+                  placeholder="operator@bastionos.com"
                   {...register("email")}
                   className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-3 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
                     errors.email
@@ -216,7 +216,7 @@ function LoginForm() {
           </div>
 
           <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-zinc-400">
-            PROTECTED BY BASTION CRYPTOGRAPHIC PROTOCOL
+            PROTECTED BY BASTIONOS CRYPTOGRAPHIC PROTOCOL
           </p>
         </div>
       </div>

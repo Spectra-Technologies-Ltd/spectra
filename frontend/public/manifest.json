@@ -1,6 +1,6 @@
 {
-  "name": "BASTION Operations",
-  "short_name": "BASTION",
+  "name": "BastionOS Operations",
+  "short_name": "BASTIONOS",
   "description": "Enterprise operations intelligence platform for private security companies",
   "start_url": "/mobile",
   "display": "standalone",
