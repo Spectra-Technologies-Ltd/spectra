@@ -7,8 +7,8 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
 const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
 
 export const metadata: Metadata = {
-  title: 'Spectra — Autonomous maritime systems',
-  description: 'The intelligence layer for the ocean. Spectra builds autonomous maritime systems for the missions that matter.',
+  title: 'Spectra — Intelligence. Engineered.',
+  description: 'Spectra builds the operating infrastructure and machine intelligence for systems that reason, learn, and act in complex, high-stakes environments.',
   generator: 'v0.app',
   icons: {
     icon: [
