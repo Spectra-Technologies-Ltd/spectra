@@ -614,6 +614,16 @@
   );
 }
 
+/* OSM tiles recolored to match the dark command-center theme */
+.dark-map-tile {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9) saturate(0.45);
+  image-rendering: auto;
+}
+
+html:not(.dark) .dark-map-tile {
+  filter: none;
+}
+
 .ambient-glow {
   background:
     radial-gradient(600px circle at 15% -10%, hsl(42 90% 56% / 0.06), transparent 60%),

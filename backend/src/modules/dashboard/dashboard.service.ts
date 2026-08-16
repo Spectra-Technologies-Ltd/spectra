@@ -296,4 +296,162 @@ export class DashboardService {
       guardFillRate: s.targetGuards > 0 ? Math.round((s._count.guards / s.targetGuards) * 100) : 0,
     }));
   }
+
+  /**
+   * Everything the live map needs in one request: sites with coordinates,
+   * on-duty guards with their latest known position (from their most recent
+   * GPS check-in), and recent incidents with severity + location.
+   */
+  async getMapData(organizationId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [sites, activeGuards, recentIncidents] = await Promise.all([
+      this.prisma.site.findMany({
+        where: { organizationId },
+        select: {
+          id: true,
+          name: true,
+          address: true,
+          latitude: true,
+          longitude: true,
+          riskLevel: true,
+          targetGuards: true,
+          client: { select: { companyName: true } },
+          _count: { select: { guards: true, incidents: true } },
+          incidents: {
+            where: { investigationStatus: { in: ['OPEN', 'UNDER_INVESTIGATION'] } },
+            select: { id: true },
+          },
+        },
+      }),
+      // ACTIVE guards with their latest attendance (for last-known position)
+      this.prisma.guard.findMany({
+        where: { organizationId, status: 'ACTIVE' },
+        select: {
+          id: true,
+          fullName: true,
+          currentShift: true,
+          assignedSiteId: true,
+          assignedSite: { select: { id: true, name: true, latitude: true, longitude: true } },
+          attendances: {
+            orderBy: { checkInTime: 'desc' },
+            take: 1,
+            select: {
+              checkInTime: true,
+              checkInLatitude: true,
+              checkInLongitude: true,
+              checkOutTime: true,
+              status: true,
+            },
+          },
+        },
+      }),
+      this.prisma.incident.findMany({
+        // Active incidents always show; closed ones drop off after 14 days
+        where: {
+          site: { organizationId },
+          OR: [
+            { investigationStatus: { in: ['OPEN', 'UNDER_INVESTIGATION'] } },
+            { reportedAt: { gte: this.startOfDaysAgo(14) } },
+          ],
+        },
+        orderBy: { reportedAt: 'desc' },
+        take: 50,
+        select: {
+          id: true,
+          title: true,
+          severity: true,
+          status: true,
+          reportedAt: true,
+          siteId: true,
+          site: { select: { name: true, latitude: true, longitude: true } },
+        },
+      }),
+    ]);
+
+    const siteMap = new Map(sites.map((s) => [s.id, s]));
+
+    const guards = activeGuards.map((g) => {
+      const latest = g.attendances[0];
+      const onDuty = latest && !latest.checkOutTime;
+      const hasGps =
+        typeof latest?.checkInLatitude === 'number' &&
+        typeof latest?.checkInLongitude === 'number' &&
+        latest.checkInLatitude !== 0 &&
+        latest.checkInLongitude !== 0;
+      const site = g.assignedSite;
+
+      return {
+        id: g.id,
+        fullName: g.fullName,
+        shift: g.currentShift,
+        onDuty,
+        status: latest?.status ?? null,
+        lastSeen: latest?.checkInTime?.toISOString() ?? null,
+        // Prefer real GPS from the last check-in; fall back to the site location
+        latitude: hasGps ? latest!.checkInLatitude : (site?.latitude ?? null),
+        longitude: hasGps ? latest!.checkInLongitude : (site?.longitude ?? null),
+        siteId: site?.id ?? g.assignedSiteId ?? null,
+        siteName: site?.name ?? null,
+      };
+    });
+
+    const incidents = recentIncidents.map((i) => ({
+      id: i.id,
+      title: i.title,
+      severity: i.severity,
+      status: i.status,
+      reportedAt: i.reportedAt.toISOString(),
+      siteId: i.siteId,
+      siteName: i.site?.name ?? null,
+      latitude: i.site?.latitude ?? null,
+      longitude: i.site?.longitude ?? null,
+    }));
+
+    const siteList = sites.map((s) => ({
+      id: s.id,
+      name: s.name,
+      address: s.address,
+      latitude: s.latitude,
+      longitude: s.longitude,
+      riskLevel: s.riskLevel,
+      clientName: s.client?.companyName ?? null,
+      guardsAssigned: s._count.guards,
+      guardsOnDuty: guards.filter((g) => g.siteId === s.id && g.onDuty).length,
+      totalIncidents: s._count.incidents,
+      openIncidents: s.incidents.length,
+      targetGuards: s.targetGuards,
+    }));
+
+    return {
+      generatedAt: new Date().toISOString(),
+      bounds: this.computeBounds(siteList),
+      sites: siteList,
+      guards,
+      incidents,
+    };
+  }
+
+  private startOfDaysAgo(days: number): Date {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  private computeBounds(sites: { latitude: number; longitude: number }[]) {
+    const withCoords = sites.filter(
+      (s) => typeof s.latitude === 'number' && typeof s.longitude === 'number',
+    );
+    if (withCoords.length === 0) return null;
+    const lats = withCoords.map((s) => s.latitude);
+    const lngs = withCoords.map((s) => s.longitude);
+    return {
+      north: Math.max(...lats),
+      south: Math.min(...lats),
+      east: Math.max(...lngs),
+      west: Math.min(...lngs),
+    };
+  }
 }

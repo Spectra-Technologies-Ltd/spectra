@@ -57,4 +57,10 @@ export class DashboardController {
   getSiteComparison(@CurrentUser() user: any) {
     return this.dashboardService.getSiteComparison(user.organizationId);
   }
+
+  @Get('map-data')
+  @Roles('ADMIN', 'EMPLOYEE')
+  getMapData(@CurrentUser() user: any) {
+    return this.dashboardService.getMapData(user.organizationId);
+  }
 }
