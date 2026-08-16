@@ -2,56 +2,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import {
-  Bell,
-  Search,
-  Sun,
-  Moon,
-  Users,
-  Building2,
-  MapPin,
-  AlertTriangle,
-  Loader2,
-  Menu,
-  CircleHelp,
-  PanelLeftClose,
-  PanelLeft,
-} from 'lucide-react';
+import { Bell, Search, Menu, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './SidebarContext';
-
-interface SearchResult {
-  id: string;
-  label: string;
-  subtitle: string;
-  type: 'guard' | 'client' | 'site' | 'incident';
-  url: string;
-}
-
-interface GuardSearchItem {
-  id: string;
-  fullName: string;
-  status?: string;
-}
-
-interface ClientSearchItem {
-  id: string;
-  companyName: string;
-  estateName?: string;
-}
-
-interface SiteSearchItem {
-  id: string;
-  name: string;
-  address?: string;
-}
-
-interface ApiList<T> {
-  data: T[];
-}
+import { CommandPalette } from '@/components/dashboard/command-palette';
 
 interface NotificationItem {
   id: string;
@@ -75,7 +32,7 @@ const DETAIL_META: { pattern: RegExp; title: string; crumb: string }[] = [
 const ROUTE_META: { prefix: string; title: string; crumb: string }[] = [
   { prefix: '/attendance', title: 'Attendance', crumb: 'Operations / Attendance' },
   { prefix: '/patrols', title: 'Patrols', crumb: 'Operations / Patrols' },
-  { prefix: '/guards', title: 'Guards', crumb: 'Operations / Guards' },
+  { prefix: '/guards', title: 'Personnel', crumb: 'Operations / Personnel' },
   { prefix: '/clients', title: 'Clients', crumb: 'Management / Clients' },
   { prefix: '/sites', title: 'Sites', crumb: 'Management / Sites' },
   { prefix: '/incidents', title: 'Incidents', crumb: 'Security / Incidents' },
@@ -83,18 +40,19 @@ const ROUTE_META: { prefix: string; title: string; crumb: string }[] = [
   { prefix: '/analytics', title: 'Analytics', crumb: 'Insights / Analytics' },
   { prefix: '/notifications', title: 'Notifications', crumb: 'System / Notifications' },
   { prefix: '/account', title: 'Account', crumb: 'System / Account' },
+  { prefix: '/map', title: 'Live Map', crumb: 'Command / Live Map' },
   { prefix: '/mobile', title: 'Mobile', crumb: 'Field / Mobile' },
 ];
 
 function getPageMeta(pathname: string) {
-  if (pathname === '/') return { title: 'Dashboard', crumb: 'Overview / Dashboard' };
+  if (pathname === '/') return { title: 'Ops Overview', crumb: 'Command / Ops Overview' };
   for (const detail of DETAIL_META) {
     if (detail.pattern.test(pathname)) return { title: detail.title, crumb: detail.crumb };
   }
   for (const route of ROUTE_META) {
     if (pathname.startsWith(route.prefix)) return { title: route.title, crumb: route.crumb };
   }
-  return { title: 'Dashboard', crumb: 'Overview / Dashboard' };
+  return { title: 'Ops Overview', crumb: 'Command / Ops Overview' };
 }
 
 export default function Header() {
@@ -103,20 +61,26 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { title, crumb } = getPageMeta(pathname || '');
-  const [darkMode, setDarkMode] = React.useState(() =>
-    typeof window !== 'undefined' && document.documentElement.classList.contains('dark'),
-  );
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-  const [bellRing, setBellRing] = useState(false);
-  const prevNotifCount = useRef(0);
+  const [now, setNow] = useState<string>('');
+
+  // Live UTC clock
+  useEffect(() => {
+    const tick = () =>
+      setNow(
+        new Date().toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          timeZone: 'UTC',
+        }),
+      );
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const { data: notifData } = useQuery({
     queryKey: ['unread-notifications'],
@@ -126,17 +90,6 @@ export default function Header() {
     },
     refetchInterval: 30000,
   });
-
-  // Shake the bell when a new unread notification arrives.
-  useEffect(() => {
-    const count = notifData?.count ?? 0;
-    const isNew = count > prevNotifCount.current && count > 0;
-    prevNotifCount.current = count;
-    if (!isNew) return;
-    setBellRing(true);
-    const timer = setTimeout(() => setBellRing(false), 600);
-    return () => clearTimeout(timer);
-  }, [notifData?.count]);
 
   const { data: recentNotifs } = useQuery({
     queryKey: ['recent-notifications'],
@@ -158,255 +111,75 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const toggleTheme = () => {
-    const html = document.documentElement;
-    const nextDark = !html.classList.contains('dark');
-    html.classList.toggle('dark', nextDark);
-    setDarkMode(nextDark);
-    try {
-      localStorage.setItem('bastion-theme', nextDark ? 'dark' : 'light');
-    } catch {
-      // storage unavailable — the in-memory toggle still applies
-    }
-  };
-
-  useEffect(() => {
-    if (query.length < 2) return;
-    const timer = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const [guards, clients, sites] = await Promise.all([
-          api.get<ApiList<GuardSearchItem>>('/guards', { params: { search: query, limit: 3 } }).catch(() => ({ data: { data: [] } })),
-          api.get<ApiList<ClientSearchItem>>('/clients', { params: { search: query, limit: 3 } }).catch(() => ({ data: { data: [] } })),
-          api.get<ApiList<SiteSearchItem>>('/sites', { params: { search: query, limit: 3 } }).catch(() => ({ data: { data: [] } })),
-        ]);
-
-        const items: SearchResult[] = [
-          ...guards.data.data.map((g) => ({
-            id: g.id,
-            label: g.fullName,
-            subtitle: `Guard - ${g.status ?? 'Active'}`,
-            type: 'guard' as const,
-            url: `/guards/${g.id}`,
-          })),
-          ...clients.data.data.map((c) => ({
-            id: c.id,
-            label: c.companyName,
-            subtitle: `Client - ${c.estateName ?? 'Portfolio'}`,
-            type: 'client' as const,
-            url: '/clients',
-          })),
-          ...sites.data.data.map((s) => ({
-            id: s.id,
-            label: s.name,
-            subtitle: `Site - ${s.address?.substring(0, 40) ?? 'Assigned location'}`,
-            type: 'site' as const,
-            url: '/sites',
-          })),
-        ];
-
-        setResults(items.slice(0, 8));
-        setSelectedIndex(0);
-        setOpen(items.length > 0);
-      } catch {
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [query]);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
-      if (e.key === 'Escape') {
-        setOpen(false);
-        inputRef.current?.blur();
-      }
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, []);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.max(i - 1, 0));
-    } else if (e.key === 'Enter' && results[selectedIndex]) {
-      e.preventDefault();
-      router.push(results[selectedIndex].url);
-      setOpen(false);
-      setQuery('');
-    }
-  };
-
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'guard':
-        return <Users className="h-4 w-4" />;
-      case 'client':
-        return <Building2 className="h-4 w-4" />;
-      case 'site':
-        return <MapPin className="h-4 w-4" />;
-      default:
-        return <AlertTriangle className="h-4 w-4" />;
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'guard':
-        return 'text-blue-500';
-      case 'client':
-        return 'text-emerald-500';
-      case 'site':
-        return 'text-amber-500';
-      default:
-        return 'text-red-500';
-    }
-  };
-
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-card/80 px-3 shadow-sm shadow-black/5 backdrop-blur-xl sm:px-5 lg:px-6">
-      {/* Desktop: toggle sidebar collapse */}
-      <button
-        onClick={toggleCollapsed}
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        aria-expanded={!collapsed}
-        title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        className="icon-btn hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground lg:flex"
-      >
-        {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
-      </button>
-
-      {/* Mobile: open drawer */}
-      <button
-        onClick={openMobile}
-        aria-label="Open menu"
-        className="icon-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground lg:hidden"
-      >
-        <Menu className="h-5 w-5" />
-      </button>
-
-      <div className="flex min-w-0 flex-1 items-center gap-3" ref={containerRef}>
-        <div className="hidden min-w-0 sm:block">
-          <h1 className="truncate text-lg font-black tracking-tight text-foreground md:text-xl">{title}</h1>
-          <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{crumb}</p>
-        </div>
-
-        <div className="search-glow relative ml-auto flex w-full max-w-[250px] items-center gap-2 rounded-lg border border-border bg-secondary px-3 py-2 focus-within:bg-card sm:max-w-xs md:max-w-md">
-          {loading ? (
-            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
-          ) : (
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-          )}
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Search BastionOS..."
-            value={query}
-            onChange={(e) => {
-              const nextQuery = e.target.value;
-              setQuery(nextQuery);
-              if (nextQuery.length < 2) {
-                setResults([]);
-                setOpen(false);
-              } else {
-                setOpen(true);
-              }
-            }}
-            onFocus={() => {
-              if (results.length > 0) setOpen(true);
-            }}
-            onKeyDown={handleKeyDown}
-            className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-          />
-          <kbd className="hidden items-center gap-0.5 rounded border border-border bg-card px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground sm:inline-flex">
-            Ctrl K
-          </kbd>
-
-          {open && results.length > 0 && (
-            <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[320px] overflow-y-auto rounded-lg border border-border bg-card py-1 shadow-xl shadow-black/30">
-              {results.map((r, i) => (
-                <button
-                  key={r.id}
-                  onClick={() => {
-                    router.push(r.url);
-                    setOpen(false);
-                    setQuery('');
-                  }}
-                  className={cn(
-                    'flex w-full items-center gap-3 px-3 py-2 text-sm transition-colors',
-                    i === selectedIndex ? 'bg-secondary' : 'hover:bg-secondary/50',
-                  )}
-                >
-                  <span className={cn('shrink-0', getTypeColor(r.type))}>{getIcon(r.type)}</span>
-                  <div className="min-w-0 text-left">
-                    <p className="truncate text-foreground">{r.label}</p>
-                    <p className="truncate text-xs text-muted-foreground">{r.subtitle}</p>
-                  </div>
-                  <span className="ml-auto shrink-0 text-[10px] uppercase text-muted-foreground">
-                    {r.type}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+    <>
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-3 backdrop-blur-md sm:px-5 lg:px-6">
+        {/* Desktop: toggle sidebar collapse */}
         <button
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className="icon-btn hidden h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground sm:flex"
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-expanded={!collapsed}
+          title={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
+          className="icon-btn hidden h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground lg:flex"
         >
-          {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {collapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
         </button>
 
+        {/* Mobile: open drawer */}
         <button
-          aria-label="Help"
-          className="icon-btn hidden h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground sm:flex"
+          onClick={openMobile}
+          aria-label="Open menu"
+          className="icon-btn flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground lg:hidden"
         >
-          <CircleHelp className="h-4 w-4" />
+          <Menu className="h-4 w-4" />
+        </button>
+
+        <div className="min-w-0">
+          <h1 className="truncate text-base font-semibold tracking-tight md:text-lg">{title}</h1>
+          <p className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            {crumb}
+          </p>
+        </div>
+
+        <div className="ml-auto hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 md:flex">
+          <span className="relative flex size-2">
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
+            <span className="relative inline-flex size-2 rounded-full bg-success" />
+          </span>
+          <span className="font-mono text-xs text-muted-foreground">All systems operational</span>
+        </div>
+
+        <div className="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 lg:flex">
+          <span className="font-mono text-xs tabular-nums text-foreground">{now}</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">UTC</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setPaletteOpen(true)}
+          className="hidden items-center gap-2 rounded-md border border-border bg-card py-2 pl-3 pr-2 text-sm text-muted-foreground transition-colors hover:border-ring hover:text-foreground md:flex md:w-44 lg:w-56"
+        >
+          <Search className="size-4 shrink-0" />
+          <span className="flex-1 text-left">Search…</span>
+          <kbd className="key">⌘K</kbd>
         </button>
 
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setNotifOpen(!notifOpen)}
             aria-label="Notifications"
-            className={cn(
-              'icon-btn relative flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground',
-              bellRing && 'bell-shake',
-            )}
+            className="relative flex size-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
           >
-            <Bell className="h-4 w-4" />
+            <Bell className="size-4" />
             {notifData?.count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-white">
                 {notifData.count > 9 ? '9+' : notifData.count}
               </span>
             )}
           </button>
+
           {notifOpen && (
-            <div className="fixed left-3 right-3 top-16 z-50 mt-0 max-h-[360px] w-auto overflow-y-auto rounded-lg border border-border bg-card py-1 shadow-xl shadow-black/30 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80">
+            <div className="fixed left-3 right-3 top-16 z-50 mt-0 max-h-[360px] w-auto overflow-y-auto rounded-lg border border-border bg-popover py-1 shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80">
               <div className="flex items-center justify-between border-b border-border px-3 py-2">
                 <p className="text-xs font-semibold text-foreground">Notifications</p>
                 {notifData?.count > 0 && (
@@ -422,8 +195,8 @@ export default function Header() {
                       setNotifOpen(false);
                     }}
                     className={cn(
-                      'w-full border-b border-border/70 px-3 py-2.5 text-left transition-colors last:border-0 hover:bg-secondary/50',
-                      n.status === 'UNREAD' && 'bg-cyan-500/10',
+                      'w-full border-b border-border/70 px-3 py-2.5 text-left transition-colors last:border-0 hover:bg-accent/50',
+                      n.status === 'UNREAD' && 'bg-primary/5',
                     )}
                   >
                     <p className={cn('text-sm leading-snug', n.status === 'UNREAD' ? 'font-semibold text-foreground' : 'text-foreground')}>
@@ -451,7 +224,7 @@ export default function Header() {
                     router.push('/notifications');
                     setNotifOpen(false);
                   }}
-                  className="w-full px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-secondary/50 hover:text-cyan-500"
+                  className="w-full px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-accent/50 hover:text-primary"
                 >
                   View all notifications
                 </button>
@@ -461,12 +234,12 @@ export default function Header() {
         </div>
 
         {user && (
-          <div className="ml-1 flex items-center gap-2 border-l border-border pl-2 sm:ml-2 sm:pl-3">
-            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-border bg-secondary text-xs font-bold text-foreground shadow-sm">
+          <div className="ml-1 hidden items-center gap-2 border-l border-border pl-3 sm:flex">
+            <div className="flex size-8 items-center justify-center rounded-full bg-primary/15 font-mono text-xs font-semibold text-primary">
               {user.firstName?.[0]}
               {user.lastName?.[0]}
             </div>
-            <div className="hidden md:block">
+            <div className="hidden lg:block">
               <p className="text-xs font-semibold text-foreground">
                 {user.firstName} {user.lastName}
               </p>
@@ -476,7 +249,9 @@ export default function Header() {
             </div>
           </div>
         )}
-      </div>
-    </header>
+      </header>
+
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+    </>
   );
 }

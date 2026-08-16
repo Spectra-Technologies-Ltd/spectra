@@ -4,16 +4,19 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Shield,
+  ShieldCheck,
   LayoutDashboard,
+  Map,
   Users,
-  Building2,
-  MapPin,
-  ClipboardCheck,
   AlertTriangle,
+  ClipboardCheck,
   Route,
+  MapPin,
+  Building2,
   BarChart3,
   FileText,
+  Bell,
+  Settings,
   ChevronsLeft,
   ChevronsRight,
   LogOut,
@@ -27,34 +30,36 @@ import api from '@/lib/api';
 
 const navSections = [
   {
-    label: 'Overview',
-    items: [{ label: 'Dashboard', href: '/', icon: LayoutDashboard }],
+    label: 'Command',
+    items: [
+      { label: 'Ops Overview', href: '/', icon: LayoutDashboard },
+      { label: 'Live Map', href: '/map', icon: Map },
+      { label: 'Personnel', href: '/guards', icon: Users },
+      { label: 'Incidents', href: '/incidents', icon: AlertTriangle },
+    ],
   },
   {
     label: 'Operations',
     items: [
       { label: 'Attendance', href: '/attendance', icon: ClipboardCheck },
       { label: 'Patrols', href: '/patrols', icon: Route },
-      { label: 'Guards', href: '/guards', icon: Users },
-    ],
-  },
-  {
-    label: 'Management',
-    items: [
-      { label: 'Clients', href: '/clients', icon: Building2 },
       { label: 'Sites', href: '/sites', icon: MapPin },
+      { label: 'Clients', href: '/clients', icon: Building2 },
     ],
   },
   {
-    label: 'Security',
+    label: 'Intelligence',
     items: [
-      { label: 'Incidents', href: '/incidents', icon: AlertTriangle },
+      { label: 'Analytics', href: '/analytics', icon: BarChart3 },
       { label: 'Reports', href: '/reports', icon: FileText },
     ],
   },
   {
-    label: 'Insights',
-    items: [{ label: 'Analytics', href: '/analytics', icon: BarChart3 }],
+    label: 'System',
+    items: [
+      { label: 'Notifications', href: '/notifications', icon: Bell },
+      { label: 'Settings', href: '/account', icon: Settings },
+    ],
   },
 ];
 
@@ -105,44 +110,47 @@ export default function Sidebar() {
     return () => document.removeEventListener('keydown', handler);
   }, [toggleCollapsed]);
 
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname?.startsWith(href);
+
   return (
     <>
       {mobileOpen && (
         <div
           onClick={closeMobile}
           aria-hidden="true"
-          className="fixed inset-0 z-40 animate-fade-in bg-zinc-950/60 backdrop-blur-[2px] lg:hidden"
+          className="fixed inset-0 z-40 animate-fade-in bg-black/60 backdrop-blur-[2px] lg:hidden"
         />
       )}
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex h-screen supports-[height:100dvh]:h-dvh flex-col bg-gradient-to-b from-[#101014] via-[#0a0a0c] to-[#060607] text-zinc-200 shadow-2xl shadow-zinc-950/40 transition-transform duration-300 ease-in-out',
-          'lg:relative lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out lg:border-r lg:border-white/[0.07]',
+          'fixed inset-y-0 left-0 z-50 flex h-screen supports-[height:100dvh]:h-dvh flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl shadow-black/40 transition-transform duration-300 ease-in-out',
+          'lg:relative lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
           collapsed ? 'w-[260px] lg:w-[76px]' : 'w-[260px]',
         )}
       >
         {/* Brand */}
-        <div className="flex h-[68px] shrink-0 items-center gap-3 border-b border-white/[0.07] px-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-black shadow-lg shadow-black/40 ring-1 ring-white/20">
-            <Shield className="h-5 w-5" />
+        <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-5">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <ShieldCheck className="size-5" />
           </div>
-          <div className={cn('min-w-0 overflow-hidden whitespace-nowrap', collapsed && 'lg:hidden')}>
-            <p className="text-[15px] font-black leading-tight tracking-[0.18em] text-white">
-              BastionOS
-            </p>
-            <p className="truncate text-[10px] font-medium tracking-[0.14em] text-zinc-400">
-              Security Platform
-            </p>
+          <div className={cn('min-w-0 overflow-hidden whitespace-nowrap leading-tight', collapsed && 'lg:hidden')}>
+            <div className="font-mono text-sm font-semibold tracking-wide">
+              BASTION<span className="text-primary">OS</span>
+            </div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              Spectra Technology
+            </div>
           </div>
 
           <button
             onClick={closeMobile}
             aria-label="Close menu"
-            className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-all hover:bg-white/10 hover:text-white lg:hidden"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground lg:hidden"
           >
-            <X className="h-4.5 w-4.5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
@@ -152,38 +160,29 @@ export default function Sidebar() {
           aria-label={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
           aria-expanded={!collapsed}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#18181b] text-zinc-300 shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-cyan-400/50 hover:text-cyan-300 hover:shadow-cyan-950/40 lg:flex"
+          className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-primary/50 hover:text-primary lg:flex"
         >
           {collapsed ? <ChevronsRight className="h-3.5 w-3.5" /> : <ChevronsLeft className="h-3.5 w-3.5" />}
         </button>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
+        <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
           {navSections.map((section) => (
             <div key={section.label}>
               <p
                 className={cn(
-                  'mb-2 flex items-center gap-2 px-2 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500',
+                  'mb-2 flex items-center gap-2 px-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground',
                   collapsed && 'lg:justify-center lg:px-0',
                 )}
               >
-                <span
-                  className={cn(
-                    'flex min-w-0 flex-1 items-center gap-2',
-                    collapsed && 'lg:hidden',
-                  )}
-                >
+                <span className={cn('min-w-0 flex-1', collapsed && 'lg:hidden')}>
                   {section.label}
-                  <span className="h-px flex-1 bg-white/[0.06]" />
                 </span>
-                <span
-                  className={cn('hidden h-px w-8 shrink-0 bg-white/10', collapsed && 'lg:block')}
-                />
+                <span className={cn('h-px w-8 bg-sidebar-border', collapsed ? 'lg:hidden' : 'flex-1')} />
               </p>
               <div className="space-y-1">
                 {section.items.map((item) => {
-                  const isActive =
-                    item.href === '/' ? pathname === '/' : pathname?.startsWith(item.href);
+                  const active = isActive(item.href);
                   const badge: string | null =
                     item.href === '/incidents' && openIncidents && openIncidents > 0
                       ? String(openIncidents)
@@ -194,31 +193,24 @@ export default function Sidebar() {
                       key={item.href}
                       href={item.href}
                       title={collapsed ? item.label : undefined}
-                      aria-current={isActive ? 'page' : undefined}
+                      aria-current={active ? 'page' : undefined}
                       className={cn(
-                        'group nav-item relative flex items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-semibold',
+                        'group flex items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium transition-colors',
                         collapsed && 'lg:justify-center lg:px-0',
-                        isActive
-                          ? 'nav-item-active'
-                          : 'text-zinc-400 hover:bg-white/[0.07] hover:text-white',
+                        active
+                          ? 'bg-sidebar-accent text-sidebar-foreground'
+                          : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
                       )}
                     >
-                      {/* Active accent bar */}
-                      <span
-                        className={cn(
-                          'accent-bar absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.8)] transition-opacity duration-150',
-                          isActive ? 'accent-bar-active opacity-100' : 'opacity-0',
-                        )}
-                      />
                       <item.icon
                         className={cn(
                           'h-[18px] w-[18px] shrink-0 transition-colors',
-                          isActive ? 'text-zinc-900' : 'text-zinc-400 group-hover:text-zinc-100',
+                          active ? 'text-primary' : 'text-muted-foreground group-hover:text-sidebar-foreground',
                         )}
                       />
                       <span
                         className={cn(
-                          'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left transition-[max-width,opacity] duration-200',
+                          'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left',
                           collapsed && 'lg:max-w-0 lg:opacity-0',
                         )}
                       >
@@ -227,12 +219,20 @@ export default function Sidebar() {
                       {badge && (
                         <span
                           className={cn(
-                            'ml-auto shrink-0 rounded-full bg-rose-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white ring-1 ring-white/20',
+                            'ml-auto shrink-0 rounded-full bg-destructive/90 px-1.5 py-0.5 text-[10px] font-bold text-white ring-1 ring-white/20',
                             collapsed && 'lg:hidden',
                           )}
                         >
                           {badge}
                         </span>
+                      )}
+                      {active && (
+                        <span
+                          className={cn(
+                            'h-4 w-1 shrink-0 rounded-full bg-primary',
+                            collapsed && 'lg:hidden',
+                          )}
+                        />
                       )}
                     </Link>
                   );
@@ -243,21 +243,21 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="space-y-1 border-t border-white/[0.07] p-3">
+        <div className="space-y-1 border-t border-sidebar-border p-3">
           {user && (
-            <div className="flex items-center gap-3 rounded-lg px-2 py-2">
+            <div className="flex items-center gap-3 rounded-md bg-sidebar-accent/50 px-2 py-2">
               <div className="relative shrink-0">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-xs font-bold text-black shadow-md shadow-black/40">
+                <div className="flex size-8 items-center justify-center rounded-full bg-primary/20 font-mono text-xs font-semibold text-primary">
                   {user.firstName?.[0]}
                   {user.lastName?.[0]}
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0a0a0c]" />
+                <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-success ring-2 ring-sidebar" />
               </div>
               <div className={cn('min-w-0 overflow-hidden whitespace-nowrap', collapsed && 'lg:hidden')}>
-                <p className="truncate text-xs font-semibold text-white">
+                <p className="truncate text-xs font-medium text-sidebar-foreground">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="truncate text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+                <p className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
                   {user.role?.replace('_', ' ')}
                 </p>
               </div>
@@ -268,14 +268,14 @@ export default function Sidebar() {
             onClick={logout}
             title={collapsed ? 'Sign Out' : undefined}
             className={cn(
-              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-semibold text-zinc-400 transition-all hover:bg-rose-500/10 hover:text-rose-300',
+              'flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive',
               collapsed && 'lg:justify-center lg:px-0',
             )}
           >
             <LogOut className="h-[18px] w-[18px] shrink-0" />
             <span
               className={cn(
-                'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left transition-[max-width,opacity] duration-200',
+                'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left',
                 collapsed && 'lg:max-w-0 lg:opacity-0',
               )}
             >
