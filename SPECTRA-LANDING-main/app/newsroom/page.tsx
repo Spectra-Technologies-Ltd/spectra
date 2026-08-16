@@ -8,7 +8,7 @@ import { Reveal } from '@/components/reveal'
 export const metadata = {
   title: 'News — Spectra Technologies',
   description:
-    'Product updates and announcements from Spectra Technologies — BastionOS, Napoleon and the Spectra Workplace.',
+    'News from Spectra Technologies — BastionOS, Napoleon and the Spectra Workplace.',
 }
 
 const headlines = [
@@ -24,36 +24,11 @@ export default function NewsPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="NEWS / PRODUCT UPDATES & ANNOUNCEMENTS" title="What&apos;s<br />new." tag="SPECTRA / NEWS">
+      <PageHero kicker="NEWS / SPECTRA" title="What&apos;s<br />new." tag="SPECTRA / NEWS">
         <p>
-          Product updates and announcements from Spectra Technologies — BastionOS, Napoleon and
-          the Spectra Workplace.
+          News from Spectra Technologies — BastionOS, Napoleon and the Spectra Workplace.
         </p>
       </PageHero>
-
-      {/* Featured story */}
-      <section className="page-section" style={{ paddingTop: 110 }}>
-        <div className="page-section-head">
-          <Reveal><p className="eyebrow">FEATURED</p><h3>The latest<br />from Spectra.</h3></Reveal>
-          <Reveal delay={120}><p className="body-copy">Announcements as they land — straight from the team.</p></Reveal>
-        </div>
-        <Reveal>
-          <div className="page-card" style={{ padding: '34px 30px' }}>
-            <p className="eyebrow">PRODUCT UPDATE / 05.22.26</p>
-            <h4 style={{ fontSize: 'clamp(24px, 3vw, 40px)', fontWeight: 330, letterSpacing: '-.04em', margin: '14px 0 0', lineHeight: 1.05 }}>
-              The Spectra Workplace is now live.
-            </h4>
-            <p style={{ color: 'var(--muted-foreground)', fontSize: 14, lineHeight: 1.7, maxWidth: 640, margin: '16px 0 0' }}>
-              Operators can now manage their entire security operation from the BastionOS command
-              center — guards, patrols, attendance, incidents and reporting in one real-time view,
-              powered by Napoleon.
-            </p>
-            <Link className="outline-button" href="https://spectra-lime.vercel.app/login" style={{ marginTop: 26 }} target="_blank" rel="noopener noreferrer">
-              Enter the Spectra Workplace <ArrowUpRight size={15} />
-            </Link>
-          </div>
-        </Reveal>
-      </section>
 
       {/* All headlines */}
       <section className="page-section page-section-alt">
@@ -89,7 +64,7 @@ export default function NewsPage() {
       <section className="statement-section">
         <div className="statement-rule" />
         <Reveal>
-          <p>NEWS · UPDATES<br />ANNOUNCEMENTS</p>
+          <p>NEWS · JOURNAL<br />RESEARCH &amp; INSIGHTS</p>
           <h2>Keep<br /><em>building.</em></h2>
         </Reveal>
         <div className="statement-foot">

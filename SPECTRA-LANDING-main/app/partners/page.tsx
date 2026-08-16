@@ -5,6 +5,8 @@ import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
+
 export const metadata = {
   title: 'Partners — Spectra Technologies',
   description:
@@ -34,23 +36,13 @@ export default function PartnersPage() {
           Partnerships, integrations and collaborations — teams building on BastionOS, Napoleon and
           the infrastructure beneath them.
         </p>
-        <Link className="outline-button" href="/contact">Become a partner <ArrowUpRight size={17} /></Link>
+        <Link className="outline-button" href={`${APP_URL}/request-demo`}>Become a partner <ArrowUpRight size={17} /></Link>
       </PageHero>
-
-      {/* Manifesto rhythm */}
-      <section className="manifesto-section" style={{ paddingTop: 130 }}>
-        <div className="section-kicker"><span>01</span><span>THE ECOSYSTEM</span></div>
-        <Reveal><h2>Built to<br /><em>build on.</em></h2></Reveal>
-        <div className="manifesto-meta">
-          <span>01—03</span>
-          <p>An Intelligence Operating System is only as strong as what it connects to. Spectra partners extend the architecture — integrations, channels and co-development.</p>
-        </div>
-      </section>
 
       {/* Programs */}
       <section className="page-section">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">02 / PARTNERSHIP PROGRAMS</p><h3>Ways to work<br />together.</h3></Reveal>
+          <Reveal><p className="eyebrow">01 / PARTNERSHIP PROGRAMS</p><h3>Ways to work<br />together.</h3></Reveal>
         </div>
         <div className="card-grid">
           {programs.map(([index, title, copy], i) => (
@@ -68,7 +60,7 @@ export default function PartnersPage() {
       {/* What partners get */}
       <section className="page-section page-section-alt">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">03 / WHAT PARTNERS GET</p><h3>Built to build on.</h3></Reveal>
+          <Reveal><p className="eyebrow">02 / WHAT PARTNERS GET</p><h3>What partners get.</h3></Reveal>
         </div>
         <Reveal>
           <div className="spec-grid two-col">
@@ -87,8 +79,8 @@ export default function PartnersPage() {
           <h2>Build with us.</h2>
         </Reveal>
         <div className="statement-foot">
-          <span>SCROLL / 04</span>
-          <Link className="text-button" href="/contact">Start the conversation <ArrowUpRight size={17} /></Link>
+          <span>SCROLL / 03</span>
+          <Link className="text-button" href={`${APP_URL}/request-demo`}>Start the conversation <ArrowUpRight size={17} /></Link>
         </div>
       </section>
 

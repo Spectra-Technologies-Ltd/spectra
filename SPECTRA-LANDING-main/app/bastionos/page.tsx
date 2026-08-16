@@ -12,8 +12,6 @@ export const metadata = {
     'BastionOS is Spectra\u2019s modular Security Operations Platform — the operational command center for private security companies.',
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
-
 const capabilities = [
   ['01', 'Guard Operations', 'Personnel, assignments and coverage managed in one real-time view. No spreadsheets, no radio noise.'],
   ['02', 'Patrols', 'Patrol planning, live tracking and automatic verification — routes that actually get walked, and proof that they did.'],
@@ -37,13 +35,12 @@ export default function BastionOSPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker={<><span className="brand-name">BastionOS</span> / THE OPERATING FOUNDATION</>} title="Security operations," em="unified." tag={<><span className="brand-name">BastionOS</span> / LIVE</>}>
+      <PageHero kicker={<><span className="brand-name">BastionOS</span> / THE OPERATING FOUNDATION</>} title="Security operations," em="unified." tag={<span className="brand-name">BastionOS</span>}>
         <p>
           The operational command center for private security companies. BastionOS unifies guard
           operations, patrols, attendance, incidents, reporting and analytics into a single,
           automated, real-time platform.
         </p>
-        <Link className="outline-button" href={`${APP_URL}/register`}>Enter the Spectra Workplace <ArrowUpRight size={17} /></Link>
       </PageHero>
 
       {/* Manifesto — the landing page rhythm: statement, then the system */}
@@ -52,7 +49,7 @@ export default function BastionOSPage() {
         <Reveal><h2>The operating system<br /><em>for security operations.</em></h2></Reveal>
         <div className="manifesto-meta">
           <span>01—04</span>
-          <p>Spectra Technologies develops Intelligence Operating Systems. BastionOS is the first — a modular security operations platform that unifies personnel, clients, sites, assets, incidents and operational data into one real-time system.</p>
+          <p>BastionOS is the first Intelligence Operating System from Spectra — a modular security operations platform that unifies personnel, clients, sites, assets, incidents and operational data into one real-time system.</p>
         </div>
       </section>
 
@@ -63,12 +60,10 @@ export default function BastionOSPage() {
           <div className="capability-sticky">
             <Reveal>
               <p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · FOUNDATION</p>
-              <h2>One platform.<br /><em>Three layers.</em></h2>
-              <p className="body-copy">Built on top of Spectra&apos;s proprietary machine learning and AI model — Napoleon — BastionOS delivers predictive insights, intelligent automation and decision support.</p>
+              <p className="body-copy">Built on Napoleon — the proprietary machine learning and AI model at the core of the Spectra platform — BastionOS delivers predictive insights, intelligent automation and decision support.</p>
             </Reveal>
             <div className="capability-detail" style={{ paddingTop: 34 }}>
               <div className="fade-swap">
-                <h3 style={{ fontSize: 'clamp(22px, 2.4vw, 34px)' }}>The command center for your entire operation.</h3>
                 <p className="body-copy">Personnel, clients, sites, assets and incidents — unified, automated and live. Operate more efficiently, respond faster, and continuously improve.</p>
               </div>
               <div className="cap-stat"><strong>1</strong><span>real-time view</span></div>
@@ -86,18 +81,10 @@ export default function BastionOSPage() {
       {/* Full-bleed mission card — the landing page architecture-card concept */}
       <section id="capabilities" className="missions-section" style={{ paddingTop: 110 }}>
         <div className="section-kicker"><span>03</span><span>CORE CAPABILITIES</span></div>
-        <div className="section-heading-row">
-          <Reveal><h2>Everything your<br /><em>operation runs on.</em></h2></Reveal>
-          <p className="body-copy">Six modules, one platform — each built to remove friction from a security operation.</p>
-        </div>
         <div className="mission-card">
-          <img src="/images/spectra-infrastructure.png" alt="BastionOS capabilities" />
+          <img src="/images/spectra-bastion-layer.jpg" alt="BastionOS layer" />
           <div className="mission-shade" />
           <div className="mission-number">06</div>
-          <div className="mission-content">
-            <p className="eyebrow"><span className="brand-name">BastionOS</span> / MODULES</p>
-            <h3>Guard operations to analytics — the modules that run the operation.</h3>
-          </div>
         </div>
         <div className="card-grid" style={{ marginTop: 40 }}>
           {capabilities.map(([index, title, copy], i) => (

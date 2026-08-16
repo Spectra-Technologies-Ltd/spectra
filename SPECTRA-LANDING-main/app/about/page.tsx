@@ -60,19 +60,19 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team — the landing page team-grid concept */}
+      {/* Workspace — the team-grid concept reworked around the workplace */}
       <section id="company-team" className="team-section">
-        <div className="section-kicker"><span>03</span><span>THE PEOPLE</span></div>
+        <div className="section-kicker"><span>03</span><span>ABOUT THE WORKSPACE</span></div>
         <div className="team-grid">
           <div>
             <Reveal>
-              <p className="eyebrow">BUILT DIFFERENT</p>
-              <h2>Small team.<br /><em>Big horizon.</em></h2>
-              <p className="body-copy">Engineers, operators, and builders working on the hard problems of intelligent infrastructure — systems that reason, learn, and coordinate in the real world. Foundational technology, built by people who care about the details.</p>
+              <p className="eyebrow">THE SPECTRA WORKPLACE</p>
+              <h2>About our<br /><em>workspace.</em></h2>
+              <p className="body-copy">The Spectra Workplace is the operational home of your entire security operation — guards, patrols, attendance, incidents and reporting, unified in one real-time command center powered by Napoleon.</p>
               <Link className="text-button" href="/contact">Work with us <ArrowUpRight size={17} /></Link>
             </Reveal>
           </div>
-          <img src="/images/spectra-team.png" alt="Spectra team in an operations room" />
+          <img src="/images/spectra-operator.png" alt="The Spectra Workplace operations view" />
         </div>
       </section>
 

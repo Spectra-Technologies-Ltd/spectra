@@ -1,10 +1,7 @@
-import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
 import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
-import { IntelligenceDiagram } from '@/components/napoleon/intelligence-diagram'
 
 export const metadata = {
   title: 'Napoleon — Spectra Technologies',
@@ -44,7 +41,6 @@ export default function NapoleonPage() {
           strategist, it represents the power of intelligence, adaptability and precision in
           decision-making.
         </p>
-        <Link className="outline-button" href="#inference">Explore the intelligence layer <ArrowUpRight size={17} /></Link>
       </PageHero>
 
       {/* Full-width intelligence scene — the animated Napoleon layer */}
@@ -52,20 +48,25 @@ export default function NapoleonPage() {
         <div className="section-kicker"><span>01</span><span>INFERENCE</span></div>
         <div className="napoleon-scene-head">
           <Reveal><p className="eyebrow">MACHINE INTELLIGENCE LAYER</p><h2>Signals in.<br /><em>Intelligence out.</em></h2></Reveal>
-          <Reveal delay={120}><p className="body-copy">Napoleon is Spectra&apos;s machine learning model — the strategic intelligence layer of modern organizations. It learns from vast operational data to identify patterns, uncover relationships, predict outcomes, and provide decision intelligence.</p></Reveal>
-        </div>
-        <div className="napoleon-scene-inner">
-          <IntelligenceDiagram />
+          <Reveal delay={120}><p className="body-copy">Filler words for the Napoleon inference section — the final copy describing how the intelligence layer reads signals and turns them into decisions will live here.</p></Reveal>
         </div>
       </section>
 
-      {/* Manifesto rhythm */}
+      {/* Manifesto rhythm — the Napoleon quote sits to the left of the heading */}
       <section className="manifesto-section" style={{ paddingTop: 130 }}>
         <div className="section-kicker"><span>02</span><span>THE STRATEGIC INTELLIGENCE ENGINE</span></div>
-        <Reveal><h2>Victory is decided<br /><em>by intelligence.</em></h2></Reveal>
-        <div className="manifesto-meta">
-          <span>01—06</span>
-          <p>Napoleon understood that victory was not determined by force alone — it was determined by the ability to gather information, understand the battlefield, anticipate movement, and make decisions faster than the opposition.</p>
+        <div style={{ alignItems: 'flex-start', display: 'flex', flexWrap: 'wrap', gap: '6vw', justifyContent: 'space-between' }}>
+          <div style={{ borderLeft: '1px solid rgba(6,21,43,.2)', marginTop: 70, maxWidth: 330, paddingLeft: 24 }}>
+            <p style={{ color: '#3c4c63', fontStyle: 'italic', fontSize: 16, lineHeight: 1.65 }}>“Nothing is more difficult, and therefore more precious, than to be able to decide.”</p>
+            <p style={{ color: '#637087', fontFamily: 'var(--font-geist-mono), monospace', fontSize: 10, letterSpacing: '.14em', marginTop: 12, textTransform: 'uppercase' }}>— Napoleon</p>
+          </div>
+          <div style={{ flex: 1, minWidth: 300 }}>
+            <Reveal><h2>Victory is decided<br /><em>by intelligence.</em></h2></Reveal>
+            <div className="manifesto-meta">
+              <span>01—06</span>
+              <p>Napoleon understood that victory was not determined by force alone — it was determined by the ability to gather information, understand the battlefield, anticipate movement, and make decisions faster than the opposition.</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -121,14 +122,6 @@ export default function NapoleonPage() {
           <Reveal><p className="eyebrow">06 / DOMAIN-AGNOSTIC</p><h3>One engine,<br />every industry.</h3></Reveal>
         </div>
         <Reveal>
-          <div className="page-prose">
-            <p>
-              Napoleon is a domain-agnostic intelligence engine that learns from structured and
-              unstructured organizational data to understand relationships, identify patterns, detect
-              anomalies, predict future events, recommend actions, and continuously improve
-              operational decision-making <strong>across industries</strong>.
-            </p>
-          </div>
           <div className="spec-grid" style={{ marginTop: 40 }}>
             {specs.map(([label, value]) => (
               <div key={label}><span>{label}</span><strong>{value}</strong></div>
@@ -142,11 +135,10 @@ export default function NapoleonPage() {
         <div className="statement-rule" />
         <Reveal>
           <p><span className="brand-name">Napoleon</span> = THINKS, LEARNS, PREDICTS.<br /><span className="brand-name">BastionOS</span> = ORGANIZES, PRESENTS, ACTS.</p>
-          <h2>See it in action.<br /><em>Enter the system.</em></h2>
+          <h2>Make data your<br /><em>strategic assets.</em></h2>
         </Reveal>
         <div className="statement-foot">
           <span>SCROLL / 07</span>
-          <Link className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></Link>
         </div>
       </section>
 

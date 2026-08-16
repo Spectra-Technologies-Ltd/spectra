@@ -39,7 +39,6 @@ const WORK_WITH_US_NAV = {
   eyebrow: '',
   description: 'Partnerships, enterprise, government and press — direct access to the Spectra team.',
   links: [
-    ['Contact Us', '/contact'],
     ['Partners', '/partners'],
   ],
   footer: ['Start a conversation', '/contact'],
@@ -71,8 +70,7 @@ const NAV_NEWS = {
 
 /* ── Mobile full-screen menu ── */
 const WORK_GROUP = [
-  ['01', 'Contact Us', '/contact'],
-  ['02', 'Partners', '/partners'],
+  ['01', 'Partners', '/partners'],
 ] as const
 
 const MORE_LINKS = [
@@ -237,7 +235,7 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
                     ))}
                   </div>
                   <div className="mega-newsletter">
-                    <span className="mega-eyebrow">Sign up for briefings</span>
+                    <span className="mega-eyebrow">Sign up for the newsletter</span>
                     <NewsletterForm />
                   </div>
                 </div>
@@ -318,10 +316,10 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
           </div>
         </div>
         <div className="menu-newsletter">
-          <span className="menu-group-title">Sign up for briefings</span>
+          <span className="menu-group-title">Sign up for the newsletter</span>
           <NewsletterForm />
         </div>
-        <div className="menu-foot"><span>BUILT FOR THE UNSEEN</span><span>© SPECTRA 2026</span></div>
+        <div className="menu-foot"><span>© SPECTRA 2026</span></div>
       </div>
     </>
   )
