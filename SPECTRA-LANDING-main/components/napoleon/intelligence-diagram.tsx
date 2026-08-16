@@ -23,7 +23,9 @@ const planeSide = { fill: 'url(#hatch)', stroke: 'var(--foreground)', strokeWidt
 
 export function IntelligenceDiagram() {
   return (
-    <div className="intelligence-diagram relative mx-auto w-full max-w-[1500px]" style={{ aspectRatio: `${VB.w} / ${VB.h}` }}>
+    <div className="intelligence-diagram relative mx-auto w-full max-w-[1500px]">
+      {/* Scene: the animation itself, at the diagram's aspect ratio */}
+      <div className="relative" style={{ aspectRatio: `${VB.w} / ${VB.h}` }}>
       {/* ---- SVG scene: planes, flows, edges ---- */}
       <svg
         viewBox={`0 0 ${VB.w} ${VB.h}`}
@@ -95,8 +97,9 @@ export function IntelligenceDiagram() {
         return <RelPill key={i} x={mid.x} y={mid.y} label={e.label} hot={e.hot} index={i} />
       })}
 
-      {/* Cycling caption, bottom-left */}
-      <div className="caption-cycler absolute bottom-0 left-0">
+      {/* Cycling caption — BELOW the scene so it never overlaps the animation */}
+      </div>
+      <div className="caption-cycler relative mt-6">
         <CaptionCycler />
       </div>
     </div>
