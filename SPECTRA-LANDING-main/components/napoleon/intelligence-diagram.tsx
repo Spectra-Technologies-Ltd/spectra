@@ -96,7 +96,7 @@ export function IntelligenceDiagram() {
       })}
 
       {/* Cycling caption, bottom-left */}
-      <div className="absolute bottom-0 left-0">
+      <div className="caption-cycler absolute bottom-0 left-0">
         <CaptionCycler />
       </div>
     </div>

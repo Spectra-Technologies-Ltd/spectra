@@ -339,6 +339,18 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
    against its own width, so it renders correctly at any container size. */
 .intelligence-diagram {
   container-type: inline-size;
+  isolation: isolate;
+}
+
+/* Layered text overlays — always readable above the SVG scene */
+.intelligence-diagram .caption-cycler {
+  z-index: 30;
+}
+.intelligence-diagram > span {
+  z-index: 20;
+}
+.intelligence-diagram > div:not(.caption-cycler) {
+  z-index: 10;
 }
 
 /* Drop the HUD grid overlay on diagram variants — it fights the scene */
@@ -357,9 +369,18 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 .napoleon-scene-head {
   align-items: flex-end;
   display: flex;
+  flex-wrap: wrap;
   gap: 6vw;
   justify-content: space-between;
   margin-bottom: 54px;
+}
+
+@media (max-width: 1100px) {
+  .napoleon-scene-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
 }
 
 .napoleon-scene-head h2 {

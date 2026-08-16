@@ -46,10 +46,10 @@ export function CaptionCycler() {
 
   return (
     <div
-      className="relative w-[min(24rem,42cqw)] bg-background/95 px-6 pb-6 pt-5 backdrop-blur-sm"
+      className="relative w-[min(24rem,42cqw)] bg-background px-6 pb-6 pt-5 shadow-xl backdrop-blur-sm"
       style={{
         clipPath: 'polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%)',
-        boxShadow: '0 -1px 0 var(--hairline), 1px 0 0 var(--hairline)',
+        boxShadow: '0 -1px 0 var(--hairline), 1px 0 0 var(--hairline), 0 12px 30px rgba(0,0,0,.35)',
       }}
     >
       <h2 className="font-sans text-2xl font-medium leading-tight tracking-tight text-foreground md:text-3xl">

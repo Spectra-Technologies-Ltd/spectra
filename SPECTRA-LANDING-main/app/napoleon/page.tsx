@@ -2,6 +2,7 @@ import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
+import { IntelligenceDiagram } from '@/components/napoleon/intelligence-diagram'
 
 export const metadata = {
   title: 'Napoleon — Spectra Technologies',
@@ -48,7 +49,9 @@ export default function NapoleonPage() {
         <div className="section-kicker"><span>01</span><span>INFERENCE</span></div>
         <div className="napoleon-scene-head">
           <Reveal><p className="eyebrow">MACHINE INTELLIGENCE LAYER</p><h2>Signals in.<br /><em>Intelligence out.</em></h2></Reveal>
-          <Reveal delay={120}><p className="body-copy">Filler words for the Napoleon inference section — the final copy describing how the intelligence layer reads signals and turns them into decisions will live here.</p></Reveal>
+        </div>
+        <div className="napoleon-scene-inner">
+          <IntelligenceDiagram />
         </div>
       </section>
 
