@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { MapPin, Users, AlertTriangle } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import { MapCanvas } from '@/components/dashboard/map-canvas'
 import { cn } from '@/lib/utils'
 
@@ -39,12 +40,13 @@ export default function MapPage() {
   const active = sites.find((s) => s.id === activeId) ?? sites[0]
 
   return (
-    <main className="flex flex-1 flex-col gap-4 lg:h-[calc(100vh-4rem)] lg:flex-row">
-      <div className="min-h-[420px] flex-1">
-        <MapCanvas activeId={active?.id} onSelect={setActiveId} />
-      </div>
+    <DashboardLayout>
+      <div className="flex flex-1 flex-col gap-4 lg:h-[calc(100vh-7rem)] lg:flex-row">
+        <div className="min-h-[420px] flex-1">
+          <MapCanvas activeId={active?.id} onSelect={setActiveId} />
+        </div>
 
-      <aside className="flex w-full shrink-0 flex-col gap-4 lg:w-80">
+        <aside className="flex w-full shrink-0 flex-col gap-4 lg:w-80">
         {active && (
           <div className="rounded-lg border border-primary/40 bg-card p-4">
             <div className="flex items-center justify-between">
@@ -120,6 +122,7 @@ export default function MapPage() {
           </ul>
         </div>
       </aside>
-    </main>
+      </div>
+    </DashboardLayout>
   )
 }

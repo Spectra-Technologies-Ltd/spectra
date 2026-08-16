@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Bell, Search, Menu, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { Bell, Search, Menu, PanelLeftClose, PanelLeft, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
@@ -65,6 +65,9 @@ export default function Header() {
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const [now, setNow] = useState<string>('');
+  const [darkMode, setDarkMode] = React.useState(() =>
+    typeof window !== 'undefined' && document.documentElement.classList.contains('dark'),
+  );
 
   // Live UTC clock
   useEffect(() => {
@@ -100,6 +103,18 @@ export default function Header() {
     refetchInterval: 30000,
     enabled: notifOpen,
   });
+
+  const toggleTheme = () => {
+    const html = document.documentElement;
+    const nextDark = !html.classList.contains('dark');
+    html.classList.toggle('dark', nextDark);
+    setDarkMode(nextDark);
+    try {
+      localStorage.setItem('bastion-theme', nextDark ? 'dark' : 'light');
+    } catch {
+      // storage unavailable — the in-memory toggle still applies
+    }
+  };
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -153,6 +168,14 @@ export default function Header() {
           <span className="font-mono text-xs tabular-nums text-foreground">{now}</span>
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">UTC</span>
         </div>
+
+        <button
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+          className="icon-btn flex size-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {darkMode ? <Sun className="size-4" /> : <Moon className="size-4" />}
+        </button>
 
         <button
           type="button"

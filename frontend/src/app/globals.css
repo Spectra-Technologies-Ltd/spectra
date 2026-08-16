@@ -3,6 +3,49 @@
 
 @layer base {
   :root {
+    /* Light theme (switchable via the header toggle) */
+    --background: 220 14% 96%;
+    --foreground: 240 12% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 12% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 12% 12%;
+    /* Signal amber — brand accent */
+    --primary: 42 90% 52%;
+    --primary-foreground: 40 60% 10%;
+    --secondary: 220 12% 92%;
+    --secondary-foreground: 240 12% 15%;
+    --muted: 220 12% 92%;
+    --muted-foreground: 220 8% 45%;
+    --accent: 220 12% 90%;
+    --accent-foreground: 240 12% 15%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 12% 88%;
+    --input: 220 12% 88%;
+    --ring: 42 90% 52%;
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar: 220 14% 97%;
+    --sidebar-foreground: 240 12% 20%;
+    --sidebar-primary: 42 90% 52%;
+    --sidebar-primary-foreground: 40 60% 10%;
+    --sidebar-accent: 220 12% 90%;
+    --sidebar-accent-foreground: 240 12% 15%;
+    --sidebar-border: 220 12% 88%;
+    --sidebar-ring: 42 90% 52%;
+
+    /* Custom alarm states */
+    --warning: 35 95% 52%;
+    --warning-foreground: 30 50% 8%;
+    --success: 152 60% 42%;
+    --success-foreground: 150 40% 96%;
+    --info: 214 80% 55%;
+    --info-foreground: 210 40% 98%;
+  }
+
+  .dark {
     /* Command-center dark surfaces (deep charcoal-navy) */
     --background: 240 15% 10%;
     --foreground: 220 25% 92%;
@@ -10,7 +53,6 @@
     --card-foreground: 220 25% 92%;
     --popover: 240 13% 13%;
     --popover-foreground: 220 25% 92%;
-    /* Signal amber — tactical accent */
     --primary: 42 90% 56%;
     --primary-foreground: 40 60% 10%;
     --secondary: 240 11% 20%;
@@ -24,38 +66,16 @@
     --border: 240 12% 24%;
     --input: 240 12% 24%;
     --ring: 42 90% 56%;
-    --radius: 0.5rem;
 
-    /* Custom alarm states */
-    --warning: 35 95% 55%;
-    --warning-foreground: 30 50% 8%;
-    --success: 152 60% 45%;
-    --success-foreground: 150 40% 96%;
-    --info: 214 80% 58%;
-    --info-foreground: 210 40% 98%;
-  }
-
-  .dark {
-    /* Dark-only command center (same palette) */
-    --background: 240 15% 10%;
-    --foreground: 220 25% 92%;
-    --card: 240 13% 14%;
-    --card-foreground: 220 25% 92%;
-    --popover: 240 13% 13%;
-    --popover-foreground: 220 25% 92%;
-    --primary: 42 90% 56%;
-    --primary-foreground: 40 60% 10%;
-    --secondary: 240 11% 20%;
-    --secondary-foreground: 220 20% 90%;
-    --muted: 240 11% 18%;
-    --muted-foreground: 240 8% 64%;
-    --accent: 240 12% 22%;
-    --accent-foreground: 220 25% 92%;
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 12% 24%;
-    --input: 240 12% 24%;
-    --ring: 42 90% 56%;
+    /* Sidebar */
+    --sidebar: 240 16% 8%;
+    --sidebar-foreground: 220 20% 88%;
+    --sidebar-primary: 42 90% 56%;
+    --sidebar-primary-foreground: 40 60% 10%;
+    --sidebar-accent: 240 12% 20%;
+    --sidebar-accent-foreground: 220 25% 92%;
+    --sidebar-border: 240 12% 22%;
+    --sidebar-ring: 42 90% 56%;
 
     --warning: 35 95% 55%;
     --warning-foreground: 30 50% 8%;
@@ -87,6 +107,15 @@
   --color-popover-foreground: hsl(var(--popover-foreground));
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
 
   --color-warning: hsl(var(--warning));
   --color-warning-foreground: hsl(var(--warning-foreground));
