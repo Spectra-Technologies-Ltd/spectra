@@ -23,7 +23,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 220 12% 88%;
     --input: 220 12% 88%;
-    --ring: 42 90% 52%;
+    --ring: 220 15% 40%;
     --radius: 0.5rem;
 
     /* Sidebar */
@@ -65,7 +65,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 12% 24%;
     --input: 240 12% 24%;
-    --ring: 42 90% 56%;
+    --ring: 0 0% 100%;
 
     /* Sidebar */
     --sidebar: 240 16% 8%;
@@ -75,7 +75,7 @@
     --sidebar-accent: 240 12% 20%;
     --sidebar-accent-foreground: 220 25% 92%;
     --sidebar-border: 240 12% 22%;
-    --sidebar-ring: 42 90% 56%;
+    --sidebar-ring: 0 0% 100%;
 
     --warning: 35 95% 55%;
     --warning-foreground: 30 50% 8%;

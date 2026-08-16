@@ -111,7 +111,7 @@ export default function AddGuardPage() {
                   placeholder={f.placeholder}
                   value={(form as any)[f.name]}
                   onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 />
               </div>
             ))}
@@ -124,7 +124,7 @@ export default function AddGuardPage() {
                   name="status"
                   value={form.status}
                   onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 >
                   {STATUSES.map((s) => (
                     <option key={s} value={s}>{s.replace('_', ' ')}</option>
@@ -138,7 +138,7 @@ export default function AddGuardPage() {
                   name="currentShift"
                   value={form.currentShift}
                   onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 >
                   {SHIFTS.map((s) => (
                     <option key={s} value={s}>{s}</option>

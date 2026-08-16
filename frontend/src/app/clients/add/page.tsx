@@ -94,7 +94,7 @@ export default function AddClientPage() {
                   placeholder={f.placeholder}
                   value={(form as any)[f.name]}
                   onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 />
               </div>
             ))}
@@ -108,7 +108,7 @@ export default function AddClientPage() {
                   required
                   value={form.contractStart}
                   onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 />
               </div>
               <div>
@@ -119,7 +119,7 @@ export default function AddClientPage() {
                   required
                   value={form.contractEnd}
                   onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 />
               </div>
             </div>
@@ -128,19 +128,19 @@ export default function AddClientPage() {
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Monthly Fee (₦)</label>
                 <input name="monthlyFee" type="number" value={form.monthlyFee} onChange={handleChange} placeholder="5000000"
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Guards Allocated</label>
                 <input name="numberOfGuardsAllocated" type="number" value={form.numberOfGuardsAllocated} onChange={handleChange} placeholder="50"
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all" />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">Billing Status *</label>
               <select name="billingStatus" value={form.billingStatus} onChange={handleChange}
-                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all">
                 <option value="PAID">PAID</option>
                 <option value="UNPAID">UNPAID</option>
                 <option value="OVERDUE">OVERDUE</option>
@@ -149,7 +149,7 @@ export default function AddClientPage() {
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">Notes (optional)</label>
               <input name="notes" type="text" value={form.notes} onChange={handleChange} placeholder="Any additional notes..."
-                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all" />
             </div>
           </div>
 

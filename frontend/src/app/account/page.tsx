@@ -191,7 +191,7 @@ export default function AccountSettingsPage() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
-                  className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+                  className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all placeholder:text-muted-foreground"
                   placeholder="Enter first name"
                 />
               </div>
@@ -204,7 +204,7 @@ export default function AccountSettingsPage() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
-                  className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+                  className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all placeholder:text-muted-foreground"
                   placeholder="Enter last name"
                 />
               </div>
@@ -233,7 +233,7 @@ export default function AccountSettingsPage() {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+                className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all placeholder:text-muted-foreground"
                 placeholder="Enter phone number"
               />
             </div>
@@ -396,7 +396,7 @@ function TfaCard() {
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
                 placeholder="000000"
-                className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono tracking-[0.3em] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono tracking-[0.3em] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
               />
             </div>
             <button
@@ -459,7 +459,7 @@ function TfaCard() {
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
                 placeholder="000000"
-                className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono tracking-[0.3em] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono tracking-[0.3em] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
               />
             </div>
             <button

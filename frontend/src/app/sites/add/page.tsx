@@ -91,7 +91,7 @@ export default function AddSitePage() {
                 </label>
                 <input name={f.name} type="text" required={f.required} placeholder={f.placeholder}
                   value={(form as any)[f.name]} onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all" />
               </div>
             ))}
 
@@ -99,19 +99,19 @@ export default function AddSitePage() {
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Latitude *</label>
                 <input name="latitude" type="number" step="any" required value={form.latitude} onChange={handleChange} placeholder="6.4385"
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Longitude *</label>
                 <input name="longitude" type="number" step="any" required value={form.longitude} onChange={handleChange} placeholder="3.5352"
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all" />
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">Client *</label>
               <select name="clientId" required value={form.clientId} onChange={handleChange}
-                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all">
                 <option value="">Select a client...</option>
                 {clients?.data?.map((c: any) => (
                   <option key={c.id} value={c.id}>{c.companyName}</option>
@@ -123,14 +123,14 @@ export default function AddSitePage() {
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Risk Level *</label>
                 <select name="riskLevel" value={form.riskLevel} onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all">
                   {RISK_LEVELS.map((r) => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">Target Guards</label>
                 <input name="targetGuards" type="number" value={form.targetGuards} onChange={handleChange} placeholder="15"
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all" />
               </div>
             </div>
           </div>

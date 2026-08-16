@@ -95,7 +95,7 @@ export default function AddIncidentPage() {
                 placeholder="Brief description of the incident"
                 value={form.title}
                 onChange={handleChange}
-                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
               />
             </div>
 
@@ -109,7 +109,7 @@ export default function AddIncidentPage() {
                   name="type"
                   value={form.type}
                   onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 >
                   {INCIDENT_TYPES.map((t) => (
                     <option key={t} value={t}>{t.replace('_', ' ')}</option>
@@ -125,7 +125,7 @@ export default function AddIncidentPage() {
                   name="severity"
                   value={form.severity}
                   onChange={handleChange}
-                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
                 >
                   {SEVERITIES.map((s) => (
                     <option key={s} value={s}>{s}</option>
@@ -144,7 +144,7 @@ export default function AddIncidentPage() {
                 required
                 value={form.siteId}
                 onChange={handleChange}
-                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
               >
                 <option value="">Select a site...</option>
                 {sites?.data?.map((site: any) => (
@@ -165,7 +165,7 @@ export default function AddIncidentPage() {
                 placeholder="Provide a detailed account of what happened"
                 value={form.description}
                 onChange={handleChange}
-                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-y"
+                className="w-full rounded-lg bg-secondary/50 border border-border px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all resize-y"
               />
             </div>
 

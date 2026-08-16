@@ -176,7 +176,7 @@ export default function MobileIncidentsPage() {
             }
             type="text"
             placeholder="e.g. Suspected trespasser at North Gate"
-            className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+            className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-ring transition-colors"
           />
         </div>
 
@@ -190,7 +190,7 @@ export default function MobileIncidentsPage() {
               onChange={(e) =>
                 setFormData({ ...formData, type: e.target.value })
               }
-              className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary appearance-none"
+              className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-ring appearance-none"
             >
               <option value="THEFT">Theft</option>
               <option value="ASSAULT">Assault</option>
@@ -249,7 +249,7 @@ export default function MobileIncidentsPage() {
             }
             type="text"
             placeholder="Leave blank to use assigned site"
-            className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors"
+            className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-ring transition-colors"
           />
         </div>
 
@@ -265,7 +265,7 @@ export default function MobileIncidentsPage() {
             }
             placeholder="Describe what happened in detail..."
             rows={5}
-            className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+            className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-ring transition-colors resize-none"
           />
         </div>
 
