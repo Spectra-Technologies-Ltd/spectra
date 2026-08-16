@@ -12,3 +12,4 @@ SECURITY_AUDIT.md
 *.sqlite3
 backend/prisma/dev.db
 /spectra-main/
+cookies.txt
