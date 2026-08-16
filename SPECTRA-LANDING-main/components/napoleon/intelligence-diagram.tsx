@@ -6,7 +6,6 @@ import {
   Spline, Store, Table2, Truck, User, Waves, Workflow, type LucideIcon,
 } from 'lucide-react'
 
-import { CaptionCycler } from './caption-cycler'
 import {
   DATA_TILES, EDGES, FLOWS, isoPlane, MODEL_TILES, NODES, onPlane, PLANES,
   toPct, VB, edgeGeom, type OntNode,
@@ -73,14 +72,6 @@ export function IntelligenceDiagram() {
       </svg>
 
       {/* ---- HTML overlays ---- */}
-      {/* Plane titles */}
-      <PlaneLabel plane="analytics" dy={-78} />
-      <PlaneLabel plane="workflows" dy={-78} />
-      <PlaneLabel plane="integrations" dy={-78} />
-      <PlaneLabel plane="napoleon" dy={150} align="left" nudgeX={-140} />
-      <PlaneLabel plane="data" dy={92} />
-      <PlaneLabel plane="models" dy={92} />
-
       {/* Source-tier tiles */}
       <TileGrid plane="data" tiles={DATA_TILES} hot={[1, 4]} />
       <TileGrid plane="models" tiles={MODEL_TILES} hot={[2, 6]} />
@@ -88,19 +79,10 @@ export function IntelligenceDiagram() {
       {/* Top-tier surfaces */}
       <TopSurfaces />
 
-      {/* Ontology object tokens + relation pills */}
+      {/* Ontology object tokens */}
       {NODES.map((n) => (
         <NodeToken key={n.id} node={n} index={NODES.indexOf(n)} />
       ))}
-      {EDGES.map((e, i) => {
-        const { mid } = edgeGeom(e)
-        return <RelPill key={i} x={mid.x} y={mid.y} label={e.label} hot={e.hot} index={i} />
-      })}
-
-      {/* Cycling caption — BELOW the scene so it never overlaps the animation */}
-      </div>
-      <div className="caption-cycler relative mt-6">
-        <CaptionCycler />
       </div>
     </div>
   )
@@ -123,36 +105,6 @@ function FlowBundle({ paths }: { paths: string[] }) {
         </g>
       ))}
     </g>
-  )
-}
-
-function PlaneLabel({
-  plane, dy, align = 'center', nudgeX = 0,
-}: {
-  plane: keyof typeof PLANES
-  dy: number
-  align?: 'center' | 'left'
-  nudgeX?: number
-}) {
-  const p = PLANES[plane]
-  const pos = toPct({ x: p.cx + nudgeX, y: p.cy + dy })
-  return (
-    <span
-      className="absolute whitespace-nowrap rounded-full border px-3 py-1.5 font-mono font-semibold uppercase backdrop-blur-sm"
-      style={{
-        left: pos.left,
-        top: pos.top,
-        transform: align === 'center' ? 'translate(-50%,-50%)' : 'translateY(-50%)',
-        borderColor: 'var(--hairline)',
-        background: 'rgba(7,10,28,.62)',
-        color: 'var(--foreground)',
-        fontSize: 'clamp(9px,0.95cqw,13px)',
-        letterSpacing: '.18em',
-        boxShadow: '0 4px 14px rgba(0,0,0,.3)',
-      }}
-    >
-      {p.label}
-    </span>
   )
 }
 
@@ -182,37 +134,6 @@ function NodeToken({ node, index }: { node: OntNode; index: number }) {
         />
       </div>
     </div>
-  )
-}
-
-function RelPill({
-  x, y, label, hot, index,
-}: {
-  x: number
-  y: number
-  label: string
-  hot?: boolean
-  index: number
-}) {
-  const pos = toPct({ x, y })
-  return (
-    <span
-      className="absolute whitespace-nowrap rounded-full border px-2 py-[3px] font-mono leading-none"
-      style={{
-        left: pos.left,
-        top: pos.top,
-        transform: 'translate(-50%,-50%)',
-        borderColor: hot ? 'rgba(87,215,212,.45)' : 'var(--hairline)',
-        background: hot ? 'var(--mint-strong)' : 'rgba(7,10,28,.6)',
-        color: hot ? 'var(--mint-ink)' : 'var(--foreground)',
-        fontSize: 'clamp(7px,0.72cqw,11px)',
-        letterSpacing: '.08em',
-        backdropFilter: 'blur(4px)',
-        animation: `pill-pop 0.4s ease-out ${index * 0.12}s both`,
-      }}
-    >
-      {label}
-    </span>
   )
 }
 
