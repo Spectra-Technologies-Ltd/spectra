@@ -138,11 +138,17 @@ function PlaneLabel({
   const pos = toPct({ x: p.cx + nudgeX, y: p.cy + dy })
   return (
     <span
-      className="absolute font-mono text-[clamp(11px,1.5cqw,22px)] font-medium uppercase tracking-[0.15em] text-foreground"
+      className="absolute whitespace-nowrap rounded-full border px-3 py-1.5 font-mono font-semibold uppercase backdrop-blur-sm"
       style={{
         left: pos.left,
         top: pos.top,
         transform: align === 'center' ? 'translate(-50%,-50%)' : 'translateY(-50%)',
+        borderColor: 'var(--hairline)',
+        background: 'rgba(7,10,28,.62)',
+        color: 'var(--foreground)',
+        fontSize: 'clamp(9px,0.95cqw,13px)',
+        letterSpacing: '.18em',
+        boxShadow: '0 4px 14px rgba(0,0,0,.3)',
       }}
     >
       {p.label}
@@ -159,12 +165,13 @@ function NodeToken({ node, index }: { node: OntNode; index: number }) {
       style={{ left: pos.left, top: pos.top, transform: 'translate(-50%,-62%)' }}
     >
       <div
-        className="grid place-items-center rounded-[6px] border shadow-sm"
+        className="absolute grid place-items-center rounded-[6px] border shadow-md"
         style={{
-          width: 'clamp(30px,3.4cqw,50px)',
-          height: 'clamp(30px,3.4cqw,50px)',
+          width: 'clamp(26px,2.8cqw,42px)',
+          height: 'clamp(26px,2.8cqw,42px)',
           borderColor: 'var(--foreground)',
-          background: node.hot ? 'var(--mint)' : 'var(--card)',
+          background: node.hot ? 'var(--mint-strong)' : 'var(--card)',
+          boxShadow: node.hot ? '0 0 18px rgba(87,215,212,.35)' : '0 4px 12px rgba(0,0,0,.25)',
           animation: `token-float 4s ease-in-out ${index * 0.3}s infinite`,
         }}
       >
@@ -190,13 +197,17 @@ function RelPill({
   const pos = toPct({ x, y })
   return (
     <span
-      className="absolute whitespace-nowrap rounded-full px-2 py-[3px] font-mono text-[clamp(7px,0.72cqw,11px)] leading-none"
+      className="absolute whitespace-nowrap rounded-full border px-2 py-[3px] font-mono leading-none"
       style={{
         left: pos.left,
         top: pos.top,
         transform: 'translate(-50%,-50%)',
-        background: hot ? 'var(--mint-strong)' : 'var(--mint)',
-        color: 'var(--mint-ink)',
+        borderColor: hot ? 'rgba(87,215,212,.45)' : 'var(--hairline)',
+        background: hot ? 'var(--mint-strong)' : 'rgba(7,10,28,.6)',
+        color: hot ? 'var(--mint-ink)' : 'var(--foreground)',
+        fontSize: 'clamp(7px,0.72cqw,11px)',
+        letterSpacing: '.08em',
+        backdropFilter: 'blur(4px)',
         animation: `pill-pop 0.4s ease-out ${index * 0.12}s both`,
       }}
     >
