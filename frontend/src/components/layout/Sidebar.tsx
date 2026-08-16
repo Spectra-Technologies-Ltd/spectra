@@ -245,9 +245,16 @@ export default function Sidebar() {
         {/* Footer */}
         <div className="space-y-1 border-t border-sidebar-border p-3">
           {user && (
-            <div className="flex items-center gap-3 rounded-md bg-sidebar-accent/50 px-2 py-2">
+            <Link
+              href="/account"
+              title={collapsed ? 'My Profile' : undefined}
+              className={cn(
+                'group flex items-center gap-3 rounded-md bg-sidebar-accent/50 px-2 py-2 transition-colors hover:bg-sidebar-accent',
+                collapsed && 'lg:justify-center lg:px-0',
+              )}
+            >
               <div className="relative shrink-0">
-                <div className="flex size-8 items-center justify-center rounded-full bg-primary/20 font-mono text-xs font-semibold text-primary">
+                <div className="flex size-8 items-center justify-center rounded-full bg-primary/20 font-mono text-xs font-semibold text-primary transition-transform group-hover:scale-105">
                   {user.firstName?.[0]}
                   {user.lastName?.[0]}
                 </div>
@@ -261,7 +268,7 @@ export default function Sidebar() {
                   {user.role?.replace('_', ' ')}
                 </p>
               </div>
-            </div>
+            </Link>
           )}
 
           <button

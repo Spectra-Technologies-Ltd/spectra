@@ -6,6 +6,10 @@ import { IncidentFeed } from '@/components/dashboard/incident-feed'
 import { ActivityTimeline } from '@/components/dashboard/activity-timeline'
 import { PersonnelStatus } from '@/components/dashboard/personnel-status'
 import { MapCanvas } from '@/components/dashboard/map-canvas'
+import { AttendanceChart } from '@/components/dashboard/attendance-chart'
+import { PatrolsDonut } from '@/components/dashboard/patrols-donut'
+import { IncidentsByType } from '@/components/dashboard/incidents-by-type'
+import { QuickActions } from '@/components/dashboard/quick-actions'
 
 export default function OverviewPage() {
   return (
@@ -37,6 +41,18 @@ export default function OverviewPage() {
             <ActivityTimeline />
           </div>
         </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <AttendanceChart />
+          </div>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
+            <PatrolsDonut />
+            <IncidentsByType />
+          </div>
+        </div>
+
+        <QuickActions />
       </div>
     </DashboardLayout>
   )
