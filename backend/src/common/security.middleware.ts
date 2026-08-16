@@ -44,12 +44,23 @@ export class SecurityMiddleware implements NestMiddleware {
     );
 
     // ── Rate limiting (auth endpoints only) ──────────────────────────────
+    // Only FAILED attempts consume budget — a successful login refunds the
+    // attempt, so legit users never lock themselves out with quick retries.
     const isAuthRoute = /^\/api\/v1\/auth\/(login|register|tfa)/.test(req.path);
     if (!isAuthRoute) return next();
 
     const key = `${req.ip}:${req.path}`;
     const now = Date.now();
     const bucket = this.buckets.get(key);
+
+    res.on('finish', () => {
+      const b = this.buckets.get(key);
+      if (!b) return;
+      if (res.statusCode < 400) {
+        // Success — refund the attempt taken on entry
+        b.count = Math.max(0, b.count - 1);
+      }
+    });
 
     if (!bucket || now >= bucket.resetAt) {
       this.buckets.set(key, { count: 1, resetAt: now + this.AUTH_WINDOW_MS });
@@ -61,7 +72,8 @@ export class SecurityMiddleware implements NestMiddleware {
       this.logger.warn(`Rate limit exceeded for ${key}`);
       res.status(429).json({
         statusCode: 429,
-        message: 'Too many attempts. Please try again later.',
+        message: 'Too many failed attempts. Please wait a few minutes and try again.',
+        retryAfter: Math.ceil((bucket.resetAt - now) / 1000),
       });
       return;
     }
