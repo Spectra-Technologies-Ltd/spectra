@@ -47,31 +47,31 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 const activityFeed = [
   {
     icon: Route,
-    color: "bg-cyan-400/10 text-cyan-300",
+    color: "bg-info/15 text-info",
     type: "PATROL",
     desc: "Perimeter patrol completed",
     status: "SUCCESS",
-    chip: "bg-emerald-400/10 text-emerald-300",
+    chip: "bg-success/15 text-success",
     time: "08:45 AM",
     loc: "Site A",
   },
   {
     icon: ShieldAlert,
-    color: "bg-red-400/10 text-red-300",
+    color: "bg-destructive/15 text-destructive",
     type: "INCIDENT",
     desc: "Theft report filed",
     status: "OPEN",
-    chip: "bg-red-400/10 text-red-300",
+    chip: "bg-destructive/15 text-destructive",
     time: "08:30 AM",
     loc: "Warehouse",
   },
   {
     icon: ClipboardCheck,
-    color: "bg-blue-400/10 text-blue-300",
+    color: "bg-primary/15 text-primary",
     type: "ATTENDANCE",
     desc: "12 guards on shift",
     status: "LIVE",
-    chip: "bg-cyan-400/10 text-cyan-300",
+    chip: "bg-primary/15 text-primary",
     time: "08:00 AM",
     loc: "Main Gate",
   },
@@ -101,11 +101,11 @@ export default function RegisterPage() {
   if (/[^A-Za-z0-9]/.test(passwordValue)) strength++;
 
   const strengthMeta = [
-    { label: "Too short", color: "bg-red-500", text: "text-red-600" },
-    { label: "Weak", color: "bg-red-500", text: "text-red-600" },
-    { label: "Fair", color: "bg-amber-500", text: "text-amber-600" },
-    { label: "Good", color: "bg-cyan-500", text: "text-cyan-600" },
-    { label: "Strong", color: "bg-emerald-500", text: "text-emerald-600" },
+    { label: "Too short", color: "bg-destructive", text: "text-destructive" },
+    { label: "Weak", color: "bg-destructive", text: "text-destructive" },
+    { label: "Fair", color: "bg-warning", text: "text-warning" },
+    { label: "Good", color: "bg-primary", text: "text-primary" },
+    { label: "Strong", color: "bg-success", text: "text-success" },
   ][strength];
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -131,49 +131,50 @@ export default function RegisterPage() {
     }
   };
 
-  const labelClass =
-    "font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500";
+  const labelClass = "font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground";
   const inputClass = (hasError: boolean) =>
-    `w-full rounded-md border bg-white py-2.5 pl-9 pr-3 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
+    `w-full rounded-md border bg-card py-2.5 pl-9 pr-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 sm:text-sm ${
       hasError
-        ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-        : "border-zinc-200 focus:border-black focus:ring-black/10"
+        ? "border-destructive/40 focus:border-destructive focus:ring-destructive/15"
+        : "border-border focus:border-ring focus:ring-ring/15"
     }`;
+  const iconClass = "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground";
+  const eyeBtnClass = "absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground transition hover:text-foreground";
 
   return (
-    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-[#f9fafb] px-4 py-12 sm:px-8">
-      <div className="animate-rise w-full max-w-[980px] overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-2xl shadow-zinc-950/10 lg:grid lg:grid-cols-[0.92fr_1.08fr]">
+    <div className="flex min-h-screen min-h-dvh items-center justify-center bg-background px-4 py-12 sm:px-8">
+      <div className="animate-rise w-full max-w-[980px] overflow-hidden rounded-lg border border-border bg-card shadow-2xl shadow-black/40 lg:grid lg:grid-cols-[0.92fr_1.08fr]">
         {/* ── Left: brand + live activity (per design frame) ── */}
-        <div className="relative hidden flex-col justify-between overflow-hidden bg-[#09090b] p-10 lg:flex">
+        <div className="relative hidden flex-col justify-between overflow-hidden bg-sidebar p-10 lg:flex">
           <img
             src="/spectra-operator.png"
             alt="BastionOS operators coordinating a mission"
             className="absolute inset-0 h-full w-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#09090b]/75 via-[#09090b]/85 to-[#09090b]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-sidebar/75 via-sidebar/85 to-sidebar" />
 
           <div className="relative flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-white text-black shadow-lg shadow-black/30">
+            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-black/30">
               <Shield className="h-6 w-6" />
             </div>
             <div>
-              <p className="font-mono text-sm font-bold tracking-[0.3em] text-white">
-                BastionOS
+              <p className="font-mono text-sm font-bold tracking-[0.3em] text-sidebar-foreground">
+                BASTION<span className="text-primary">OS</span>
               </p>
-              <p className="font-mono text-[10px] tracking-[0.24em] text-zinc-400">
-                SECURITY PLATFORM
+              <p className="font-mono text-[10px] tracking-[0.24em] text-muted-foreground">
+                SPECTRA TECHNOLOGY
               </p>
             </div>
           </div>
 
           <div className="relative">
-            <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-cyan-400">
+            <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-primary">
               LIVE OPERATIONS
             </p>
-            <h2 className="mt-4 text-2xl font-black leading-tight tracking-tight text-white">
+            <h2 className="mt-4 text-2xl font-black leading-tight tracking-tight text-sidebar-foreground">
               Take command of your security network.
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               Create the first account for your organization and start running
               patrols, tracking incidents and protecting every site.
             </p>
@@ -182,7 +183,7 @@ export default function RegisterPage() {
               {activityFeed.map((item) => (
                 <div
                   key={item.type}
-                  className="flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.04] p-3 backdrop-blur-sm"
+                  className="flex items-center gap-3 rounded-md border border-border bg-card/50 p-3 backdrop-blur-sm"
                 >
                   <span
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${item.color}`}
@@ -190,13 +191,13 @@ export default function RegisterPage() {
                     <item.icon className="h-4 w-4" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                       {item.type}
                     </p>
-                    <p className="truncate text-sm font-semibold text-white">
+                    <p className="truncate text-sm font-semibold text-sidebar-foreground">
                       {item.desc}
                     </p>
-                    <p className="mt-0.5 font-mono text-[10px] text-zinc-500">
+                    <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">
                       {item.time} · {item.loc}
                     </p>
                   </div>
@@ -209,20 +210,20 @@ export default function RegisterPage() {
               ))}
             </div>
 
-            <div className="mt-8 inline-flex items-center gap-2.5 rounded-md border border-white/15 bg-white/10 px-3.5 py-2 backdrop-blur-md">
+            <div className="mt-8 inline-flex items-center gap-2.5 rounded-md border border-border bg-card/60 px-3.5 py-2 backdrop-blur-md">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-70" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
               </span>
-              <Radio className="h-3.5 w-3.5 text-cyan-300" />
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white">
+              <Radio className="h-3.5 w-3.5 text-success" />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-sidebar-foreground">
                 All systems operational
               </span>
             </div>
           </div>
 
-          <p className="relative font-mono text-[10px] tracking-[0.2em] text-zinc-500">
-            © 2026 BastionOS SYSTEMS, INC.
+          <p className="relative font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
+            © 2026 BASTIONOS SYSTEMS, INC.
           </p>
         </div>
 
@@ -230,32 +231,32 @@ export default function RegisterPage() {
         <div className="p-8 sm:p-10">
           {/* Mobile brand */}
           <div className="mb-8 flex flex-col items-center gap-3 lg:hidden">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-black text-white shadow-lg">
+            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg">
               <Shield className="h-6 w-6" />
             </div>
-            <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
-              BastionOS
+            <p className="font-mono text-sm font-bold tracking-[0.3em] text-foreground">
+              BASTION<span className="text-primary">OS</span>
             </p>
           </div>
 
           <AuthModeSwitch mode="register" />
 
-          <p className="mt-8 font-mono text-[11px] font-bold tracking-[0.28em] text-zinc-400">
+          <p className="mt-8 font-mono text-[11px] font-bold tracking-[0.28em] text-primary">
             CREATE ACCOUNT
           </p>
-          <h2 className="mt-3 text-3xl font-black tracking-tight text-zinc-950">
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-foreground">
             Join the operations
           </h2>
-          <p className="mt-2 text-sm text-zinc-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Register your organization and take command of your security network.
           </p>
 
           {error && (
-            <div className="mt-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <div className="mt-6 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
                 <p className="font-bold">Registration error</p>
-                <p className="mt-0.5 text-red-600">{error}</p>
+                <p className="mt-0.5">{error}</p>
               </div>
             </div>
           )}
@@ -267,7 +268,7 @@ export default function RegisterPage() {
                   First Name
                 </label>
                 <div className="relative mt-1.5">
-                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <User className={iconClass} />
                   <input
                     id="firstName"
                     type="text"
@@ -279,7 +280,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 {errors.firstName && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">
+                  <p className="mt-1.5 text-xs font-medium text-destructive">
                     {errors.firstName.message}
                   </p>
                 )}
@@ -289,7 +290,7 @@ export default function RegisterPage() {
                   Last Name
                 </label>
                 <div className="relative mt-1.5">
-                  <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <User className={iconClass} />
                   <input
                     id="lastName"
                     type="text"
@@ -300,7 +301,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 {errors.lastName && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">
+                  <p className="mt-1.5 text-xs font-medium text-destructive">
                     {errors.lastName.message}
                   </p>
                 )}
@@ -312,7 +313,7 @@ export default function RegisterPage() {
                 Security Email
               </label>
               <div className="relative mt-1.5">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Mail className={iconClass} />
                 <input
                   id="email"
                   type="email"
@@ -323,7 +324,7 @@ export default function RegisterPage() {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1.5 text-xs font-medium text-red-600">
+                <p className="mt-1.5 text-xs font-medium text-destructive">
                   {errors.email.message}
                 </p>
               )}
@@ -334,7 +335,7 @@ export default function RegisterPage() {
                 Phone Number
               </label>
               <div className="relative mt-1.5">
-                <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Phone className={iconClass} />
                 <input
                   id="phone"
                   type="tel"
@@ -345,7 +346,7 @@ export default function RegisterPage() {
                 />
               </div>
               {errors.phone && (
-                <p className="mt-1.5 text-xs font-medium text-red-600">
+                <p className="mt-1.5 text-xs font-medium text-destructive">
                   {errors.phone.message}
                 </p>
               )}
@@ -356,7 +357,7 @@ export default function RegisterPage() {
                 Organization <span className="font-normal normal-case">(optional)</span>
               </label>
               <div className="relative mt-1.5">
-                <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Building2 className={iconClass} />
                 <input
                   id="organizationName"
                   type="text"
@@ -367,7 +368,7 @@ export default function RegisterPage() {
                 />
               </div>
               {errors.organizationName && (
-                <p className="mt-1.5 text-xs font-medium text-red-600">
+                <p className="mt-1.5 text-xs font-medium text-destructive">
                   {errors.organizationName.message}
                 </p>
               )}
@@ -379,7 +380,7 @@ export default function RegisterPage() {
                   Password
                 </label>
                 <div className="relative mt-1.5">
-                  <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <LockKeyhole className={iconClass} />
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -392,7 +393,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 transition hover:text-zinc-900"
+                    className={eyeBtnClass}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -402,7 +403,7 @@ export default function RegisterPage() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">
+                  <p className="mt-1.5 text-xs font-medium text-destructive">
                     {errors.password.message}
                   </p>
                 )}
@@ -413,7 +414,7 @@ export default function RegisterPage() {
                         <span
                           key={i}
                           className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-                            i < strength ? strengthMeta.color : "bg-zinc-200"
+                            i < strength ? strengthMeta.color : "bg-border"
                           }`}
                         />
                       ))}
@@ -429,7 +430,7 @@ export default function RegisterPage() {
                   Confirm
                 </label>
                 <div className="relative mt-1.5">
-                  <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <LockKeyhole className={iconClass} />
                   <input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
@@ -442,7 +443,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 transition hover:text-zinc-900"
+                    className={eyeBtnClass}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -452,7 +453,7 @@ export default function RegisterPage() {
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">
+                  <p className="mt-1.5 text-xs font-medium text-destructive">
                     {errors.confirmPassword.message}
                   </p>
                 )}
@@ -462,7 +463,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-zinc-950/10 transition-all hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-50"
+              className="btn-accent group flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
@@ -478,14 +479,14 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-7 flex items-center gap-3">
-            <span className="h-px flex-1 bg-zinc-200" />
-            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-zinc-400">
+            <span className="h-px flex-1 bg-border" />
+            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-muted-foreground">
               SECURE ACCESS
             </span>
-            <span className="h-px flex-1 bg-zinc-200" />
+            <span className="h-px flex-1 bg-border" />
           </div>
 
-          <p className="mt-5 text-center text-sm text-zinc-500">
+          <p className="mt-5 text-center text-sm text-muted-foreground">
             Protected by BastionOS Cryptographic Protocol. All attempts logged.
           </p>
         </div>

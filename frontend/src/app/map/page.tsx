@@ -24,6 +24,14 @@ const riskTone: Record<string, { label: string; text: string; dot: string }> = {
   CRITICAL: { label: 'Critical', text: 'text-destructive', dot: 'bg-destructive' },
 }
 
+const riskWeight: Record<string, number> = { LOW: 20, MEDIUM: 45, HIGH: 70, CRITICAL: 90 }
+
+function scoreTone(score: number) {
+  if (score >= 70) return 'text-destructive'
+  if (score >= 40) return 'text-warning'
+  return 'text-success'
+}
+
 export default function MapPage() {
   const [activeId, setActiveId] = useState<string>('')
 
@@ -38,6 +46,9 @@ export default function MapPage() {
 
   const sites: Site[] = data?.data ?? []
   const active = sites.find((s) => s.id === activeId) ?? sites[0]
+  const riskScore = active
+    ? Math.min(99, (riskWeight[active.riskLevel] ?? 20) + (active._count?.incidents ?? 0) * 2)
+    : 0
 
   return (
     <DashboardLayout>
@@ -81,6 +92,22 @@ export default function MapPage() {
                 <p className="mt-1 font-mono text-xl font-semibold tabular-nums">
                   {active._count?.incidents ?? 0}
                 </p>
+              </div>
+            </div>
+            <div className="mt-3 rounded-md border border-border bg-background/50 p-2.5">
+              <div className="flex items-center justify-between">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Risk Score
+                </p>
+                <p className={`font-mono text-lg font-semibold tabular-nums ${scoreTone(riskScore)}`}>
+                  {riskScore}/99
+                </p>
+              </div>
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-success via-warning to-destructive"
+                  style={{ width: `${riskScore}%` }}
+                />
               </div>
             </div>
           </div>

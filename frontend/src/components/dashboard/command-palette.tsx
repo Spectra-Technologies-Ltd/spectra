@@ -16,7 +16,10 @@ import {
   FileText,
   Bell,
   Settings,
+  Loader2,
 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import api from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 const items = [
@@ -34,6 +37,21 @@ const items = [
   { label: 'Settings', href: '/account', icon: Settings, hint: 'Go to' },
 ]
 
+interface SearchHit {
+  id: string
+  label: string
+  subtitle: string
+  type: 'guard' | 'client' | 'site' | 'incident'
+  url: string
+}
+
+const HIT_ICON: Record<SearchHit['type'], typeof Users> = {
+  guard: Users,
+  client: Building2,
+  site: MapPin,
+  incident: AlertTriangle,
+}
+
 export function CommandPalette({
   open,
   onOpenChange,
@@ -46,7 +64,73 @@ export function CommandPalette({
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  const filtered = items.filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
+  const searchable = query.trim().length >= 2
+
+  const { data: hits, isFetching } = useQuery({
+    queryKey: ['palette-search', query],
+    queryFn: async () => {
+      const [guards, clients, sites, incidents] = await Promise.all([
+        api.get('/guards', { params: { search: query, limit: 5 } }),
+        api.get('/clients', { params: { search: query, limit: 5 } }),
+        api.get('/sites', { params: { search: query, limit: 5 } }),
+        api.get('/incidents', { params: { search: query, limit: 5 } }),
+      ])
+      const results: SearchHit[] = []
+      guards.data?.data?.forEach((g: { id: string; fullName: string; status?: string }) =>
+        results.push({
+          id: g.id,
+          label: g.fullName,
+          subtitle: `Guard · ${g.status?.replace('_', ' ') ?? '—'}`,
+          type: 'guard',
+          url: `/guards/${g.id}`,
+        }),
+      )
+      clients.data?.data?.forEach((c: { id: string; companyName: string; estateName?: string }) =>
+        results.push({
+          id: c.id,
+          label: c.companyName,
+          subtitle: `Client · ${c.estateName ?? '—'}`,
+          type: 'client',
+          url: `/clients/${c.id}`,
+        }),
+      )
+      sites.data?.data?.forEach((s: { id: string; name: string; address?: string }) =>
+        results.push({
+          id: s.id,
+          label: s.name,
+          subtitle: `Site · ${s.address ?? '—'}`,
+          type: 'site',
+          url: `/sites/${s.id}`,
+        }),
+      )
+      incidents.data?.data?.forEach((i: { id: string; title: string; status?: string }) =>
+        results.push({
+          id: i.id,
+          label: i.title,
+          subtitle: `Incident · ${i.status?.replace('_', ' ') ?? '—'}`,
+          type: 'incident',
+          url: `/incidents/${i.id}`,
+        }),
+      )
+      return results.slice(0, 8)
+    },
+    enabled: searchable,
+    staleTime: 15000,
+  })
+
+  const navFiltered = items.filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
+  const rows: { label?: string; items: { key: string; label: string; href: string; icon: typeof Users; hint?: string }[] }[] = []
+
+  if (navFiltered.length > 0) {
+    rows.push({ label: 'Views', items: navFiltered.map((n) => ({ key: n.href, label: n.label, href: n.href, icon: n.icon, hint: n.hint })) })
+  }
+  if (searchable && hits && hits.length > 0) {
+    rows.push({
+      label: 'Search results',
+      items: hits.map((h) => ({ key: h.id + h.type, label: h.label, href: h.url, icon: HIT_ICON[h.type], hint: h.subtitle })),
+    })
+  }
+  const flat = rows.flatMap((r) => r.items)
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -69,7 +153,7 @@ export function CommandPalette({
     }
   }, [open])
 
-  useEffect(() => setActive(0), [query])
+  useEffect(() => setActive(0), [query, hits])
 
   function select(href: string) {
     router.push(href)
@@ -79,12 +163,12 @@ export function CommandPalette({
   function onInputKey(e: React.KeyboardEvent) {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setActive((a) => Math.min(a + 1, filtered.length - 1))
+      setActive((a) => Math.min(a + 1, Math.max(flat.length - 1, 0)))
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
       setActive((a) => Math.max(a - 1, 0))
-    } else if (e.key === 'Enter' && filtered[active]) {
-      select(filtered[active].href)
+    } else if (e.key === 'Enter' && flat[active]) {
+      select(flat[active].href)
     }
   }
 
@@ -106,38 +190,53 @@ export function CommandPalette({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onInputKey}
-            placeholder="Jump to a view…"
+            placeholder="Jump to a view, or search guards, clients, sites, incidents…"
             className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
-          <kbd className="key">Esc</kbd>
-        </div>
-        <ul className="max-h-72 overflow-y-auto p-1.5">
-          {filtered.length === 0 && (
-            <li className="px-3 py-6 text-center text-sm text-muted-foreground">No matches</li>
+          {isFetching ? (
+            <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
+          ) : (
+            <kbd className="key">Esc</kbd>
           )}
-          {filtered.map((item, i) => {
-            const Icon = item.icon
-            return (
-              <li key={item.href}>
-                <button
-                  type="button"
-                  onClick={() => select(item.href)}
-                  onMouseEnter={() => setActive(i)}
-                  className={cn(
-                    'flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors',
-                    active === i ? 'bg-accent text-foreground' : 'text-muted-foreground',
-                  )}
-                >
-                  <Icon className={cn('size-4', active === i ? 'text-primary' : 'text-muted-foreground')} />
-                  {item.label}
-                  <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {item.hint}
-                  </span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+        </div>
+        <div className="max-h-80 overflow-y-auto p-1.5">
+          {rows.length === 0 && (
+            <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+              {searchable ? 'No matches' : 'Type to search…'}
+            </div>
+          )}
+          {rows.map((group) => (
+            <div key={group.label}>
+              {group.label && (
+                <p className="px-3 pb-1 pt-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {group.label}
+                </p>
+              )}
+              {group.items.map((item) => {
+                const globalIndex = flat.indexOf(item)
+                const Icon = item.icon
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => select(item.href)}
+                    onMouseEnter={() => setActive(globalIndex)}
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors',
+                      active === globalIndex ? 'bg-accent text-foreground' : 'text-muted-foreground',
+                    )}
+                  >
+                    <Icon className={cn('size-4 shrink-0', active === globalIndex ? 'text-primary' : 'text-muted-foreground')} />
+                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    <span className="ml-auto shrink-0 truncate pl-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                      {item.hint}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

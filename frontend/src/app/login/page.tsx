@@ -71,42 +71,48 @@ function LoginForm() {
     }
   };
 
-  const labelClass = "font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500";
+  const labelClass = "font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground";
+  const inputClass = (hasError: boolean) =>
+    `w-full rounded-md border bg-card py-2.5 pl-9 pr-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 sm:text-sm ${
+      hasError
+        ? "border-destructive/40 focus:border-destructive focus:ring-destructive/15"
+        : "border-border focus:border-ring focus:ring-ring/15"
+    }`;
 
   return (
-    <div className="flex min-h-screen min-h-dvh bg-[#f9fafb]">
+    <div className="flex min-h-screen min-h-dvh bg-background">
       <BrandPanel />
 
       <div className="flex flex-1 items-center justify-center px-4 py-12 sm:px-8">
         <div className="w-full max-w-[400px]">
           {/* Mobile brand */}
           <div className="animate-rise mb-10 flex flex-col items-center gap-3 lg:hidden">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-black text-white shadow-lg">
+            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg">
               <Shield className="h-6 w-6" />
             </div>
-            <p className="font-mono text-sm font-bold tracking-[0.3em] text-zinc-900">
-              BastionOS
+            <p className="font-mono text-sm font-bold tracking-[0.3em] text-foreground">
+              BASTION<span className="text-primary">OS</span>
             </p>
           </div>
 
-          <p className="animate-rise font-mono text-[11px] font-bold tracking-[0.28em] text-zinc-400">
+          <p className="animate-rise font-mono text-[11px] font-bold tracking-[0.28em] text-primary">
             SECURE SIGN-IN
           </p>
-          <h2 className="animate-rise mt-3 text-3xl font-black tracking-tight text-zinc-950" style={{ animationDelay: "60ms" }}>
+          <h2 className="animate-rise mt-3 text-3xl font-black tracking-tight text-foreground" style={{ animationDelay: "60ms" }}>
             Welcome back
           </h2>
-          <p className="animate-rise mt-2 text-sm text-zinc-500" style={{ animationDelay: "120ms" }}>
+          <p className="animate-rise mt-2 text-sm text-muted-foreground" style={{ animationDelay: "120ms" }}>
             Sign in to the BastionOS Operations Command Center.
           </p>
 
           <AuthModeSwitch mode="signin" />
 
           {registered === "1" && (
-            <div className="mt-6 flex items-start gap-3 rounded-md border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+            <div className="mt-6 flex items-start gap-3 rounded-md border border-success/30 bg-success/10 p-4 text-sm text-success">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
                 <p className="font-bold">Account created</p>
-                <p className="mt-0.5 text-emerald-600">
+                <p className="mt-0.5">
                   Your security account is ready. Sign in to continue.
                 </p>
               </div>
@@ -114,11 +120,11 @@ function LoginForm() {
           )}
 
           {error && (
-            <div className="mt-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <div className="mt-6 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
                 <p className="font-bold">Authentication error</p>
-                <p className="mt-0.5 text-red-600">{error}</p>
+                <p className="mt-0.5">{error}</p>
               </div>
             </div>
           )}
@@ -129,7 +135,7 @@ function LoginForm() {
                 Security Email
               </label>
               <div className="relative mt-1.5">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
                   id="email"
                   type="email"
@@ -137,15 +143,11 @@ function LoginForm() {
                   autoFocus
                   placeholder="operator@bastionos.com"
                   {...register("email")}
-                  className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-3 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
-                    errors.email
-                      ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                      : "border-zinc-200 focus:border-black focus:ring-black/10"
-                  }`}
+                  className={inputClass(!!errors.email)}
                 />
               </div>
               {errors.email && (
-                <p className="mt-1.5 text-xs font-medium text-red-600">
+                <p className="mt-1.5 text-xs font-medium text-destructive">
                   {errors.email.message}
                 </p>
               )}
@@ -156,24 +158,20 @@ function LoginForm() {
                 Password
               </label>
               <div className="relative mt-1.5">
-                <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   placeholder="••••••••"
                   {...register("password")}
-                  className={`w-full rounded-md border bg-white py-2.5 pl-9 pr-10 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
-                    errors.password
-                      ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                      : "border-zinc-200 focus:border-black focus:ring-black/10"
-                  }`}
+                  className={`${inputClass(!!errors.password)} pr-10`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 transition hover:text-zinc-900"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground transition hover:text-foreground"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -183,7 +181,7 @@ function LoginForm() {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1.5 text-xs font-medium text-red-600">
+                <p className="mt-1.5 text-xs font-medium text-destructive">
                   {errors.password.message}
                 </p>
               )}
@@ -192,7 +190,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group flex w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-zinc-950/10 transition-all hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-50"
+              className="btn-accent group flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
@@ -208,15 +206,15 @@ function LoginForm() {
           </form>
 
           <div className="mt-7 flex items-center gap-3">
-            <span className="h-px flex-1 bg-zinc-200" />
-            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-zinc-400">
+            <span className="h-px flex-1 bg-border" />
+            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-muted-foreground">
               SECURE ACCESS
             </span>
-            <span className="h-px flex-1 bg-zinc-200" />
+            <span className="h-px flex-1 bg-border" />
           </div>
 
-          <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-zinc-400">
-            PROTECTED BY BastionOS CRYPTOGRAPHIC PROTOCOL
+          <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
+            PROTECTED BY BASTIONOS CRYPTOGRAPHIC PROTOCOL
           </p>
         </div>
       </div>

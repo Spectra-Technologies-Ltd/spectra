@@ -68,6 +68,13 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
+  // Role-based access: field employees get the ops views; settings stay for leadership
+  const isLeader = !!user?.role && user.role !== 'EMPLOYEE';
+  const sections = navSections.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => item.href !== '/account' || isLeader),
+  }));
+
   // Live count of open incidents for the sidebar badge
   const { data: openIncidents } = useQuery({
     queryKey: ['sidebar-open-incidents'],
@@ -167,7 +174,7 @@ export default function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
-          {navSections.map((section) => (
+          {sections.map((section) => (
             <div key={section.label}>
               <p
                 className={cn(
