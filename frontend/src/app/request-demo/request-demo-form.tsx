@@ -58,7 +58,7 @@ export default function RequestDemoForm() {
     `w-full rounded-md border bg-white py-2.5 px-3 text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 sm:text-sm ${
       hasError
         ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-        : "border-zinc-200 focus:border-blue-500 focus:ring-blue-100"
+        : "border-zinc-200 focus:border-[#57d7d4] focus:ring-[#b9efed]"
     }`;
 
   const onSubmit = async (data: RequestDemoFormData) => {
@@ -104,7 +104,7 @@ export default function RequestDemoForm() {
           </p>
           <Link
             href="/"
-            className="mt-8 inline-flex items-center gap-2 rounded-md bg-gradient-to-br from-cyan-500 to-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition-all hover:brightness-110"
+            className="mt-8 inline-flex items-center gap-2 rounded-md bg-[#57d7d4] px-5 py-3 text-sm font-bold text-[#061a20] shadow-lg shadow-[#57d7d4]/30 transition-all hover:bg-[#4cc9c6]"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Homepage
           </Link>
@@ -118,7 +118,7 @@ export default function RequestDemoForm() {
       {/* Simple top bar */}
       <header className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-8">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-md shadow-blue-600/25">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#57d7d4] text-[#061a20] shadow-md shadow-[#57d7d4]/30">
             <Shield className="h-4 w-4" />
           </div>
           <span className="font-mono text-sm font-bold tracking-[0.25em] text-zinc-900">
@@ -127,7 +127,7 @@ export default function RequestDemoForm() {
         </div>
         <Link
           href="/"
-          className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 transition-colors hover:text-blue-600"
+          className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 transition-colors hover:text-[#0e9d9a]"
         >
           Home
         </Link>
@@ -149,7 +149,7 @@ export default function RequestDemoForm() {
             </div>
           </div>
 
-          <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-blue-600">
+          <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-[#0e9d9a]">
             CONTACT · DEMO REQUEST · PARTNERSHIP INQUIRIES
           </p>
           <h1 className="mt-3 text-3xl font-black tracking-tight text-zinc-950">
@@ -317,7 +317,7 @@ export default function RequestDemoForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group flex w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-blue-900/25 transition-all hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50"
+              className="group flex w-full items-center justify-center gap-2 rounded-md bg-[#57d7d4] px-4 py-3 text-sm font-bold text-[#061a20] shadow-lg shadow-[#57d7d4]/30 transition-all hover:bg-[#4cc9c6] focus:outline-none focus:ring-2 focus:ring-[#57d7d4] disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
