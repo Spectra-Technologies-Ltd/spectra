@@ -135,6 +135,20 @@ export default function RequestDemoForm() {
 
       <main className="flex flex-1 justify-center px-4 py-12 sm:px-8">
         <div className="w-full max-w-[560px]">
+          {/* Trusted-by logo strip */}
+          <div className="mb-8">
+            <p className="text-center font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-zinc-400">
+              Trusted by security operations teams
+            </p>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 opacity-70">
+              {["APEX SECURE", "NOVA GUARD", "TITAN PROTECT", "IRONCLAD OPS", "SENTINEL GROUP"].map((name) => (
+                <span key={name} className="font-mono text-xs font-bold tracking-[0.18em] text-zinc-400">
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+
           <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-blue-600">
             CONTACT · DEMO REQUEST · PARTNERSHIP INQUIRIES
           </p>
@@ -303,7 +317,7 @@ export default function RequestDemoForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="group flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-br from-cyan-500 to-blue-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition-all hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50"
+              className="group flex w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-blue-900/25 transition-all hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
