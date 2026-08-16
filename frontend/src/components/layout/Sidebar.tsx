@@ -17,6 +17,7 @@ import {
   FileText,
   Bell,
   Settings,
+  Sparkles,
   ChevronsLeft,
   ChevronsRight,
   LogOut,
@@ -57,8 +58,10 @@ const navSections = [
   {
     label: 'System',
     items: [
+      { label: 'Security Center', href: '/security', icon: ShieldCheck },
       { label: 'Notifications', href: '/notifications', icon: Bell },
       { label: 'Settings', href: '/account', icon: Settings },
+      { label: "What's New", href: '/changelog', icon: Sparkles },
     ],
   },
 ];

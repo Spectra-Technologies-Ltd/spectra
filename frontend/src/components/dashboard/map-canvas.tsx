@@ -45,6 +45,31 @@ export function MapCanvas({
     y: 18 + ((i * 11) % 64),
   }))
 
+  // If sites carry GPS coordinates, project them onto the map within bounds
+  const withCoords = (data?.data ?? []).filter(
+    (s: { latitude?: number; longitude?: number }) =>
+      typeof s.latitude === 'number' && typeof s.longitude === 'number',
+  )
+  let projected: SiteMarker[] | null = null
+  if (withCoords.length > 0) {
+    const lats = withCoords.map((s: { latitude: number }) => s.latitude)
+    const lngs = withCoords.map((s: { longitude: number }) => s.longitude)
+    const minLat = Math.min(...lats)
+    const maxLat = Math.max(...lats)
+    const minLng = Math.min(...lngs)
+    const maxLng = Math.max(...lngs)
+    const latSpan = Math.max(maxLat - minLat, 0.001)
+    const lngSpan = Math.max(maxLng - minLng, 0.001)
+    projected = withCoords.map((s: { id: string; name: string; riskLevel: string; latitude: number; longitude: number }) => ({
+      id: s.id,
+      name: s.name,
+      riskLevel: s.riskLevel ?? 'LOW',
+      x: 12 + ((s.longitude - minLng) / lngSpan) * 76,
+      y: 12 + ((maxLat - s.latitude) / latSpan) * 76,
+    }))
+  }
+  const markers = projected ?? sites
+
   return (
     <div
       className={cn(
@@ -72,7 +97,7 @@ export function MapCanvas({
       <div className="pointer-events-none absolute bottom-3 right-3 size-5 border-b-2 border-r-2 border-primary/50" />
 
       {/* Site markers */}
-      {sites.map((site) => {
+      {markers.map((site) => {
         const active = activeId === site.id
         const dot = riskDot[site.riskLevel] ?? riskDot.LOW
         return (
@@ -110,7 +135,7 @@ export function MapCanvas({
       <div className="absolute left-4 top-4 flex items-center gap-2 rounded-md border border-border bg-background/70 px-2.5 py-1 backdrop-blur-sm">
         <span className="size-1.5 animate-pulse rounded-full bg-primary" />
         <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          Live · {sites.length} sites tracked
+          Live · {markers.length} sites tracked
         </span>
       </div>
     </div>

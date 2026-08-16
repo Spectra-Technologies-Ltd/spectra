@@ -4,7 +4,7 @@ import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import {
   ArrowLeft,
@@ -160,6 +160,27 @@ export default function IncidentDetailPage() {
       return res.data;
     },
   });
+
+  // ── Evidence upload ──
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = React.useState(false);
+  const queryClient = useQueryClient();
+
+  const handleEvidenceUpload = async (file: File) => {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      await api.post(`/uploads/incident/${id}/photo`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["incident", id] });
+    } catch {
+      alert("Failed to upload photo. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -485,24 +506,56 @@ export default function IncidentDetailPage() {
             </div>
           )}
 
-          {/* Photos */}
-          {photosList.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-5">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-                <Camera className="h-4 w-4" /> Photos ({photosList.length})
+          {/* Photos — evidence with upload */}
+          <div className="rounded-xl border border-border bg-card p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <Camera className="h-4 w-4" /> Evidence ({photosList.length})
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="btn-accent inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+              >
+                {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
+                {uploading ? "Uploading…" : "Add Photo"}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleEvidenceUpload(file);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+            {photosList.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No photos yet — attach evidence to build the case file.
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {photosList.map((photo: string, i: number) => (
                   <div
                     key={i}
-                    className="aspect-video rounded-lg bg-secondary/20 flex items-center justify-center overflow-hidden"
+                    className="group relative aspect-video overflow-hidden rounded-lg border border-border bg-secondary/20"
                   >
-                    <Camera className="h-6 w-6 text-muted-foreground" />
+                    {photo.startsWith('http') || photo.startsWith('/uploads') ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={photo} alt={`Evidence ${i + 1}`} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Camera className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Videos */}
           {videosList.length > 0 && (

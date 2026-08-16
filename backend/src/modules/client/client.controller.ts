@@ -47,6 +47,12 @@ export class ClientController {
     return this.clientService.findOne(id, user.organizationId);
   }
 
+  @Get(':id/export')
+  @Roles('ADMIN')
+  async exportData(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.clientService.exportData(id, user.organizationId);
+  }
+
   @Post()
   @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)

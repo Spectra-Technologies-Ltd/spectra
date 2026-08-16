@@ -17,6 +17,8 @@ import {
   Bell,
   Settings,
   Loader2,
+  ShieldCheck,
+  Sparkles,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
@@ -34,7 +36,9 @@ const items = [
   { label: 'Analytics', href: '/analytics', icon: BarChart3, hint: 'Go to' },
   { label: 'Reports', href: '/reports', icon: FileText, hint: 'Go to' },
   { label: 'Notifications', href: '/notifications', icon: Bell, hint: 'Go to' },
+  { label: 'Security Center', href: '/security', icon: ShieldCheck, hint: 'Go to' },
   { label: 'Settings', href: '/account', icon: Settings, hint: 'Go to' },
+  { label: "What's New", href: '/changelog', icon: Sparkles, hint: 'Go to' },
 ]
 
 interface SearchHit {

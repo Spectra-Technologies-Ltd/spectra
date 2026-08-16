@@ -20,6 +20,7 @@ interface Guard {
   nin: string;
   status: string;
   currentShift: string;
+  performanceScore?: number;
   assignedSite?: { id: string; name: string };
 }
 
@@ -29,11 +30,42 @@ export default function GuardsDirectoryPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  // Saved views — persist filters in localStorage
+  const [search, setSearch] = useState<string>(() => {
+    try {
+      return localStorage.getItem('bastion-guards-search') ?? '';
+    } catch {
+      return '';
+    }
+  });
+  const [statusFilter, setStatusFilter] = useState<string>(() => {
+    try {
+      return localStorage.getItem('bastion-guards-status') ?? 'ALL';
+    } catch {
+      return 'ALL';
+    }
+  });
   const [showFilter, setShowFilter] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkSiteId, setBulkSiteId] = useState('');
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('bastion-guards-search', search);
+    } catch {
+      /* noop */
+    }
+  }, [search]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('bastion-guards-status', statusFilter);
+    } catch {
+      /* noop */
+    }
+  }, [statusFilter]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -55,6 +87,15 @@ export default function GuardsDirectoryPage() {
     },
   });
 
+  const { data: sitesData } = useQuery({
+    queryKey: ['guards-sites'],
+    queryFn: async () => {
+      const res = await api.get('/sites', { params: { limit: 100 } });
+      return res.data;
+    },
+    staleTime: 60000,
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (guardId: string) => api.delete(`/guards/${guardId}`),
     onSuccess: () => {
@@ -62,6 +103,25 @@ export default function GuardsDirectoryPage() {
       setOpenMenu(null);
     },
   });
+
+  const bulkAssignMutation = useMutation({
+    mutationFn: (dto: { siteId: string; guardIds: string[] }) =>
+      api.post('/guards/bulk-assign', dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guards'] });
+      setSelected(new Set());
+      setBulkSiteId('');
+    },
+  });
+
+  const toggleSelected = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -108,6 +168,44 @@ export default function GuardsDirectoryPage() {
           </button>
         </div>
       </div>
+
+      {/* Bulk assign bar */}
+      {selected.size > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/40 bg-primary/10 p-3">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-primary">
+            {selected.size} selected
+          </span>
+          <select
+            value={bulkSiteId}
+            onChange={(e) => setBulkSiteId(e.target.value)}
+            className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground outline-none focus:border-ring"
+          >
+            <option value="">Assign to site…</option>
+            {(sitesData?.data ?? []).map((s: { id: string; name: string }) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => {
+              if (!bulkSiteId) return;
+              bulkAssignMutation.mutate({
+                siteId: bulkSiteId,
+                guardIds: Array.from(selected),
+              });
+            }}
+            disabled={!bulkSiteId || bulkAssignMutation.isPending}
+            className="btn-accent flex items-center gap-2 rounded-lg px-4 py-1.5 text-sm font-medium disabled:opacity-50"
+          >
+            {bulkAssignMutation.isPending ? 'Assigning…' : 'Assign'} <ArrowRightLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setSelected(new Set())}
+            className="ml-auto font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
+          >
+            Clear
+          </button>
+        </div>
+      )}
 
       {/* Filter bar */}
       {showFilter && (
@@ -163,10 +261,14 @@ export default function GuardsDirectoryPage() {
               <table className="w-full text-sm text-left">
                 <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
                   <tr>
+                    <th className="px-6 py-4 font-medium tracking-wider w-10">
+                      <span className="sr-only">Select</span>
+                    </th>
                     <th className="px-6 py-4 font-medium tracking-wider">Guard Name</th>
                     <th className="px-6 py-4 font-medium tracking-wider">National ID (NIN)</th>
                     <th className="px-6 py-4 font-medium tracking-wider">Assigned Site</th>
                     <th className="px-6 py-4 font-medium tracking-wider">Shift</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Performance</th>
                     <th className="px-6 py-4 font-medium tracking-wider">Status</th>
                     <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
                   </tr>
@@ -174,6 +276,15 @@ export default function GuardsDirectoryPage() {
                 <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((guard: Guard) => (
                     <tr key={guard.id} className="table-row-hover group">
+                      <td className="px-6 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(guard.id)}
+                          onChange={() => toggleSelected(guard.id)}
+                          aria-label={`Select ${guard.fullName}`}
+                          className="size-4 rounded border-border accent-primary"
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 ring-1 ring-primary/25">
@@ -194,6 +305,20 @@ export default function GuardsDirectoryPage() {
                       <td className="px-6 py-4">
                         <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
                           {guard.currentShift}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center gap-1 font-mono text-xs font-bold ${
+                            (guard.performanceScore ?? 100) >= 85
+                              ? 'text-success'
+                              : (guard.performanceScore ?? 100) >= 70
+                                ? 'text-warning'
+                                : 'text-destructive'
+                          }`}
+                        >
+                          <span className="size-1.5 rounded-full bg-current" />
+                          {guard.performanceScore ?? 100}
                         </span>
                       </td>
                       <td className="px-6 py-4">

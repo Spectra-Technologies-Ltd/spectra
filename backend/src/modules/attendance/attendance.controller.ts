@@ -1,6 +1,7 @@
 import {
-  Controller, Get, Post, Body, Query, UseGuards, HttpCode, HttpStatus,
+  Controller, Get, Post, Body, Query, UseGuards, HttpCode, HttpStatus, Header, Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { AttendanceService } from './attendance.service';
 import { CheckInDto, CheckOutDto } from './dto/attendance.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -56,5 +57,26 @@ export class AttendanceController {
       limit: limit ? parseInt(limit) : undefined,
       siteId, date, guardId, organizationId: user.organizationId,
     });
+  }
+
+  @Get('export')
+  @Roles('ADMIN')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  async exportCsv(
+    @Res() res: Response,
+    @CurrentUser() user: any,
+    @Query('date') date?: string,
+    @Query('siteId') siteId?: string,
+  ) {
+    const csv = await this.attendanceService.exportCsv({
+      organizationId: user.organizationId,
+      date,
+      siteId,
+    });
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="attendance-${date ?? 'all'}.csv"`,
+    );
+    res.send(csv);
   }
 }

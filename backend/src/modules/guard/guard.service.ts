@@ -59,6 +59,77 @@ export class GuardService {
     };
   }
 
+  /**
+   * Compute a performance score per guard from attendance, patrol and
+   * incident data, persist it, and return the ranked list.
+   */
+  async getPerformance(organizationId: string) {
+    const guards = await this.prisma.guard.findMany({
+      where: { organizationId },
+      select: {
+        id: true,
+        fullName: true,
+        status: true,
+        performanceScore: true,
+        assignedSite: { select: { name: true } },
+        _count: {
+          select: { attendances: true, patrolRecords: true },
+        },
+        attendances: {
+          select: { isLate: true },
+        },
+        patrolRecords: {
+          select: { completionPercentage: true },
+        },
+      },
+    });
+
+    const scored = guards.map((g) => {
+      const late = g.attendances.filter((a) => a.isLate).length;
+      const totalAtt = g.attendances.length;
+      const attRate =
+        totalAtt > 0 ? Math.round(((totalAtt - late) / totalAtt) * 100) : 100;
+      const avgCompletion =
+        g.patrolRecords.length > 0
+          ? Math.round(
+              g.patrolRecords.reduce(
+                (s, p) => s + p.completionPercentage,
+                0,
+              ) / g.patrolRecords.length,
+            )
+          : 100;
+      const score = Math.max(
+        40,
+        Math.min(99, Math.round(attRate * 0.5 + avgCompletion * 0.5)),
+      );
+
+      return {
+        id: g.id,
+        fullName: g.fullName,
+        status: g.status,
+        site: g.assignedSite?.name ?? '—',
+        attendanceRate: attRate,
+        patrolCompletion: avgCompletion,
+        lateCheckIns: late,
+        score,
+      };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+
+    // Persist the computed scores
+    for (const item of scored) {
+      if (item.score !== 100) {
+        await this.prisma.guard.update({
+          where: { id: item.id },
+          data: { performanceScore: item.score },
+        });
+      }
+    }
+
+    return scored;
+  }
+
   async findOne(id: string, organizationId?: string) {
     const where: any = { id };
     if (organizationId) where.organizationId = organizationId;

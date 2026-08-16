@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   X,
+  Siren,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -26,6 +27,48 @@ export default function MobileDashboard() {
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [sosState, setSosState] = useState<"idle" | "sending" | "sent">("idle");
+
+  const handleSos = () => {
+    if (!window.confirm("Trigger a PANIC ALERT to your command center?")) return;
+    setSosState("sending");
+    setError(null);
+    const report = (latitude: number, longitude: number) => {
+      api
+        .get("/auth/me")
+        .then(async (me) => {
+          const guardProfile = me.data?.guardProfile;
+          let siteId = guardProfile?.assignedSite?.id;
+          if (!siteId) {
+            const sites = await api.get("/sites", { params: { limit: 1 } });
+            siteId = sites.data?.data?.[0]?.id;
+          }
+          if (!siteId) throw new Error("No site available for panic alert");
+          return api.post("/incidents", {
+            title: "PANIC ALERT — Officer in distress",
+            description: `SOS triggered from the field at ${new Date().toLocaleTimeString()}. Location: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,
+            type: "OTHER",
+            severity: "CRITICAL",
+            siteId,
+            latitude,
+            longitude,
+          });
+        })
+        .then(() => {
+          setSosState("sent");
+          setTimeout(() => setSosState("idle"), 6000);
+        })
+        .catch((e: any) => {
+          setError(e?.response?.data?.message ?? "SOS failed. Please try again.");
+          setSosState("idle");
+        });
+    };
+    navigator.geolocation.getCurrentPosition(
+      (pos) => report(pos.coords.latitude, pos.coords.longitude),
+      () => report(0, 0),
+      { timeout: 8000 },
+    );
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -171,6 +214,31 @@ export default function MobileDashboard() {
           </span>
         </div>
       </div>
+
+      {/* SOS button */}
+      <button
+        onClick={handleSos}
+        disabled={sosState !== "idle"}
+        className={`flex w-full items-center justify-center gap-2.5 rounded-2xl border p-4 text-base font-bold transition-all ${
+          sosState === "sent"
+            ? "border-success/40 bg-success/15 text-success"
+            : "border-destructive/40 bg-destructive/15 text-destructive active:scale-[0.98]"
+        }`}
+      >
+        {sosState === "sending" ? (
+          <>
+            <Clock className="h-5 w-5 animate-spin" /> Sending panic alert…
+          </>
+        ) : sosState === "sent" ? (
+          <>
+            <CheckCircle2 className="h-5 w-5" /> Alert sent — command center notified
+          </>
+        ) : (
+          <>
+            <Siren className="h-5 w-5" /> SOS — Panic Alert
+          </>
+        )}
+      </button>
 
       {/* Error banner */}
       {error && (

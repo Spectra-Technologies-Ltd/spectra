@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { ClipboardCheck } from 'lucide-react';
+import { ClipboardCheck, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Pagination } from '@/components/ui/Pagination';
 import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
@@ -68,6 +68,12 @@ export default function AttendancePage() {
             Monitor guard check-ins, check-outs, and attendance status across all sites.
           </p>
         </div>
+        <a
+          href="/api/v1/attendance/export"
+          className="btn-accent inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium"
+        >
+          <Download className="h-4 w-4" /> Export CSV
+        </a>
       </div>
 
       <div className="rounded-xl border border-border bg-card overflow-hidden flex flex-col">

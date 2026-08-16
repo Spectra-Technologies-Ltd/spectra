@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
   ArrowLeft, Building2, Phone, Mail, MapPin, Calendar, DollarSign, Users,
-  Shield, AlertTriangle, Loader2, ExternalLink, Camera,
+  Shield, AlertTriangle, Loader2, ExternalLink, Camera, Download, FileText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
@@ -120,9 +120,25 @@ export default function ClientProfilePage() {
 
   return (
     <DashboardLayout>
-      <button onClick={() => router.push('/clients')} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
-        <ArrowLeft className="h-4 w-4" /> Back to directory
-      </button>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <button onClick={() => router.push('/clients')} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="h-4 w-4" /> Back to directory
+        </button>
+        <div className="flex items-center gap-2">
+          <a
+            href={`/api/v1/clients/${id}/export`}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:border-primary/40"
+          >
+            <Download className="h-3.5 w-3.5" /> Export Data
+          </a>
+          <a
+            href={`/api/v1/reports/client/${id}/pdf`}
+            className="btn-accent inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium"
+          >
+            <FileText className="h-3.5 w-3.5" /> Summary PDF
+          </a>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column — Company card */}

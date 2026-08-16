@@ -149,6 +149,45 @@ export class UploadsController {
   }
 
   /**
+   * Upload incident evidence (photo). Appends to the incident's photo list.
+   * POST /uploads/incident/:id/photo
+   */
+  @Post('incident/:id/photo')
+  @Roles('ADMIN', 'EMPLOYEE')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 10 * 1024 * 1024 },
+      fileFilter: (_req, file, cb) => {
+        if (!file.mimetype.startsWith('image/')) {
+          cb(new BadRequestException('Only image files are allowed'), false);
+          return;
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async uploadIncidentPhoto(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() user: { organizationId: string },
+  ) {
+    if (!file) throw new BadRequestException('No file uploaded');
+
+    const incident = await this.prisma.incident.findFirst({
+      where: { id, site: { organizationId: user.organizationId } },
+    });
+    if (!incident) throw new BadRequestException('Incident not found in your organization');
+
+    const url = await this.uploadAndPersist(file, 'incidents');
+    const existing = incident.photos ? incident.photos.split(',').filter(Boolean) : [];
+    const photos = [...existing, url].join(',');
+
+    await this.prisma.incident.update({ where: { id }, data: { photos } });
+
+    return { photoUrl: url, photos: photos.split(',') };
+  }
+
+  /**
    * Upload to Cloudinary if configured, otherwise save locally.
    */
   private async uploadAndPersist(

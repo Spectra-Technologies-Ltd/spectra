@@ -40,6 +40,8 @@ const ROUTE_META: { prefix: string; title: string; crumb: string }[] = [
   { prefix: '/analytics', title: 'Analytics', crumb: 'Insights / Analytics' },
   { prefix: '/notifications', title: 'Notifications', crumb: 'System / Notifications' },
   { prefix: '/account', title: 'Account', crumb: 'System / Account' },
+  { prefix: '/security', title: 'Security Center', crumb: 'System / Security Center' },
+  { prefix: '/changelog', title: "What's New", crumb: 'System / Changelog' },
   { prefix: '/map', title: 'Live Map', crumb: 'Command / Live Map' },
   { prefix: '/mobile', title: 'Mobile', crumb: 'Field / Mobile' },
 ];

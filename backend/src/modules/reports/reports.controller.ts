@@ -53,4 +53,15 @@ export class ReportsController {
     });
     res.end(pdf);
   }
+
+  @Get('client/:clientId/pdf')
+  @Roles('ADMIN')
+  async getClientSummary(@Param('clientId') clientId: string, @Res() res: Response) {
+    const pdf = await this.reportsService.generateClientSummary(clientId);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="client-summary-${clientId}.pdf"`,
+    });
+    res.end(pdf);
+  }
 }

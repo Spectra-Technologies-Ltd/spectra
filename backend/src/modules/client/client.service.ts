@@ -55,6 +55,63 @@ export class ClientService {
     return client;
   }
 
+  /** Full data bundle for a client — sites, incidents and attendance summary. */
+  async exportData(id: string, organizationId?: string) {
+    const client = await this.findOne(id, organizationId);
+    const sites = await this.prisma.site.findMany({
+      where: { clientId: id },
+      include: {
+        _count: { select: { guards: true, incidents: true } },
+        incidents: {
+          orderBy: { reportedAt: 'desc' },
+          take: 50,
+          select: {
+            id: true,
+            title: true,
+            incidentType: true,
+            severity: true,
+            status: true,
+            reportedAt: true,
+            description: true,
+          },
+        },
+      },
+    });
+    const attendance = await this.prisma.attendance.findMany({
+      where: { site: { clientId: id } },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      select: {
+        id: true,
+        status: true,
+        isLate: true,
+        checkInTime: true,
+        checkOutTime: true,
+        guard: { select: { fullName: true } },
+        site: { select: { name: true } },
+      },
+    });
+
+    return {
+      exportedAt: new Date().toISOString(),
+      client: {
+        id: client.id,
+        companyName: client.companyName,
+        estateName: client.estateName,
+        contactPerson: client.contactPerson,
+        phone: client.phone,
+        email: client.email,
+        contractStart: client.contractStart,
+        contractEnd: client.contractEnd,
+        monthlyFee: client.monthlyFee,
+        numberOfGuardsAllocated: client.numberOfGuardsAllocated,
+        billingStatus: client.billingStatus,
+      },
+      sites,
+      recentAttendance: attendance,
+    };
+  }
+
   async create(dto: CreateClientDto, organizationId: string) {
     return this.prisma.client.create({
       data: {

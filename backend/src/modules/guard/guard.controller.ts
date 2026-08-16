@@ -57,6 +57,12 @@ export class GuardController {
     return this.guardService.getStats(user.organizationId);
   }
 
+  @Get('performance')
+  @Roles('ADMIN')
+  async getPerformance(@CurrentUser() user: any) {
+    return this.guardService.getPerformance(user.organizationId);
+  }
+
   @Get('unassigned')
   @Roles('ADMIN')
   async findUnassigned(@CurrentUser() user: any) {

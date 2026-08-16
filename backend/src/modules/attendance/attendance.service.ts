@@ -283,4 +283,59 @@ export class AttendanceService {
 
     return { data, meta: { total, page, limit, pages: Math.ceil(total / limit) } };
   }
+
+  /** Export attendance records as CSV for payroll / compliance. */
+  async exportCsv(opts: { organizationId: string; date?: string; siteId?: string }) {
+    const where: any = { guard: { organizationId: opts.organizationId } };
+    if (opts.siteId) where.siteId = opts.siteId;
+    if (opts.date) {
+      const startOfDay = new Date(opts.date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(opts.date);
+      endOfDay.setHours(23, 59, 59, 999);
+      where.createdAt = { gte: startOfDay, lte: endOfDay };
+    }
+
+    const records = await this.prisma.attendance.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        guard: { select: { fullName: true, nin: true, currentShift: true } },
+        site: { select: { name: true } },
+      },
+    });
+
+    const header = [
+      'Date',
+      'Guard Name',
+      'NIN',
+      'Site',
+      'Check In',
+      'Check Out',
+      'Status',
+      'Late',
+      'Shift',
+    ];
+    const escape = (v: unknown) => {
+      const s = String(v ?? '');
+      return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = records.map((r) =>
+      [
+        r.createdAt.toLocaleDateString('en-GB'),
+        r.guard.fullName,
+        r.guard.nin,
+        r.site.name,
+        r.checkInTime?.toLocaleString('en-GB'),
+        r.checkOutTime?.toLocaleString('en-GB') ?? '',
+        r.status,
+        r.isLate ? 'YES' : 'NO',
+        r.guard.currentShift,
+      ]
+        .map(escape)
+        .join(','),
+    );
+
+    return [header.join(','), ...rows].join('\r\n');
+  }
 }

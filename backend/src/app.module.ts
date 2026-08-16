@@ -15,6 +15,7 @@ import { ReportsModule } from './modules/reports/reports.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { LeadsModule } from './modules/leads/leads.module';
+import { AuditModule } from './modules/audit/audit.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { LeadsModule } from './modules/leads/leads.module';
     DashboardModule,
     UploadsModule,
     LeadsModule,
+    AuditModule,
   ],
   controllers: [AppController],
   providers: [AppService],
