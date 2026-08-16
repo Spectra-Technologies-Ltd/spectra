@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
   User, Loader2, Save, CheckCircle2, AlertCircle, Mail, Phone, Shield, Camera,
+  KeyRound, Copy, Smartphone,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -286,7 +287,225 @@ export default function AccountSettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Two-Factor Authentication Card */}
+        <TfaCard />
       </div>
     </DashboardLayout>
+  );
+}
+
+function TfaCard() {
+  const [status, setStatus] = useState<{ enabled: boolean } | null>(null);
+  const [enroll, setEnroll] = useState<{ secret: string; otpauthUri: string } | null>(null);
+  const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const loadStatus = () => {
+    api
+      .get('/auth/tfa/status')
+      .then((r) => setStatus(r.data))
+      .catch(() => {});
+  };
+
+  useEffect(loadStatus, []);
+
+  const copySecret = async () => {
+    if (!enroll) return;
+    try {
+      await navigator.clipboard.writeText(enroll.secret);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard unavailable
+    }
+  };
+
+  const startEnroll = async () => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const r = await api.post('/auth/tfa/enable');
+      setEnroll(r.data);
+    } catch (e: any) {
+      setMsg({ kind: 'err', text: e?.response?.data?.message ?? 'Could not start enrollment' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const confirmEnroll = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setMsg(null);
+    try {
+      const r = await api.post('/auth/tfa/confirm', { code: code.trim() });
+      setBackupCodes(r.data.backupCodes ?? []);
+      setEnroll(null);
+      setCode('');
+      setStatus({ enabled: true });
+    } catch (e: any) {
+      setMsg({ kind: 'err', text: e?.response?.data?.message ?? 'Invalid code' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const disable = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setMsg(null);
+    try {
+      await api.post('/auth/tfa/disable', { code: code.trim() });
+      setCode('');
+      setStatus({ enabled: false });
+      setMsg({ kind: 'ok', text: 'Two-factor authentication disabled.' });
+    } catch (e: any) {
+      setMsg({ kind: 'err', text: e?.response?.data?.message ?? 'Invalid code' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 mt-5">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+        <KeyRound className="h-4 w-4" /> Two-Factor Authentication
+      </h3>
+
+      {status && status.enabled && !enroll && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+            <span>
+              Enabled — every sign-in requires a code from your authenticator app.
+            </span>
+          </div>
+          <form onSubmit={disable} className="flex flex-wrap items-end gap-3">
+            <div className="min-w-0 flex-1">
+              <label className="text-xs text-muted-foreground">
+                Enter an authenticator code to disable
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                placeholder="000000"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono tracking-[0.3em] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={busy || code.length < 6}
+              className="rounded-lg border border-destructive/40 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
+            >
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Disable 2FA'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {status && !status.enabled && !enroll && !backupCodes && (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            Add an authenticator app (Google Authenticator, Authy, 1Password…) for
+            an extra layer of account security.
+          </p>
+          <button
+            onClick={startEnroll}
+            disabled={busy}
+            className="btn-accent inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium disabled:opacity-60"
+          >
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Smartphone className="h-4 w-4" />}
+            Enable 2FA
+          </button>
+        </div>
+      )}
+
+      {enroll && (
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Scan this key with your authenticator app (or enter the secret
+            manually), then enter the 6-digit code to confirm.
+          </p>
+          <div className="rounded-lg border border-border bg-background p-4 font-mono text-xs">
+            <p className="text-muted-foreground">Secret key</p>
+            <div className="mt-1 flex items-center justify-between gap-2">
+              <span className="break-all text-foreground">{enroll.secret}</span>
+              <button
+                onClick={copySecret}
+                className="shrink-0 rounded-md border border-border px-2 py-1 text-[10px] text-muted-foreground hover:text-foreground"
+              >
+                <Copy className="h-3 w-3" /> {copied ? 'Copied' : 'Copy'}
+              </button>
+            </div>
+            <p className="mt-2 text-muted-foreground">
+              Manual setup: <span className="break-all text-foreground">{enroll.otpauthUri}</span>
+            </p>
+          </div>
+          <form onSubmit={confirmEnroll} className="flex flex-wrap items-end gap-3">
+            <div className="min-w-0 flex-1">
+              <label className="text-xs text-muted-foreground">6-digit verification code</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoFocus
+                maxLength={6}
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                placeholder="000000"
+                className="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono tracking-[0.3em] text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={busy || code.length < 6}
+              className="btn-accent inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium disabled:opacity-60"
+            >
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify & Enable'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {backupCodes && (
+        <div className="space-y-3">
+          <div className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div>
+              <p className="font-semibold">Save these backup codes</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Each code works once. If you lose your authenticator app, these are
+                the only way back in.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {backupCodes.map((c) => (
+              <code key={c} className="rounded-lg border border-border bg-background px-3 py-2 text-center font-mono text-xs text-foreground">
+                {c}
+              </code>
+            ))}
+          </div>
+          <button
+            onClick={() => setBackupCodes(null)}
+            className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+          >
+            Done — I saved these
+          </button>
+        </div>
+      )}
+
+      {msg && (
+        <p className={`mt-3 text-sm ${msg.kind === 'ok' ? 'text-success' : 'text-destructive'}`}>
+          {msg.text}
+        </p>
+      )}
+    </div>
   );
 }

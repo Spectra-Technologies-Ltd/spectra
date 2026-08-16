@@ -1,8 +1,9 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { useRealtimeEvent } from '@/lib/realtime'
 
 interface ActivityItem {
   type: string
@@ -37,6 +38,7 @@ const fallback: ActivityItem[] = [
 ]
 
 export function ActivityTimeline() {
+  const queryClient = useQueryClient()
   const { data } = useQuery({
     queryKey: ['activity-timeline'],
     queryFn: async () => {
@@ -44,6 +46,14 @@ export function ActivityTimeline() {
       return res.data
     },
     staleTime: 30000,
+  })
+
+  // New incidents and check-ins appear instantly in the activity log
+  useRealtimeEvent('incident:created', () => {
+    queryClient.invalidateQueries({ queryKey: ['activity-timeline'] })
+  })
+  useRealtimeEvent('attendance:checkin', () => {
+    queryClient.invalidateQueries({ queryKey: ['activity-timeline'] })
   })
 
   const activities: ActivityItem[] = data?.length > 0 ? data.slice(0, 6) : fallback

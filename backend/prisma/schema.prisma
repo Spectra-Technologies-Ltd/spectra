@@ -19,6 +19,9 @@ model User {
   role                String         // "CEO", "OPERATIONS_MANAGER", "HR", "SUPERVISOR", "GUARD", "CLIENT"
   photoUrl            String?
   isActive            Boolean        @default(true)
+  twoFactorEnabled    Boolean        @default(false)
+  twoFactorSecret     String?
+  twoFactorBackupCodes String?       // JSON array of SHA-256 hashed backup codes
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 
@@ -34,6 +37,20 @@ model User {
   auditLogs           AuditLog[]
   notifications       Notification[]
   refreshTokens       RefreshToken[]
+  pushSubscriptions   PushSubscription[]
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Organization {

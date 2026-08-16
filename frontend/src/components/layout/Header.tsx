@@ -2,13 +2,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { Bell, Search, Menu, PanelLeftClose, PanelLeft, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './SidebarContext';
 import { CommandPalette } from '@/components/dashboard/command-palette';
+import { useRealtimeEvent, useRealtimeStatus } from '@/lib/realtime';
 
 interface NotificationItem {
   id: string;
@@ -38,10 +40,12 @@ const ROUTE_META: { prefix: string; title: string; crumb: string }[] = [
   { prefix: '/incidents', title: 'Incidents', crumb: 'Security / Incidents' },
   { prefix: '/reports', title: 'Reports', crumb: 'Security / Reports' },
   { prefix: '/analytics', title: 'Analytics', crumb: 'Insights / Analytics' },
+  { prefix: '/napoleon', title: 'Napoleon', crumb: 'Insights / Napoleon' },
   { prefix: '/notifications', title: 'Notifications', crumb: 'System / Notifications' },
   { prefix: '/account', title: 'Account', crumb: 'System / Account' },
   { prefix: '/security', title: 'Security Center', crumb: 'System / Security Center' },
   { prefix: '/changelog', title: "What's New", crumb: 'System / Changelog' },
+  { prefix: '/napoleon', title: 'Napoleon Intelligence', crumb: 'Intelligence / Napoleon' },
   { prefix: '/map', title: 'Live Map', crumb: 'Command / Live Map' },
   { prefix: '/mobile', title: 'Mobile', crumb: 'Field / Mobile' },
 ];
@@ -106,6 +110,29 @@ export default function Header() {
     enabled: notifOpen,
   });
 
+  const queryClient = useQueryClient();
+  const rtStatus = useRealtimeStatus();
+  const [bellPulse, setBellPulse] = useState(false);
+
+  // Live notification push — invalidate instantly instead of waiting for poll
+  useRealtimeEvent('notification:created', (n) => {
+    queryClient.invalidateQueries({ queryKey: ['unread-notifications'] });
+    queryClient.invalidateQueries({ queryKey: ['recent-notifications'] });
+    setBellPulse(true);
+    setTimeout(() => setBellPulse(false), 1800);
+    // Browser notification when permission granted and the tab is hidden
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted' && document.hidden) {
+      try {
+        new Notification(n.title ?? 'BastionOS', {
+          body: n.message ?? '',
+          icon: '/icon-192.png',
+        });
+      } catch {
+        // notification constructor failed — ignore
+      }
+    }
+  });
+
   const toggleTheme = () => {
     const html = document.documentElement;
     const nextDark = !html.classList.contains('dark');
@@ -160,10 +187,30 @@ export default function Header() {
 
         <div className="ml-auto hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 md:flex">
           <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />
-            <span className="relative inline-flex size-2 rounded-full bg-success" />
+            <span
+              className={cn(
+                'absolute inline-flex size-full animate-ping rounded-full',
+                rtStatus === 'live'
+                  ? 'bg-success opacity-60'
+                  : rtStatus === 'connecting'
+                    ? 'bg-warning opacity-60'
+                    : 'bg-destructive opacity-60',
+              )}
+            />
+            <span
+              className={cn(
+                'relative inline-flex size-2 rounded-full',
+                rtStatus === 'live'
+                  ? 'bg-success'
+                  : rtStatus === 'connecting'
+                    ? 'bg-warning'
+                    : 'bg-destructive',
+              )}
+            />
           </span>
-          <span className="font-mono text-xs text-muted-foreground">All systems operational</span>
+          <span className="font-mono text-xs text-muted-foreground">
+            {rtStatus === 'live' ? 'LIVE · realtime connected' : rtStatus === 'connecting' ? 'Connecting…' : 'Reconnecting…'}
+          </span>
         </div>
 
         <div className="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 lg:flex">
@@ -195,7 +242,7 @@ export default function Header() {
             aria-label="Notifications"
             className="relative flex size-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
           >
-            <Bell className="size-4" />
+            <Bell className={cn('size-4', bellPulse && 'animate-bounce text-primary')} />
             {notifData?.count > 0 && (
               <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold text-white">
                 {notifData.count > 9 ? '9+' : notifData.count}
@@ -259,7 +306,11 @@ export default function Header() {
         </div>
 
         {user && (
-          <div className="ml-1 hidden items-center gap-2 border-l border-border pl-3 sm:flex">
+          <Link
+            href="/account"
+            title="Account & security"
+            className="ml-1 hidden items-center gap-2 border-l border-border pl-3 transition-opacity hover:opacity-80 sm:flex"
+          >
             <div className="flex size-8 items-center justify-center rounded-full bg-primary/15 font-mono text-xs font-semibold text-primary">
               {user.firstName?.[0]}
               {user.lastName?.[0]}
@@ -272,7 +323,7 @@ export default function Header() {
                 {user.role?.replace('_', ' ')}
               </p>
             </div>
-          </div>
+          </Link>
         )}
       </header>
 

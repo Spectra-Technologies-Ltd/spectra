@@ -8,11 +8,15 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { PrismaService } from '../../database/prisma.service';
 
 @Controller('attendance')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class AttendanceController {
-  constructor(private attendanceService: AttendanceService) {}
+  constructor(
+    private attendanceService: AttendanceService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post('check-in')
   @Roles('EMPLOYEE')
@@ -40,6 +44,43 @@ export class AttendanceController {
       dto.date,
     );
     return { message: `${count} guards marked as absent`, count };
+  }
+
+  @Get('me')
+  async getMyStatus(@CurrentUser() user: any) {
+    const guard = await this.prisma.guard.findUnique({
+      where: { userId: user.id },
+      select: { id: true, fullName: true, assignedSiteId: true },
+    });
+    if (!guard) return { hasGuardProfile: false };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const active = await this.prisma.attendance.findFirst({
+      where: { guardId: guard.id, createdAt: { gte: today }, checkOutTime: null },
+      orderBy: { createdAt: 'desc' },
+    });
+    const latest = await this.prisma.attendance.findFirst({
+      where: { guardId: guard.id },
+      orderBy: { createdAt: 'desc' },
+      take: 1,
+    });
+
+    return {
+      hasGuardProfile: true,
+      checkedIn: Boolean(active),
+      activeCheckIn: active
+        ? {
+            id: active.id,
+            time: active.checkInTime.toISOString(),
+            status: active.status,
+            isLate: active.isLate,
+            verified: active.verifiedStatus,
+          }
+        : null,
+      lastStatus: latest ? { status: latest.status, isLate: latest.isLate, at: latest.createdAt.toISOString() } : null,
+    };
   }
 
   @Get('history')

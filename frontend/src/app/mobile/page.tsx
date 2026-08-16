@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   X,
   Siren,
+  BellRing,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -28,6 +29,13 @@ export default function MobileDashboard() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [sosState, setSosState] = useState<"idle" | "sending" | "sent">("idle");
+  const [checkInResult, setCheckInResult] = useState<string | null>(null);
+  const [alertsEnabled, setAlertsEnabled] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "granted",
+  );
 
   const handleSos = () => {
     if (!window.confirm("Trigger a PANIC ALERT to your command center?")) return;
@@ -73,6 +81,33 @@ export default function MobileDashboard() {
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Restore duty state on load so reopening the app shows the truth
+  useEffect(() => {
+    const restore = async () => {
+      try {
+        const res = await api.get("/attendance/me");
+        if (res.data?.checkedIn) {
+          setIsCheckedIn(true);
+          setCheckInResult(
+            res.data.activeCheckIn?.verified
+              ? `On duty since ${new Date(res.data.activeCheckIn.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+              : `Checked in (${res.data.activeCheckIn?.status ?? "FLAGGED"}) — verification pending`,
+          );
+        }
+      } catch {
+        // Not signed in as a guard profile — ignore
+      }
+    };
+    restore();
+  }, []);
+
+  // Push alert permission state
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setAlertsEnabled(Notification.permission === "granted");
+    }
   }, []);
 
   useEffect(() => {
@@ -138,6 +173,14 @@ export default function MobileDashboard() {
             setIsCheckedIn(true);
             setCapturedPhoto(null);
             setPhotoFile(null);
+            const status = res.data?.status ?? "ON_TIME";
+            setCheckInResult(
+              status === "FLAGGED"
+                ? "Checked in outside the 200m geofence — supervisor notified"
+                : status === "LATE"
+                  ? "Checked in — marked late"
+                  : "Checked in — on time, geofence verified",
+            );
           } catch (e: any) {
             const msg =
               e?.response?.data?.message ||
@@ -171,6 +214,7 @@ export default function MobileDashboard() {
           try {
             await api.post("/attendance/check-out", { latitude, longitude });
             setIsCheckedIn(false);
+            setCheckInResult(null);
           } catch (e: any) {
             const msg =
               e?.response?.data?.message ||
@@ -245,6 +289,20 @@ export default function MobileDashboard() {
         <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-xl p-3 text-sm flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           {error}
+        </div>
+      )}
+
+      {/* Check-in result feedback */}
+      {checkInResult && (
+        <div
+          className={`rounded-xl p-3 text-sm flex items-center gap-2 border ${
+            checkInResult.includes("geofence") || checkInResult.includes("late")
+              ? "bg-warning/10 border-warning/20 text-warning"
+              : "bg-success/10 border-success/20 text-success"
+          }`}
+        >
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          {checkInResult}
         </div>
       )}
 
@@ -347,6 +405,31 @@ export default function MobileDashboard() {
             <Camera className="h-5 w-5" />
           </div>
           <span className="text-xs font-medium text-foreground">Log Photo</span>
+        </button>
+        <button
+          onClick={async () => {
+            if (alertsEnabled) {
+              const ok = await import("@/lib/push").then((m) => m.unsubscribeFromPush());
+              if (ok) setAlertsEnabled(false);
+            } else {
+              const ok = await import("@/lib/push").then((m) => m.subscribeToPush());
+              setAlertsEnabled(ok);
+            }
+          }}
+          className={`bg-card border border-border p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors ${
+            alertsEnabled ? "border-primary/50 bg-primary/5" : ""
+          }`}
+        >
+          <div
+            className={`h-10 w-10 rounded-full flex items-center justify-center ${
+              alertsEnabled ? "bg-primary/15 text-primary" : "bg-secondary text-foreground"
+            }`}
+          >
+            <BellRing className="h-5 w-5" />
+          </div>
+          <span className="text-xs font-medium text-foreground">
+            {alertsEnabled ? "Alerts On" : "Enable Alerts"}
+          </span>
         </button>
         <a
           href="/mobile/incidents"

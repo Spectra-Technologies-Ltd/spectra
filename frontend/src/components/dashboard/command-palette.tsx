@@ -3,22 +3,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
+  Users,
   LayoutDashboard,
   Map,
-  Users,
   AlertTriangle,
-  Search,
   ClipboardCheck,
   Route,
-  Building2,
   MapPin,
+  Building2,
   BarChart3,
   FileText,
+  Search,
   Bell,
   Settings,
   Loader2,
   ShieldCheck,
   Sparkles,
+  BrainCircuit,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
@@ -34,6 +35,7 @@ const items = [
   { label: 'Sites', href: '/sites', icon: MapPin, hint: 'Go to' },
   { label: 'Clients', href: '/clients', icon: Building2, hint: 'Go to' },
   { label: 'Analytics', href: '/analytics', icon: BarChart3, hint: 'Go to' },
+  { label: 'Napoleon', href: '/napoleon', icon: BrainCircuit, hint: 'Go to' },
   { label: 'Reports', href: '/reports', icon: FileText, hint: 'Go to' },
   { label: 'Notifications', href: '/notifications', icon: Bell, hint: 'Go to' },
   { label: 'Security Center', href: '/security', icon: ShieldCheck, hint: 'Go to' },

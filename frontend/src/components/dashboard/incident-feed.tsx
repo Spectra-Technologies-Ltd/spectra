@@ -2,10 +2,11 @@
 
 import { ChevronRight, MapPin, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils'
+import { useRealtimeEvent } from '@/lib/realtime'
 
 interface IncidentRow {
   id: string
@@ -42,6 +43,7 @@ function timeAgo(iso: string): string {
 }
 
 export function IncidentFeed() {
+  const queryClient = useQueryClient()
   const { data } = useQuery({
     queryKey: ['incident-feed'],
     queryFn: async () => {
@@ -49,6 +51,11 @@ export function IncidentFeed() {
       return res.data
     },
     staleTime: 30000,
+  })
+
+  // A new incident lands in the feed the moment it is reported
+  useRealtimeEvent('incident:created', () => {
+    queryClient.invalidateQueries({ queryKey: ['incident-feed'] })
   })
 
   const incidents: IncidentRow[] = data?.data ?? []

@@ -13,6 +13,7 @@ import {
   UpdateIncidentStatusDto,
 } from './dto/incident.dto';
 import { NotificationsService } from '../notifications/notifications.service';
+import { RealtimeService } from '../realtime/realtime.service';
 
 @Injectable()
 export class IncidentService {
@@ -21,6 +22,7 @@ export class IncidentService {
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
+    private realtime: RealtimeService,
   ) {}
 
   async reportIncident(
@@ -63,6 +65,18 @@ export class IncidentService {
       siteName: site.name,
       description: dto.description,
     }).catch((err) => this.logger.warn('Notification failed:', err.message));
+
+    // Real-time push to the command center
+    this.realtime.publish(user.organizationId, 'incident:created', {
+      id: incident.id,
+      title: dto.title,
+      type: dto.type,
+      severity: dto.severity,
+      status: 'OPEN',
+      siteId: dto.siteId,
+      siteName: site.name,
+      reportedAt: incident.reportedAt.toISOString(),
+    });
 
     // Write audit log (fire-and-forget)
     this.prisma.auditLog.create({

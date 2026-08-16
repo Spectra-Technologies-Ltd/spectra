@@ -18,6 +18,7 @@ import {
   Bell,
   Settings,
   Sparkles,
+  BrainCircuit,
   ChevronsLeft,
   ChevronsRight,
   LogOut,
@@ -51,6 +52,7 @@ const navSections = [
   {
     label: 'Intelligence',
     items: [
+      { label: 'Napoleon', href: '/napoleon', icon: BrainCircuit },
       { label: 'Analytics', href: '/analytics', icon: BarChart3 },
       { label: 'Reports', href: '/reports', icon: FileText },
     ],

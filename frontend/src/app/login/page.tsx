@@ -45,6 +45,9 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tfaToken, setTfaToken] = useState<string | null>(null);
+  const [tfaCode, setTfaCode] = useState("");
+  const [tfaEmail, setTfaEmail] = useState("");
 
   const {
     register,
@@ -59,6 +62,12 @@ function LoginForm() {
     setIsSubmitting(true);
     try {
       const response = await api.post("/auth/login", data);
+      if (response.data?.requiresTwoFactor) {
+        // Step two: authenticator code required
+        setTfaToken(response.data.tfaToken);
+        setTfaEmail(data.email);
+        return;
+      }
       const { user } = response.data;
       login(user);
     } catch (err: any) {
@@ -66,6 +75,28 @@ function LoginForm() {
         err.response?.data?.message ||
           "Unable to connect to security servers. Please verify credentials.",
       );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onTfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tfaToken || tfaCode.trim().length < 6) {
+      setError("Please enter the 6-digit code from your authenticator app.");
+      return;
+    }
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      const response = await api.post("/auth/tfa/login", {
+        tfaToken,
+        code: tfaCode.trim(),
+      });
+      login(response.data.user);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Invalid two-factor code.");
+      setTfaCode("");
     } finally {
       setIsSubmitting(false);
     }
@@ -95,6 +126,92 @@ function LoginForm() {
             </p>
           </div>
 
+          {tfaToken ? (
+            /* ── 2FA verification step ── */
+            <>
+              <p className="animate-rise font-mono text-[11px] font-bold tracking-[0.28em] text-primary" style={{ animationDelay: "180ms" }}>
+                TWO-FACTOR VERIFICATION
+              </p>
+              <div className="animate-rise mt-4 flex items-start gap-3 rounded-md border border-primary/30 bg-primary/5 p-4 text-sm text-foreground" style={{ animationDelay: "240ms" }}>
+                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <div>
+                  <p className="font-bold">Authentication required</p>
+                  <p className="mt-0.5 text-muted-foreground">
+                    Enter the 6-digit code from your authenticator app to finish
+                    signing in as <span className="font-semibold text-foreground">{tfaEmail}</span>.
+                  </p>
+                </div>
+              </div>
+
+              {error && (
+                <div className="animate-rise mt-4 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive" style={{ animationDelay: "300ms" }}>
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <div>
+                    <p className="font-bold">Verification failed</p>
+                    <p className="mt-0.5">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              <form className="mt-8 space-y-5" onSubmit={onTfaSubmit} noValidate>
+                <div>
+                  <label htmlFor="tfa" className={labelClass}>
+                    Authenticator Code
+                  </label>
+                  <div className="relative mt-1.5">
+                    <Shield className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="tfa"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      autoFocus
+                      maxLength={6}
+                      placeholder="000000"
+                      value={tfaCode}
+                      onChange={(e) =>
+                        setTfaCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
+                      }
+                      className="w-full rounded-md border border-border bg-card py-2.5 pl-9 pr-3 font-mono text-lg tracking-[0.4em] text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/15 sm:text-base"
+                    />
+                  </div>
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    Backup codes also work here.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn-accent group flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Verifying...
+                    </>
+                  ) : (
+                    <>
+                      Verify & Enter
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTfaToken(null);
+                    setTfaCode("");
+                    setError(null);
+                  }}
+                  className="w-full text-center text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  ← Back to sign in
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
           <p className="animate-rise font-mono text-[11px] font-bold tracking-[0.28em] text-primary">
             SECURE SIGN-IN
           </p>
@@ -216,6 +333,8 @@ function LoginForm() {
           <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
             PROTECTED BY BASTIONOS CRYPTOGRAPHIC PROTOCOL
           </p>
+            </>
+          )}
         </div>
       </div>
     </div>

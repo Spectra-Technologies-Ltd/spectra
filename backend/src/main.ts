@@ -11,6 +11,7 @@ import cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { mkdirSync, existsSync } from 'fs';
+import { SecurityMiddleware } from './common/security.middleware';
 
 async function bootstrap() {
   // Ensure uploads directory exists
@@ -27,6 +28,11 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+
+  // Security hardening: headers + auth rate limiting
+  const security = new SecurityMiddleware();
+  app.use((req: any, res: any, next: any) => security.use(req, res, next));
+  setInterval(() => security.prune(), 60 * 1000).unref();
 
   // Log all requests with full error details
   const httpLogger = new Logger('HTTP');

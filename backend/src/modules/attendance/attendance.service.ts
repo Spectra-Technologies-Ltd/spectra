@@ -1,10 +1,14 @@
 import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
+import { RealtimeService } from '../realtime/realtime.service';
 import { CheckInDto, CheckOutDto } from './dto/attendance.dto';
 
 @Injectable()
 export class AttendanceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private realtime: RealtimeService,
+  ) {}
 
   // Distance calculation using Haversine formula
   private getDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -116,6 +120,19 @@ export class AttendanceService {
 
     // 7. Update guard performance score based on attendance rate
     await this.updateGuardPerformanceScore(guard.id);
+
+    // Real-time check-in event for the command center
+    this.realtime.publish(user.organizationId, 'attendance:checkin', {
+      id: record.id,
+      guardId: guard.id,
+      guardName: guard.fullName,
+      siteId: site.id,
+      siteName: site.name,
+      status,
+      isLate,
+      withinGeofence: isWithinGeofence,
+      time: record.checkInTime.toISOString(),
+    });
 
     // 8. Write audit log (fire-and-forget)
     this.prisma.auditLog.create({

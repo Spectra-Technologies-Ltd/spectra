@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import AuthProvider from "@/providers/AuthProvider";
+import PwaBootstrap from "@/components/PwaBootstrap";
 
 export const metadata: Metadata = {
   title: "BastionOS | Operations Intelligence Platform",
@@ -46,6 +47,7 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             {children}
+            <PwaBootstrap />
           </AuthProvider>
         </QueryProvider>
       </body>

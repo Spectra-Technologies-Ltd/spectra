@@ -12,12 +12,14 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
+import { TfaService } from './tfa.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
+import { PrismaService } from '../../database/prisma.service';
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -28,7 +30,11 @@ const COOKIE_OPTIONS = {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private tfa: TfaService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -52,6 +58,11 @@ export class AuthController {
   ) {
     const result = await this.authService.login(dto);
 
+    // 2FA gate: no cookies yet, just hand back the step-two token
+    if (result.requiresTwoFactor) {
+      return { requiresTwoFactor: true, tfaToken: result.tfaToken };
+    }
+
     res.cookie('access_token', result.accessToken, {
       ...COOKIE_OPTIONS,
       maxAge: 15 * 60 * 1000, // 15 minutes
@@ -64,6 +75,62 @@ export class AuthController {
     });
 
     return { user: result.user };
+  }
+
+  @Post('tfa/login')
+  @HttpCode(HttpStatus.OK)
+  async tfaLogin(
+    @Body() dto: { tfaToken: string; code: string },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.authService.completeTfaLogin(dto.tfaToken, dto.code);
+
+    res.cookie('access_token', result.accessToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie('refresh_token', result.refreshToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/v1/auth',
+    });
+
+    return { user: result.user };
+  }
+
+  @Get('tfa/status')
+  @UseGuards(JwtAuthGuard)
+  async tfaStatus(@CurrentUser() user: any) {
+    const record = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      select: { twoFactorEnabled: true },
+    });
+    return { enabled: record?.twoFactorEnabled ?? false };
+  }
+
+  @Post('tfa/enable')
+  @UseGuards(JwtAuthGuard)
+  async tfaEnable(@CurrentUser() user: any) {
+    return this.tfa.startEnrollment(user.id, user.email);
+  }
+
+  @Post('tfa/confirm')
+  @UseGuards(JwtAuthGuard)
+  async tfaConfirm(
+    @CurrentUser() user: any,
+    @Body() dto: { code: string },
+  ) {
+    return this.tfa.confirmEnrollment(user.id, dto.code);
+  }
+
+  @Post('tfa/disable')
+  @UseGuards(JwtAuthGuard)
+  async tfaDisable(
+    @CurrentUser() user: any,
+    @Body() dto: { code: string },
+  ) {
+    return this.tfa.disable(user.id, dto.code);
   }
 
   @Post('refresh')
