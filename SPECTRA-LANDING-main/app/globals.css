@@ -230,6 +230,13 @@ section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 .statement-foot { color: #75829c; display: flex; font-family: var(--font-geist-mono), monospace; font-size: 10px; justify-content: space-between; letter-spacing: .12em; margin-top: 8vh; }
 .command-section { background: #060a19; }
 .command-layout { align-items: center; display: grid; gap: 8vw; grid-template-columns: .75fr 1.25fr; margin-top: 75px; }
+/* Signal flow — Learn / Predict / Decide design element */
+.signal-flow { border-left: 1px solid var(--hairline); display: flex; flex-direction: column; gap: 22px; padding-left: 26px; }
+.signal-step { align-items: flex-start; display: flex; gap: 16px; position: relative; }
+.signal-step::before { background: var(--accent); border-radius: 50%; content: ''; height: 7px; left: -29.5px; position: absolute; top: 7px; width: 7px; box-shadow: 0 0 0 4px rgba(87,215,212,.15), 0 0 14px rgba(87,215,212,.45); }
+.signal-idx { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; padding-top: 3px; }
+.signal-title { color: var(--foreground); font-size: 15px; font-weight: 600; letter-spacing: -.01em; margin: 0; }
+.signal-sub { color: var(--muted-foreground); font-size: 13px; line-height: 1.55; margin: 4px 0 0; max-width: 280px; }
 .command-copy h2 { font-size: clamp(54px, 6.5vw, 100px); }
 .command-copy .body-copy { margin: 28px 0 34px; }
 .command-visual { aspect-ratio: 1.35; background: #080d1e; overflow: hidden; position: relative; }
