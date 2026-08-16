@@ -7,10 +7,16 @@ import {
   Body,
   Param,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   HttpCode,
   HttpStatus,
+  Header,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { GuardService } from './guard.service';
 import {
   CreateGuardDto,
@@ -79,6 +85,73 @@ export class GuardController {
   @Roles('ADMIN')
   async bulkAssign(@Body() dto: { siteId: string; guardIds: string[] }, @CurrentUser() user: any) {
     return this.guardService.bulkAssign(dto, user.organizationId);
+  }
+
+  // ── Bulk import ────────────────────────────────────────────────────────────
+
+  @Get('import/template')
+  @Roles('ADMIN')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  async importTemplate(@Res() res: Response) {
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="guards-import-template.csv"',
+    );
+    res.send(this.guardService.buildCsvTemplate());
+  }
+
+  @Post('import')
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  async importGuards(
+    @Body()
+    body: {
+      rows: Record<string, any>[];
+      createAccounts?: boolean;
+      mode?: 'create' | 'upsert';
+    },
+    @CurrentUser() user: any,
+  ) {
+    if (!body?.rows?.length) {
+      return {
+        total: 0,
+        created: 0,
+        updated: 0,
+        skipped: 0,
+        accountsCreated: 0,
+        createdAccounts: [],
+        errors: [{ row: 0, reason: 'No rows provided' }],
+        errorsTruncated: false,
+      };
+    }
+    return this.guardService.importGuards({
+      rows: body.rows,
+      createAccounts: body.createAccounts,
+      mode: body.mode,
+      organizationId: user.organizationId,
+    });
+  }
+
+  @Post('import/csv')
+  @Roles('ADMIN')
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.OK)
+  async importCsv(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { createAccounts?: string; mode?: string },
+    @CurrentUser() user: any,
+  ) {
+    if (!file) {
+      return { error: 'Upload a CSV file with the field named "file"' };
+    }
+    const text = file.buffer?.toString('utf8') ?? '';
+    const rows = this.guardService.importFromCsv(text, user.organizationId);
+    return this.guardService.importGuards({
+      rows,
+      createAccounts: body.createAccounts === 'true',
+      mode: (body.mode as 'create' | 'upsert') ?? 'create',
+      organizationId: user.organizationId,
+    });
   }
 
   @Get(':id')

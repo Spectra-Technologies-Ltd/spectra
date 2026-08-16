@@ -7,12 +7,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
   Users, Search, Plus, Filter, MoreVertical, Shield,
-  X, Edit, Trash2, ArrowRightLeft,
+  X, Edit, Trash2, ArrowRightLeft, UploadCloud,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
 import { Pagination } from '@/components/ui/Pagination';
 import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
+import { ImportGuardsModal } from '@/components/dashboard/import-guards-modal';
 
 interface Guard {
   id: string;
@@ -28,6 +29,7 @@ const STATUSES = ['ALL', 'ACTIVE', 'ON_LEAVE', 'SUSPENDED', 'INACTIVE'];
 
 export default function GuardsDirectoryPage() {
   const router = useRouter();
+  const [importOpen, setImportOpen] = useState(false);
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   // Saved views — persist filters in localStorage
@@ -159,6 +161,12 @@ export default function GuardsDirectoryPage() {
                 1
               </span>
             )}
+          </button>
+          <button
+            onClick={() => setImportOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-border bg-card hover:border-primary/40"
+          >
+            <UploadCloud className="h-4 w-4" /> Import
           </button>
           <button
             onClick={() => router.push('/guards/add')}
@@ -435,6 +443,8 @@ export default function GuardsDirectoryPage() {
           />
         )}
       </div>
+
+      <ImportGuardsModal open={importOpen} onClose={() => setImportOpen(false)} />
     </DashboardLayout>
   );
 }
