@@ -1,5 +1,5 @@
 /* BastionOS service worker — offline shell + web push. */
-const CACHE = 'bastionos-shell-v2';
+const CACHE = 'bastionos-shell-v3';
 const SHELL = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
 
 self.addEventListener('install', (event) => {
