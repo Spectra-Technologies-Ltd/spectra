@@ -38,13 +38,7 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased dark">
       {/* Apply the saved theme before first paint (defaults to dark) */}
       <head>
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('bastion-theme');if(t==='light'){document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark')}}catch(e){document.documentElement.classList.add('dark')}})();`,
-          }}
-        />
+        <Script id="theme-init" src="/theme-init.js" strategy="beforeInteractive" />
       </head>
       <body className="min-h-full bg-background text-foreground flex flex-col font-sans">
         <QueryProvider>
