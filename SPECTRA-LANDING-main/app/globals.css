@@ -141,9 +141,9 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--accent); outlin
 .hero-copy h1, h2 { font-size: clamp(52px, 8.3vw, 130px); font-weight: 330; letter-spacing: -.09em; line-height: .9; margin: 26px 0; }
 h1 em, h2 em, .statement-section em, .careers-section em, .contact-section em { color: var(--accent); font-style: normal; }
 .hero-description { color: #b3bfd3; font-size: 15px; line-height: 1.65; margin: 0 0 29px; max-width: 400px; }
-.outline-button, .solid-button { align-items: center; border: 1px solid rgba(220,235,255,.38); background: rgba(7,10,28,.16); color: var(--foreground); cursor: pointer; display: inline-flex; font-size: 11px; gap: 26px; justify-content: space-between; padding: 14px 16px; text-transform: uppercase; transition: background .25s ease, border-color .25s ease, color .25s ease; }
-.outline-button:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-foreground); }
-.solid-button { background: var(--accent); border-color: var(--accent); color: var(--accent-foreground); }
+.outline-button, .solid-button { align-items: center; border: 1px solid rgba(87,215,212,.42); background: rgba(7,10,28,.16); color: var(--foreground); cursor: pointer; display: inline-flex; font-size: 11px; gap: 26px; justify-content: space-between; padding: 14px 16px; text-transform: uppercase; transition: background .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease; }
+.outline-button:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-foreground); box-shadow: 0 0 24px rgba(87,215,212,.35); }
+.solid-button { background: var(--accent); border-color: var(--accent); color: var(--accent-foreground); box-shadow: 0 0 24px rgba(87,215,212,.25); }
 .hero-bottom { bottom: 28px; display: flex; justify-content: space-between; left: 34px; position: absolute; right: 34px; z-index: 1; }
 .hero-scroll { align-items: center; display: flex; gap: 9px; }
 .scroll-line { background: var(--accent); display: block; height: 1px; width: 54px; }
