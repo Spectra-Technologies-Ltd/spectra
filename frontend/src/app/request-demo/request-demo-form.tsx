@@ -127,7 +127,7 @@ export default function RequestDemoForm() {
         </div>
         <Link
           href="/"
-          className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 transition-colors hover:text-[#0e9d9a]"
+          className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 transition-colors hover:text-[#57d7d4]"
         >
           Home
         </Link>
@@ -149,7 +149,7 @@ export default function RequestDemoForm() {
             </div>
           </div>
 
-          <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-[#0e9d9a]">
+          <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-[#57d7d4]">
             CONTACT · DEMO REQUEST · PARTNERSHIP INQUIRIES
           </p>
           <h1 className="mt-3 text-3xl font-black tracking-tight text-zinc-950">
