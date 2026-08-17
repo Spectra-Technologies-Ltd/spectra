@@ -6,7 +6,6 @@ import { ArrowDownRight, ArrowUpRight, MoveRight, Plus } from 'lucide-react'
 import SiteHeader from '../components/site-header'
 import SiteFooter from '../components/site-footer'
 import { Reveal } from '../components/reveal'
-import { IntelligenceDiagram } from '../components/napoleon/intelligence-diagram'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
 
@@ -15,17 +14,6 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.
 const CeaserScene = dynamic(() => import('../components/CeaserScene'), { ssr: false })
 const IsometricPlatform = dynamic(() => import('../components/isometric-platform').then((m) => m.IsometricPlatform))
 
-const products = [
-  { name: 'BastionOS', type: 'OPERATING FOUNDATION / INFRASTRUCTURE', image: '/images/spectra-bastion-layer.jpg', description: 'The secure operating environment where Spectra\u2019s systems run — infrastructure that is observable, resilient, and built for autonomy.', stats: [['Uptime', '99.99%'], ['Security', 'Zero trust'], ['Deployment', 'Edge + cloud'], ['Observability', 'Native']] },
-  { name: 'Napoleon', type: 'INTELLIGENCE LAYER / MACHINE LEARNING', image: '/images/spectra-command.png', description: 'Spectra\u2019s machine-intelligence layer. Models that turn raw signals — video, radar, AIS, acoustic — into capability the system can act on.', stats: [['Inference', '< 90 sec'], ['Signals', 'Multi-sensor'], ['Learning', 'Continuous'], ['Latency', 'Real time']] },
-]
-
-const capabilities = [
-  { label: '01 / DEPLOY', title: 'Put autonomy where the mission is.', copy: 'Launch from a ship, road, airfield or remote edge. Spectra systems get to work without a crew onboard or a new operating base.', stat: '18 hr', statLabel: 'aerial persistence' },
-  { label: '02 / UNDERSTAND', title: 'Turn every signal into context.', copy: 'Our mission software fuses video, radar, AIS, acoustic and environmental data into one shared operational picture.', stat: '1 view', statLabel: 'for every domain' },
-  { label: '03 / ACT', title: 'Move at the speed of information.', copy: 'Retask assets, coordinate fleets and close the loop from detection to decision in seconds — with a human in control.', stat: '< 90s', statLabel: 'tasking latency' },
-]
-
 const newsItems = [
   ['SPECTRA JOURNAL', 'BastionOS: the operating foundation for intelligent systems.', '08.15.26'],
   ['TECHNICAL BRIEF', 'Napoleon: machine intelligence from signal to action.', '07.28.26'],
@@ -33,28 +21,18 @@ const newsItems = [
 ]
 
 export default function Page() {
-  const [capability, setCapability] = useState(0)
-  const [product, setProduct] = useState(0)
   const [pressExpanded, setPressExpanded] = useState(false)
-
-  const activeProduct = products[product]
-  const activeCapability = capabilities[capability]
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  // Nav "Overview" links land on the "Built on two layers" section and select
-  // the matching layer (BastionOS or Napoleon) via the URL hash.
+  // Nav "Overview" links land on the BastionOS / Napoleon sections.
   useEffect(() => {
     const handleLayerHash = () => {
       const hash = window.location.hash.replace('#', '')
-      if (hash === 'fleet-bastion') {
-        setProduct(0)
-        scrollTo('fleet')
-      } else if (hash === 'fleet-napoleon') {
-        setProduct(1)
-        scrollTo('fleet')
+      if (hash === 'bastion' || hash === 'napoleon') {
+        scrollTo(hash)
       }
     }
     handleLayerHash()
@@ -75,7 +53,18 @@ export default function Page() {
 
       <section className="manifesto-section" id="company"><div className="section-kicker"><span>01</span><span>WHAT IS SPECTRA</span></div><Reveal><h2>The infrastructure<br /><em>for intelligence.</em></h2></Reveal><div className="manifesto-meta"><span>01—03</span><p>Spectra Technologies builds deep technology — operating environments, machine intelligence, and autonomous systems — engineered for the places where the hardest problems live.</p><ArrowDownRight size={28} /></div></section>
 
-      {/* BastionOS overview — the small section the nav Overview links to */}
+      {/* Intro copy before the Bastion slide */}
+      <section className="bastion-intro">
+        <div className="section-kicker"><span>02</span><span>THE OPERATING FOUNDATION</span></div>
+        <div className="bastion-intro-grid">
+          <Reveal><h2>Security operations run on<br /><em>people, sites and patrols.</em></h2></Reveal>
+          <Reveal><div className="bastion-intro-copy">
+            <p className="body-copy">Every shift, every guard, every site generates data — but it lives in spreadsheets, radio calls and paper records. The platform below brings it all into one real-time operating picture.</p>
+          </div></Reveal>
+        </div>
+      </section>
+
+      {/* BastionOS — the small section the nav Overview links to */}
       <section id="bastion" className="bastion-intro">
         <div className="section-kicker"><span className="brand-name">BastionOS</span><span>THE OPERATING FOUNDATION</span></div>
         <div className="bastion-intro-grid">
@@ -87,19 +76,16 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="fleet" className="fleet-section"><div className="section-kicker"><span>02</span><span>THE PLATFORM</span></div><div className="fleet-intro"><Reveal><h2>Built on<br /><em>two layers.</em></h2></Reveal><p className="body-copy">BastionOS and Napoleon — the operating foundation and the intelligence layer at the core of the Spectra architecture. Select a layer.</p></div><div className="product-switcher"><div className="product-nav">{products.map((item, index) => <button key={item.name} className={product === index ? 'active' : ''} onClick={() => setProduct(index)}><span>0{index + 1}</span>{item.name}</button>)}</div><div className="product-layout"><div className={`product-visual${activeProduct.name === 'Napoleon' ? ' diagram-visual' : ''}`}>
-              {activeProduct.name === 'Napoleon'
-                ? <IntelligenceDiagram />
-                : <><img key={activeProduct.name} className="product-in" src={activeProduct.image} alt={`${activeProduct.name} product layer`} /><div className="image-corner">{activeProduct.name} / SPECTRA</div></>
-              }</div><div className="product-info"><p className="eyebrow">{activeProduct.type}</p><h3>{activeProduct.name}</h3><p className="body-copy">{activeProduct.description}</p><div className="spec-list">{activeProduct.stats.map(([label, value]) => <div key={label}><span>{label}</span><strong>{value}</strong></div>)}</div><a className="outline-button" href={activeProduct.name === 'BastionOS' ? '/bastionos' : '/napoleon'}>View technical specs <ArrowUpRight size={17} /></a></div></div></div></section>
+      {/* Napoleon — signals in, intelligence out */}
+      <section id="napoleon" className="command-section"><div className="section-kicker"><span>03</span><span>NAPOLEON</span></div><div className="command-layout"><div className="command-copy"><Reveal><p className="eyebrow">MACHINE INTELLIGENCE LAYER</p><h2>Signals in.<br /><em>Intelligence out.</em></h2><p className="body-copy">Napoleon is the intelligence layer of the Spectra platform. It learns from the operational data your teams already produce — attendance, patrols, incidents, sensors — to surface patterns, predict outcomes, and recommend the next action.</p><a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a></Reveal></div><div className="command-visual"><Reveal delay={120}><div className="signal-pipeline"><div className="pipeline-rail"><span className="pipeline-rail-label">SIGNAL IN</span><div className="pipeline-chip-list">{['ATTENDANCE', 'PATROLS', 'INCIDENTS', 'SENSORS'].map((label) => <span key={label} className="pipeline-chip"><span className="chip-dot" />{label}</span>)}</div></div><div className="pipeline-core"><span className="core-ring" /><span className="core-ring core-ring-2" /><span className="core-dot" /><span className="core-label">NAPOLEON</span></div><div className="pipeline-rail pipeline-rail-out"><span className="pipeline-rail-label">INTELLIGENCE OUT</span><div className="pipeline-chip-list">{['PATTERNS', 'PREDICTIONS', 'DECISIONS'].map((label) => <span key={label} className="pipeline-chip chip-out"><span className="chip-dot" />{label}</span>)}</div></div></div></Reveal></div></div></section>
 
-      <section id="architecture" className="capabilities-section"><div className="section-kicker"><span>03</span><span>THE ARCHITECTURE</span></div><div className="capabilities-layout"><div className="capability-sticky"><Reveal><p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · FOUNDATION</p><h2>From signal<br /><em>to action.</em></h2><p className="body-copy">Three layers, one system. The operating foundation, the intelligence layer, and the infrastructure beneath — built to work as a single architecture.</p></Reveal><div className="capability-tabs">{capabilities.map((item, index) => <button className={capability === index ? 'active' : ''} key={item.label} onClick={() => setCapability(index)}><span>{item.label}</span><span className="tab-bar" /></button>)}</div></div><div className="capability-stage"><div className="capability-animation-wrap"><IsometricPlatform /><div className="image-corner">SPECTRA / SYSTEM ARCHITECTURE</div></div><div className="capability-detail"><div key={capability} className="fade-swap"><p className="eyebrow">{activeCapability.label}</p><h3>{activeCapability.title}</h3><p className="body-copy">{activeCapability.copy}</p></div><div className="cap-stat"><strong>{activeCapability.stat}</strong><span>{activeCapability.statLabel}</span></div></div></div></div></section>
+      {/* Architecture — matching the BastionOS comprehensive page */}
+      <section id="architecture" className="capabilities-section"><div className="section-kicker"><span>04</span><span>THE ARCHITECTURE</span></div><div className="capabilities-layout"><div className="capability-sticky"><Reveal><p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · FOUNDATION</p><h2>One system.<br /><em>Three layers.</em></h2><p className="body-copy">Built on Napoleon — the proprietary machine learning and AI model at the core of the Spectra platform — BastionOS delivers predictive insights, intelligent automation and decision support.</p></Reveal><div className="capability-detail" style={{ paddingTop: 34 }}><div className="fade-swap"><p className="body-copy">Personnel, clients, sites, assets and incidents — unified, automated and live. Operate more efficiently, respond faster, and continuously improve.</p></div><div className="cap-stat"><strong>1</strong><span>real-time view</span></div></div></div><div className="capability-stage"><div className="capability-animation-wrap"><IsometricPlatform /><div className="image-corner">SPECTRA / SYSTEM ARCHITECTURE</div></div></div></div></section>
 
       <section className="statement-section"><div className="statement-rule" /><Reveal><p>WE DON&apos;T BUILD SYSTEMS<br />FOR A SINGLE DOMAIN.</p><h2>We build<br /><em>for what&apos;s next.</em></h2></Reveal><div className="statement-foot"><span>SCROLL / 05</span><span>THE SPECTRA WAY</span></div></section>
 
-      <section id="napoleon" className="command-section"><div className="section-kicker"><span>04</span><span>NAPOLEON</span></div><div className="command-layout"><div className="command-copy"><Reveal><p className="eyebrow">MACHINE INTELLIGENCE LAYER</p><h2>Signals in.<br /><em>Intelligence out.</em></h2><p className="body-copy">Napoleon is the intelligence layer of the Spectra platform. It learns from the operational data your teams already produce — attendance, patrols, incidents, sensors — to surface patterns, predict outcomes, and recommend the next action.</p><a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a></Reveal></div><div className="command-visual"><Reveal delay={120}><div className="signal-pipeline"><div className="pipeline-rail"><span className="pipeline-rail-label">SIGNAL IN</span><div className="pipeline-chip-list">{['ATTENDANCE', 'PATROLS', 'INCIDENTS', 'SENSORS'].map((label) => <span key={label} className="pipeline-chip"><span className="chip-dot" />{label}</span>)}</div></div><div className="pipeline-core"><span className="core-ring" /><span className="core-ring core-ring-2" /><span className="core-dot" /><span className="core-label">NAPOLEON</span></div><div className="pipeline-rail pipeline-rail-out"><span className="pipeline-rail-label">INTELLIGENCE OUT</span><div className="pipeline-chip-list">{['PATTERNS', 'PREDICTIONS', 'DECISIONS'].map((label) => <span key={label} className="pipeline-chip chip-out"><span className="chip-dot" />{label}</span>)}</div></div></div></Reveal></div></div></section>
-
-      <section id="company-team" className="team-section"><div className="section-kicker"><span>05</span><span>ABOUT THE WORKSPACE</span></div><div className="team-grid"><div><Reveal><p className="eyebrow">THE SPECTRA WORKPLACE</p><h2>About our<br /><em>workspace.</em></h2><p className="body-copy">The Spectra Workplace is the operational home of your entire security operation — guards, patrols, attendance, incidents and reporting, unified in one real-time command center.</p><a className="text-button" href="/contact">Work with us <ArrowUpRight size={17} /></a></Reveal></div><img src="/images/spectra-operator.png" alt="The Spectra Workplace operations view" /></div></section>
+      {/* The Spectra Workplace */}
+      <section id="company-team" className="team-section"><div className="section-kicker"><span>05</span><span>THE SPECTRA WORKPLACE</span></div><div className="team-grid"><div><Reveal><p className="eyebrow">ONE SYSTEM · THREE LAYERS</p><h2>Work from<br /><em>one workspace.</em></h2><p className="body-copy">The Spectra Workplace is the operational home of your entire security operation — guards, patrols, attendance, incidents and reporting, unified in one real-time command center.</p><a className="text-button" href="/workspace">Explore the Workplace <ArrowUpRight size={17} /></a></Reveal></div><img src="/images/spectra-operator.png" alt="The Spectra Workplace operations view" /></div></section>
 
       {/* Partners — before news, per brand structure */}
       <section id="partners" className="bastion-intro">

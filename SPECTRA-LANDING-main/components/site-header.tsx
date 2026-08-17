@@ -14,22 +14,22 @@ const NAV_GROUPS = [
     label: 'BastionOS',
     eyebrow: 'The Operating Foundation',
     description: '',
-    links: [['Overview', '/#fleet-bastion']],
+    links: [['Overview', '/#bastion']],
     footer: ['Explore BastionOS', '/bastionos'],
   },
   {
     label: 'Napoleon',
     eyebrow: 'The Intelligence Layer',
     description: '',
-    links: [['Overview', '/#fleet-napoleon']],
+    links: [['Overview', '/#napoleon']],
     footer: ['Explore Napoleon', '/napoleon'],
   },
   {
     label: 'Spectra Workplace',
     eyebrow: 'Spectra Workplace',
-    description: 'Spectra Workplace access is coming soon.',
+    description: 'The operational command center for your entire security operation.',
     links: [],
-    footer: ['', ''],
+    footer: ['Enter the Workplace', '/workspace'],
   },
 ] as const
 
@@ -77,7 +77,7 @@ const MORE_LINKS = [
   ['Home', '/'],
   ['BastionOS', '/bastionos'],
   ['Napoleon', '/napoleon'],
-  ['Spectra Workplace', `${APP_URL}/login`],
+  ['Spectra Workplace', '/workspace'],
   ['News', '/newsroom'],
   ['The Journal', '/journal'],
   ['Research', '/research'],
@@ -123,8 +123,7 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
   // native <a href> navigation do its thing (works even without JS).
   const handleMegaLink = (e: React.MouseEvent, target: string) => {
     const [path, hash] = target.split('#')
-    const layerHash = hash === 'fleet-bastion' || hash === 'fleet-napoleon'
-    if (hash && (path === '' || path === '/' || path === pathname) && !layerHash) {
+    if (hash && (path === '' || path === '/' || path === pathname)) {
       e.preventDefault()
       setOpenNav(null)
       scrollToSection(hash)
@@ -141,19 +140,7 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
       return
     }
     const [path, hash] = target.split('#')
-    // Layer-switch hashes: set the URL hash so the homepage can select the
-    // matching layer and scroll to the "Built on two layers" section.
-    if (hash === 'fleet-bastion' || hash === 'fleet-napoleon') {
-      if (path === '' || path === '/' || path === pathname) {
-        window.location.hash = hash
-      } else {
-        router.push(`${path || '/'}#${hash}`)
-        setTimeout(() => {
-          if (window.location.hash === `#${hash}`) window.dispatchEvent(new Event('hashchange'))
-        }, 600)
-      }
-      return
-    }
+    // Hash links scroll to the matching section on the current page
     if (hash && (path === '' || path === '/' || path === pathname)) {
       scrollToSection(hash)
       return

@@ -60,6 +60,7 @@ export default function BastionOSPage() {
           <div className="capability-sticky">
             <Reveal>
               <p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · FOUNDATION</p>
+              <h2>One system.<br /><em>Three layers.</em></h2>
               <p className="body-copy">Built on Napoleon — the proprietary machine learning and AI model at the core of the Spectra platform — BastionOS delivers predictive insights, intelligent automation and decision support.</p>
             </Reveal>
             <div className="capability-detail" style={{ paddingTop: 34 }}>
