@@ -70,7 +70,7 @@ export default function Page() {
 
       {/* BastionOS — the small section the nav Overview links to */}
       <section id="bastion" className="bastion-intro bastion-centered">
-        <div className="section-kicker"><span className="brand-name">BastionOS</span><span>OUR FLAGSHIP</span></div>
+        <div className="section-kicker"><span className="brand-name">BastionOS</span></div>
         <div className="bastion-hero-center">
           <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'Our Flagship', style: 'em' }, { text: 'Product', style: 'em' }]} />
           <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
