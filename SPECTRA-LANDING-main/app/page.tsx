@@ -72,20 +72,17 @@ export default function Page() {
       <section id="bastion" className="bastion-intro bastion-centered">
         <div className="section-kicker"><span className="brand-name">BastionOS</span><span>OUR FLAGSHIP</span></div>
         <div className="bastion-hero-center">
-          <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'Our Flagship Product', style: 'em' }]} />
+          <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'Our Flagship', style: 'em' }, { text: 'Product', style: 'em' }]} />
           <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
         </div>
       </section>
 
       {/* Napoleon — computes what comes next */}
-      <section id="napoleon" className="bastion-intro">
+      <section id="napoleon" className="bastion-intro bastion-centered">
         <div className="section-kicker"><span className="brand-name">Napoleon</span><span>THE INTELLIGENCE LAYER</span></div>
-        <div className="bastion-intro-grid">
-          <PrintText tag="h2" lines={[{ text: 'Napoleon', style: 'brand' }, { text: 'Compute What Comes Next', style: 'em' }]} />
-          <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy"><strong className="brand-name">Napoleon</strong>{' '}<PrintText tag="span" lines="is the machine intelligence layer of the Spectra platform — it thinks, learns and predicts. It reads the operational data your teams already produce and computes what comes next: patterns, predictions, decisions." speed={10} /></p>
-            <a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a>
-          </div></Reveal>
+        <div className="bastion-hero-center">
+          <PrintText tag="h2" lines={[{ text: 'Napoleon', style: 'brand' }, { text: 'Compute What', style: 'em' }, { text: 'Comes Next', style: 'em' }]} />
+          <a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a>
         </div>
       </section>
 
