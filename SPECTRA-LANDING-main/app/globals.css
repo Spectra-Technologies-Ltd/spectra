@@ -577,6 +577,7 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 .bastion-centered .section-kicker { justify-content: center; }
 .bastion-hero-center { align-items: center; display: flex; flex-direction: column; gap: 30px; margin-top: 60px; text-align: center; }
 .bastion-hero-center h2 { margin: 0; }
+.bastion-hero-center .body-copy { margin: 0; max-width: 620px; }
 
 /* Keep anchored sections clear of the fixed header when scrolled to */
 section[id] { scroll-margin-top: 90px; }
