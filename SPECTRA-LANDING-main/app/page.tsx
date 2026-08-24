@@ -105,7 +105,7 @@ export default function Page() {
       <section id="partners" className="bastion-intro">
         <div className="section-kicker"><span>PARTNERS</span><span>BUILD WITH US</span></div>
         <div className="bastion-intro-grid">
-          <PrintText tag="h2" lines={[{ text: 'Built to' }, { text: 'build on.', style: 'em' }]} />
+          <PrintText tag="h2" lines={[{ text: 'Build with' }, { text: 'Spectra', style: 'em' }]} />
           <Reveal><div className="bastion-intro-copy">
             <p className="body-copy"><PrintText tag="span" lines="Technology integrations, channel partnerships and co-development — teams building on the Spectra architecture, from first signal to final decision." speed={10} /></p>
             <a className="text-button" href="/partners">Explore partnerships <ArrowUpRight size={17} /></a>
