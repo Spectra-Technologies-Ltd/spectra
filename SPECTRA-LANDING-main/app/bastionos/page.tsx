@@ -59,13 +59,13 @@ export default function BastionOSPage() {
         <div className="capabilities-layout">
           <div className="capability-sticky">
             <Reveal>
-              <p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · FOUNDATION</p>
+              <p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · ONE FOUNDATION</p>
               <h2>One system.<br /><em>Three layers.</em></h2>
-              <p className="body-copy">Built on Napoleon — the proprietary machine learning and AI model at the core of the Spectra platform — BastionOS delivers predictive insights, intelligent automation and decision support.</p>
+              <p className="body-copy">BastionOS is the operating foundation. Napoleon is the intelligence layer. Together they form one architecture — from raw signal to decision.</p>
             </Reveal>
             <div className="capability-detail" style={{ paddingTop: 34 }}>
               <div className="fade-swap">
-                <p className="body-copy">Personnel, clients, sites, assets and incidents — unified, automated and live. Operate more efficiently, respond faster, and continuously improve.</p>
+                <p className="body-copy">Personnel, clients, sites, assets and incidents — unified, automated and live. One real-time picture of the entire operation.</p>
               </div>
               <div className="cap-stat"><strong>1</strong><span>real-time view</span></div>
             </div>
@@ -123,7 +123,6 @@ export default function BastionOSPage() {
           <h2>Explore the intelligence<br /><em>layer behind it.</em></h2>
         </Reveal>
         <div className="statement-foot">
-          <span>SCROLL / 05</span>
           <Link className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></Link>
         </div>
       </section>

@@ -87,7 +87,6 @@ export default function ResearchPage() {
           <h2>Deep work,<br /><em>in the open.</em></h2>
         </Reveal>
         <div className="statement-foot">
-          <span>SCROLL / 03</span>
           <Link className="text-button" href="/journal">The Spectra Journal <ArrowUpRight size={17} /></Link>
         </div>
       </section>

@@ -81,7 +81,6 @@ export default function WorkspacePage() {
           <h2>Step into<br /><em>the Workplace.</em></h2>
         </Reveal>
         <div className="statement-foot">
-          <span>SCROLL / 04</span>
           <Link className="text-button" href={`${APP_URL}/login`} target="_blank" rel="noopener noreferrer">Enter the Spectra Workplace <ArrowUpRight size={17} /></Link>
         </div>
       </section>

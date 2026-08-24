@@ -140,9 +140,6 @@ export default function NapoleonPage() {
           <p><span className="brand-name">Napoleon</span> = THINKS, LEARNS, PREDICTS.<br /><span className="brand-name">BastionOS</span> = ORGANIZES, PRESENTS, ACTS.</p>
           <h2>Make data your<br /><em>strategic assets.</em></h2>
         </Reveal>
-        <div className="statement-foot">
-          <span>SCROLL / 07</span>
-        </div>
       </section>
 
       <SiteFooter />

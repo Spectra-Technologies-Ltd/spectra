@@ -68,7 +68,6 @@ export default function NewsPage() {
           <h2>Keep<br /><em>building.</em></h2>
         </Reveal>
         <div className="statement-foot">
-          <span>SCROLL / 03</span>
           <Link className="text-button" href="/research">Research &amp; Insights <ArrowUpRight size={17} /></Link>
         </div>
       </section>

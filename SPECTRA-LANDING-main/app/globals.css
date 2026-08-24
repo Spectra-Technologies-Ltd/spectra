@@ -145,8 +145,7 @@ h1 em, h2 em, .statement-section em, .careers-section em, .contact-section em { 
 .outline-button:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-foreground); box-shadow: 0 0 24px rgba(87,215,212,.35); }
 .solid-button { background: var(--accent); border-color: var(--accent); color: var(--accent-foreground); box-shadow: 0 0 24px rgba(87,215,212,.25); }
 .hero-bottom { bottom: 28px; display: flex; justify-content: space-between; left: 34px; position: absolute; right: 34px; z-index: 1; }
-.hero-scroll { align-items: center; display: flex; gap: 9px; }
-.scroll-line { background: var(--accent); display: block; height: 1px; width: 54px; }
+.hero-bottom > span:only-child, .statement-foot > :only-child { margin-left: auto; }
 
 section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 .section-kicker { border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding-bottom: 16px; }

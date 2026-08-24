@@ -79,7 +79,6 @@ export default function PartnersPage() {
           <h2>Build with us.</h2>
         </Reveal>
         <div className="statement-foot">
-          <span>SCROLL / 03</span>
           <Link className="text-button" href={`${APP_URL}/request-demo`}>Start the conversation <ArrowUpRight size={17} /></Link>
         </div>
       </section>

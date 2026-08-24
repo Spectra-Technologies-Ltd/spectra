@@ -84,7 +84,6 @@ export default function AboutPage() {
           <h2>Let&apos;s talk about<br /><em>the mission.</em></h2>
         </Reveal>
         <div className="statement-foot">
-          <span>SCROLL / 04</span>
           <Link className="text-button" href="/contact">Start a conversation <ArrowUpRight size={17} /></Link>
         </div>
       </section>

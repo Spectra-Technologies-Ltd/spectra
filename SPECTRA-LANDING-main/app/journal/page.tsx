@@ -88,7 +88,6 @@ export default function JournalPage() {
           <h2>More from<br /><em>the journal.</em></h2>
         </Reveal>
         <div className="statement-foot">
-          <span>SCROLL / 03</span>
           <Link className="text-button" href="/newsroom">Latest news <ArrowUpRight size={17} /></Link>
         </div>
       </section>
