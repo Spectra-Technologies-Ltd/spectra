@@ -161,7 +161,7 @@ section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 .manifesto-meta { align-items: flex-end; display: flex; gap: 5vw; justify-content: space-between; margin: 80px 0 0 auto; max-width: 640px; }
 .manifesto-meta p, .body-copy { color: var(--muted-foreground); font-size: 14px; line-height: 1.7; max-width: 390px; }
 .manifesto-section .manifesto-meta p { color: #59677e; }
-.capabilities-layout { display: grid; gap: 9vw; grid-template-columns: .75fr 1.25fr; margin-top: 75px; }
+.capabilities-layout { display: grid; gap: 7vw; grid-template-columns: .75fr 1.25fr; margin-top: 48px; }
 /* Left copy scrolls naturally; the 3D scene below is sticky so it follows
    the viewport down the page while the section scrolls. */
 .capability-sticky { align-self: start; }
@@ -542,7 +542,7 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 /* Container for the animation inside the capabilities stage.
    The stage is taller than the viewport so the pinned scene has room to
    "travel" down the page before it releases. */
-.capability-stage { display: flex; flex-direction: column; min-height: 62vh; }
+.capability-stage { display: flex; flex-direction: column; min-height: 0; }
 .capability-animation-wrap { align-self: flex-start; position: sticky; top: 110px; width: 100%; }
 .capability-animation-wrap .iso-scene { margin-top: -8px; }
 
