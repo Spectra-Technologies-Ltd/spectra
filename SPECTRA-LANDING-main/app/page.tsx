@@ -89,7 +89,7 @@ export default function Page() {
       {/* Architecture — matching the BastionOS comprehensive page */}
       <section id="architecture" className="capabilities-section"><div className="section-kicker"><span>04</span><span>THE ARCHITECTURE</span></div><div className="capabilities-layout"><div className="capability-sticky"><Reveal><p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · ONE FOUNDATION</p><h2>One system.<br /><em>Three layers.</em></h2><p className="body-copy">Three layers, one system. The infrastructure layer unifies operational data. The intelligence layer learns from that data, predicts outcomes and recommends action. The application layer organizes the work and puts intelligence to use. Each layer feeds the next — infrastructure powers intelligence, intelligence powers action.</p></Reveal></div><div className="capability-stage"><div className="capability-animation-wrap"><IsometricPlatform /></div></div></div></section>
 
-      <section className="statement-section"><div className="statement-rule" /><Reveal><p>WE DON&apos;T BUILD SYSTEMS<br />FOR A SINGLE DOMAIN.</p><PrintText tag="h2" lines={[{ text: 'We build' }, { text: "for what's next.", style: 'em' }]} /></Reveal></section>
+      <section className="statement-section"><div className="statement-rule" /><Reveal><p>WE DON&apos;T BUILD SYSTEMS<br />FOR A SINGLE DOMAIN.</p><h2>We build<br /><em>for what&apos;s next.</em></h2></Reveal></section>
 
       {/* The Spectra Workplace */}
       <section id="company-team" className="team-section bastion-centered">
