@@ -229,7 +229,7 @@ section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 .spec-list { border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); margin: 38px 0 30px; }
 .spec-list div { align-items: center; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding: 12px 0; }.spec-list div:last-child { border: 0; }.spec-list strong { font-size: 13px; font-weight: 400; }
 
-.statement-section { min-height: 70vh; padding-top: 8vh !important; }.statement-rule { background: var(--border); height: 1px; margin-bottom: 95px; }.statement-section p { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .12em; }.statement-section h2 { font-size: clamp(65px, 10vw, 155px); margin-top: 35px; }
+.statement-section { min-height: 0; padding-top: 0 !important; }.statement-rule { background: var(--border); height: 1px; margin-bottom: 95px; }.statement-section p { color: var(--muted-foreground); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .12em; }.statement-section h2 { font-size: clamp(65px, 10vw, 155px); margin-top: 35px; }
 .statement-foot { color: #75829c; display: flex; font-family: var(--font-geist-mono), monospace; font-size: 10px; justify-content: space-between; letter-spacing: .12em; margin-top: 8vh; }
 .command-section { background: #060a19; }
 .command-layout { align-items: center; display: grid; gap: 8vw; grid-template-columns: .75fr 1.25fr; margin-top: 75px; }
@@ -543,7 +543,7 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
    The stage is taller than the viewport so the pinned scene has room to
    "travel" down the page before it releases. */
 .capability-stage { display: flex; flex-direction: column; min-height: 0; }
-.capabilities-section { padding-bottom: 48px !important; }
+.capabilities-section { padding-bottom: 0 !important; }
 .capability-animation-wrap { align-self: flex-start; position: sticky; top: 110px; width: 100%; }
 .capability-animation-wrap .iso-scene { margin-top: -8px; }
 
