@@ -48,7 +48,7 @@ export default function Page() {
         <CeaserScene />
         <div className="hero-scrim" />
         <div className="hero-copy"><p className="eyebrow">SPECTRA TECHNOLOGIES</p><h1>Intelligence.<br /><em>Engineered.</em></h1><p className="hero-description">Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems.</p><a className="outline-button" href={`${APP_URL}/request-demo`}>Get Started <MoveRight size={17} /></a></div>
-        <div className="hero-bottom"><span>AUTONOMOUS SYSTEM</span></div>
+        <div className="hero-bottom"><span>TURNING COMPLEXITY INTO ACTION</span></div>
       </section>
 
       <section className="manifesto-section" id="company"><div className="section-kicker"><span>01</span><span>WHAT IS SPECTRA</span></div><Reveal><h2>The infrastructure<br /><em>for intelligence.</em></h2></Reveal><div className="manifesto-meta"><span>01—03</span><p>Spectra Technologies builds deep technology — operating environments, machine intelligence, and autonomous systems — engineered for the places where the hardest problems live.</p><ArrowDownRight size={28} /></div></section>
