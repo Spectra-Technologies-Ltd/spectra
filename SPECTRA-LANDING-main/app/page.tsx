@@ -95,9 +95,9 @@ export default function Page() {
       <section id="company-team" className="team-section bastion-centered">
         <div className="section-kicker"><span>05</span><span>SPECTRA WORKPLACE</span></div>
         <div className="bastion-hero-center">
-          <PrintText tag="h2" lines={[{ text: 'Work from' }, { text: 'one workspace.', style: 'em' }]} />
+          <PrintText tag="h2" lines={[{ text: 'Design your' }, { text: 'intelligence.', style: 'em' }]} />
           <p className="body-copy">The Spectra Workplace — a workspace for conceptualizing and building intelligent systems. Design ontologies, create Napoleon-powered agents, connect data, and deploy prototypes.</p>
-          <a className="text-button" href="/workspace">Explore the Workplace <ArrowUpRight size={17} /></a>
+          <a className="text-button" href="/workspace">Enter the Workplace <ArrowUpRight size={17} /></a>
         </div>
       </section>
 
