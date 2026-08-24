@@ -64,8 +64,17 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Napoleon — signals in, intelligence out */}
-      <section id="napoleon" className="command-section"><div className="section-kicker"><span>03</span><span>NAPOLEON</span></div><div className="command-layout"><div className="command-copy"><Reveal><p className="eyebrow">MACHINE INTELLIGENCE LAYER</p><h2>Signals in.<br /><em>Intelligence out.</em></h2><p className="body-copy">Napoleon is the intelligence layer of the Spectra platform. It learns from the operational data your teams already produce — attendance, patrols, incidents, sensors — to surface patterns, predict outcomes, and recommend the next action.</p><a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a></Reveal></div><div className="command-visual"><Reveal delay={120}><div className="signal-pipeline"><div className="pipeline-rail"><span className="pipeline-rail-label">SIGNAL IN</span><div className="pipeline-chip-list">{['ATTENDANCE', 'PATROLS', 'INCIDENTS', 'SENSORS'].map((label) => <span key={label} className="pipeline-chip"><span className="chip-dot" />{label}</span>)}</div></div><div className="pipeline-core"><span className="core-ring" /><span className="core-ring core-ring-2" /><span className="core-dot" /><span className="core-label">NAPOLEON</span></div><div className="pipeline-rail pipeline-rail-out"><span className="pipeline-rail-label">INTELLIGENCE OUT</span><div className="pipeline-chip-list">{['PATTERNS', 'PREDICTIONS', 'DECISIONS'].map((label) => <span key={label} className="pipeline-chip chip-out"><span className="chip-dot" />{label}</span>)}</div></div></div></Reveal></div></div></section>
+      {/* Napoleon — computes what comes next */}
+      <section id="napoleon" className="bastion-intro">
+        <div className="section-kicker"><span className="brand-name">Napoleon</span><span>THE INTELLIGENCE LAYER</span></div>
+        <div className="bastion-intro-grid">
+          <Reveal><h2><span className="brand-name">Napoleon</span><br /><em>compute what comes next.</em></h2></Reveal>
+          <Reveal><div className="bastion-intro-copy">
+            <p className="body-copy"><strong className="brand-name">Napoleon</strong> is the machine intelligence layer of the Spectra platform — it thinks, learns and predicts. It reads the operational data your teams already produce — attendance, patrols, incidents, sensors — and computes what comes next: patterns, predictions, decisions.</p>
+            <a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a>
+          </div></Reveal>
+        </div>
+      </section>
 
       {/* Architecture — matching the BastionOS comprehensive page */}
       <section id="architecture" className="capabilities-section"><div className="section-kicker"><span>04</span><span>THE ARCHITECTURE</span></div><div className="capabilities-layout"><div className="capability-sticky"><Reveal><p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · ONE FOUNDATION</p><h2>One system.<br /><em>Three layers.</em></h2><p className="body-copy">BastionOS is the operating foundation. Napoleon is the intelligence layer. Together they form one architecture — from raw signal to decision.</p></Reveal><div className="capability-detail" style={{ paddingTop: 34 }}><div className="fade-swap"><p className="body-copy">Personnel, clients, sites, assets and incidents — unified, automated and live. One real-time picture of the entire operation.</p></div><div className="cap-stat"><strong>1</strong><span>real-time view</span></div></div></div><div className="capability-stage"><div className="capability-animation-wrap"><IsometricPlatform /><div className="image-corner">SPECTRA / SYSTEM ARCHITECTURE</div></div></div></div></section>
