@@ -573,6 +573,10 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 .bastion-intro-grid h2 { margin: 0; max-width: 760px; }
 .bastion-intro-copy { max-width: 380px; }
 .bastion-intro-copy .body-copy { margin: 0 0 28px; }
+/* Centered variant — headline + CTA stacked in the middle */
+.bastion-centered .section-kicker { justify-content: center; }
+.bastion-hero-center { align-items: center; display: flex; flex-direction: column; gap: 30px; margin-top: 60px; text-align: center; }
+.bastion-hero-center h2 { margin: 0; }
 
 /* Keep anchored sections clear of the fixed header when scrolled to */
 section[id] { scroll-margin-top: 90px; }

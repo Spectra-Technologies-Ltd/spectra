@@ -50,14 +50,8 @@ export default function Page() {
         <div className="hero-scrim" />
         <div className="hero-copy">
           <p className="eyebrow">SPECTRA TECHNOLOGIES</p>
-          <PrintText tag="h1" lines={[{ text: 'Intelligence.' }, { text: 'Engineered.', style: 'em' }]} delay={80} />
-          <PrintText
-            tag="p"
-            className="hero-description"
-            lines="Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems."
-            speed={9}
-            delay={700}
-          />
+          <h1>Intelligence.<br /><em>Engineered.</em></h1>
+          <p className="hero-description">Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems.</p>
           <a className="outline-button" href={`${APP_URL}/request-demo`}>Get Started <MoveRight size={17} /></a>
         </div>
       </section>
@@ -75,13 +69,11 @@ export default function Page() {
       </section>
 
       {/* BastionOS — the small section the nav Overview links to */}
-      <section id="bastion" className="bastion-intro">
+      <section id="bastion" className="bastion-intro bastion-centered">
         <div className="section-kicker"><span className="brand-name">BastionOS</span><span>OUR FLAGSHIP</span></div>
-        <div className="bastion-intro-grid">
+        <div className="bastion-hero-center">
           <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'Our Flagship Product', style: 'em' }]} />
-          <Reveal><div className="bastion-intro-copy">
-            <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
-          </div></Reveal>
+          <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
         </div>
       </section>
 
