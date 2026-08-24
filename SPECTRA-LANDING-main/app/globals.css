@@ -686,6 +686,52 @@ section[id] { scroll-margin-top: 90px; }
   .cta-band { padding: 78px 18px; }
 }
 
+/* ── Mobile responsiveness pass (top-notch) ── */
+@media (max-width: 800px) {
+  /* Animation scenes scale down to the viewport instead of overflowing */
+  .napoleon-scene-inner { min-width: 0; }
+  .napoleon-scene { overflow-x: hidden; }
+  .capability-animation-wrap .iso-scene { height: 330px; }
+  .command-visual { aspect-ratio: auto; min-height: 380px; }
+  /* Hero fills the mobile viewport without dynamic-toolbar overflow */
+  .hero-section { min-height: 100dvh; }
+  .hero-copy h1 { letter-spacing: -.07em; }
+  .bastion-intro-grid { gap: 26px; }
+  .fleet-intro, .section-heading-row { gap: 20px; }
+  .team-grid { gap: 34px; }
+  .manifesto-meta { gap: 24px; }
+  .page-hero-bottom { bottom: 20px; left: 18px; right: 18px; }
+  .card-grid { gap: 14px; }
+}
+
+@media (max-width: 640px) {
+  /* Signal pipeline stacks vertically with wrapping chips */
+  .signal-pipeline { align-items: stretch; display: flex; flex-direction: column; gap: 20px; padding: 22px 5vw; }
+  .signal-pipeline::before, .signal-pipeline::after { display: none; }
+  .pipeline-rail { align-items: flex-start; }
+  .pipeline-rail-out { align-items: flex-start; }
+  .pipeline-rail-label, .pipeline-rail-out .pipeline-rail-label { align-self: flex-start; }
+  .pipeline-chip-list { flex-direction: row; flex-wrap: wrap; }
+  .pipeline-chip { width: auto; }
+  .pipeline-core { margin: 2px 0; }
+  .core-dot { height: 40px; width: 40px; }
+  .core-ring { height: 58px; width: 58px; }
+  .command-visual { min-height: 340px; }
+  .capability-animation-wrap .iso-scene { height: 270px; }
+  /* Type scale tightens for small screens */
+  section:not(.hero-section):not(.careers-section) { padding: 64px 18px; }
+  .manifesto-section h2, .capability-sticky h2, .fleet-intro h2, .team-grid h2 { font-size: 40px; }
+  .command-copy h2 { font-size: 46px; }
+  .page-hero { padding-bottom: 38px; padding-top: 120px; }
+  .page-hero h2 { font-size: 42px; }
+  .page-section-head h3 { font-size: 30px; }
+  .page-card { padding: 22px 20px; }
+  .footer-links { gap: 28px; grid-template-columns: 1fr; }
+  .footer-newsletter { gap: 14px; }
+  .hero-copy h1 { font-size: clamp(42px, 13vw, 70px); }
+  .hero-description { font-size: 14px; }
+}
+
 /* ── Accessibility: respect reduced-motion preferences ── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
