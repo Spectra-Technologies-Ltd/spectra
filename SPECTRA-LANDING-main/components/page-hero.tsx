@@ -1,4 +1,6 @@
 /** Shared hero header for Spectra sub-pages (BastionOS, Napoleon, About, ...). */
+import { PrintText } from './print-text'
+
 export function PageHero({
   kicker,
   title,
@@ -20,15 +22,10 @@ export function PageHero({
         <span>SPECTRA TECHNOLOGIES</span>
         <span>{kicker}</span>
       </div>
-      <h2>
-        {title}
-        {em && (
-          <>
-            <br />
-            <em>{em}</em>
-          </>
-        )}
-      </h2>
+      <PrintText
+        tag="h2"
+        lines={em ? [{ text: title }, { text: em, style: 'em' }] : [{ text: title }]}
+      />
       {children && <div className="page-hero-meta">{children}</div>}
       {!hideBottom && (
         <div className="hero-bottom page-hero-bottom">

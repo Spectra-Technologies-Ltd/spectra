@@ -6,6 +6,7 @@ import { ArrowDownRight, ArrowUpRight, MoveRight, Plus } from 'lucide-react'
 import SiteHeader from '../components/site-header'
 import SiteFooter from '../components/site-footer'
 import { Reveal } from '../components/reveal'
+import { PrintText } from '../components/print-text'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
 
@@ -47,18 +48,39 @@ export default function Page() {
       <section id="top" className="hero-section">
         <CeaserScene />
         <div className="hero-scrim" />
-        <div className="hero-copy"><p className="eyebrow">SPECTRA TECHNOLOGIES</p><h1>Intelligence.<br /><em>Engineered.</em></h1><p className="hero-description">Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems.</p><a className="outline-button" href={`${APP_URL}/request-demo`}>Get Started <MoveRight size={17} /></a></div>
+        <div className="hero-copy">
+          <p className="eyebrow">SPECTRA TECHNOLOGIES</p>
+          <PrintText tag="h1" lines={[{ text: 'Intelligence.' }, { text: 'Engineered.', style: 'em' }]} delay={80} />
+          <PrintText
+            tag="p"
+            className="hero-description"
+            lines="Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems."
+            speed={9}
+            delay={700}
+          />
+          <a className="outline-button" href={`${APP_URL}/request-demo`}>Get Started <MoveRight size={17} /></a>
+        </div>
       </section>
 
-      <section className="manifesto-section" id="company"><Reveal><h2>The infrastructure<br /><em>for intelligence.</em></h2></Reveal><div className="manifesto-meta"><p>Spectra Technologies builds deep technology — operating environments, machine intelligence, and autonomous systems — engineered for the places where the hardest problems live.</p><ArrowDownRight size={28} /></div></section>
+      <section className="manifesto-section" id="company">
+        <PrintText tag="h2" lines={[{ text: 'The infrastructure' }, { text: 'for intelligence.', style: 'em' }]} />
+        <div className="manifesto-meta">
+          <PrintText
+            tag="p"
+            lines="Spectra Technologies builds deep technology — operating environments, machine intelligence, and autonomous systems — engineered for the places where the hardest problems live."
+            speed={10}
+          />
+          <ArrowDownRight size={28} />
+        </div>
+      </section>
 
       {/* BastionOS — the small section the nav Overview links to */}
       <section id="bastion" className="bastion-intro">
         <div className="section-kicker"><span className="brand-name">BastionOS</span><span>OUR FLAGSHIP</span></div>
         <div className="bastion-intro-grid">
-          <Reveal><h2><span className="brand-name">BastionOS</span><br /><em>our flagship</em></h2></Reveal>
+          <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'our flagship', style: 'em' }]} />
           <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy"><strong className="brand-name">BastionOS</strong> is our flagship — a modular security operations platform that unifies guard operations, patrols, attendance, incidents, reporting and analytics into one automated, real-time system.</p>
+            <p className="body-copy"><strong className="brand-name">BastionOS</strong>{' '}<PrintText tag="span" lines="is our flagship — a modular security operations platform that unifies guard operations, patrols, attendance, incidents, reporting and analytics into one automated, real-time system." speed={10} /></p>
             <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
           </div></Reveal>
         </div>
@@ -68,29 +90,29 @@ export default function Page() {
       <section id="napoleon" className="bastion-intro">
         <div className="section-kicker"><span className="brand-name">Napoleon</span><span>THE INTELLIGENCE LAYER</span></div>
         <div className="bastion-intro-grid">
-          <Reveal><h2><span className="brand-name">Napoleon</span><br /><em>compute what comes next.</em></h2></Reveal>
+          <PrintText tag="h2" lines={[{ text: 'Napoleon', style: 'brand' }, { text: 'Compute what comes next.', style: 'em' }]} />
           <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy"><strong className="brand-name">Napoleon</strong> is the machine intelligence layer of the Spectra platform — it thinks, learns and predicts. It reads the operational data your teams already produce — attendance, patrols, incidents, sensors — and computes what comes next: patterns, predictions, decisions.</p>
+            <p className="body-copy"><strong className="brand-name">Napoleon</strong>{' '}<PrintText tag="span" lines="is the machine intelligence layer of the Spectra platform — it thinks, learns and predicts. It reads the operational data your teams already produce — attendance, patrols, incidents, sensors — and computes what comes next: patterns, predictions, decisions." speed={10} /></p>
             <a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a>
           </div></Reveal>
         </div>
       </section>
 
       {/* Architecture — matching the BastionOS comprehensive page */}
-      <section id="architecture" className="capabilities-section"><div className="section-kicker"><span>04</span><span>THE ARCHITECTURE</span></div><div className="capabilities-layout"><div className="capability-sticky"><Reveal><p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · ONE FOUNDATION</p><h2>One system.<br /><em>Three layers.</em></h2><p className="body-copy">BastionOS is the operating foundation. Napoleon is the intelligence layer. Together they form one architecture — from raw signal to decision.</p></Reveal><div className="capability-detail" style={{ paddingTop: 34 }}><div className="fade-swap"><p className="body-copy">Personnel, clients, sites, assets and incidents — unified, automated and live. One real-time picture of the entire operation.</p></div><div className="cap-stat"><strong>1</strong><span>real-time view</span></div></div></div><div className="capability-stage"><div className="capability-animation-wrap"><IsometricPlatform /><div className="image-corner">SPECTRA / SYSTEM ARCHITECTURE</div></div></div></div></section>
+      <section id="architecture" className="capabilities-section"><div className="section-kicker"><span>04</span><span>THE ARCHITECTURE</span></div><div className="capabilities-layout"><div className="capability-sticky"><Reveal><p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · ONE FOUNDATION</p><PrintText tag="h2" lines={[{ text: 'One system.' }, { text: 'Three layers.', style: 'em' }]} /><p className="body-copy">BastionOS is the operating foundation. Napoleon is the intelligence layer. Together they form one architecture — from raw signal to decision.</p></Reveal><div className="capability-detail" style={{ paddingTop: 34 }}><div className="fade-swap"><PrintText tag="p" className="body-copy" lines="Personnel, clients, sites, assets and incidents — unified, automated and live. One real-time picture of the entire operation." speed={10} /></div><div className="cap-stat"><strong>1</strong><span>real-time view</span></div></div></div><div className="capability-stage"><div className="capability-animation-wrap"><IsometricPlatform /><div className="image-corner">SPECTRA / SYSTEM ARCHITECTURE</div></div></div></div></section>
 
-      <section className="statement-section"><div className="statement-rule" /><Reveal><p>WE DON&apos;T BUILD SYSTEMS<br />FOR A SINGLE DOMAIN.</p><h2>We build<br /><em>for what&apos;s next.</em></h2></Reveal></section>
+      <section className="statement-section"><div className="statement-rule" /><Reveal><p>WE DON&apos;T BUILD SYSTEMS<br />FOR A SINGLE DOMAIN.</p><PrintText tag="h2" lines={[{ text: 'We build' }, { text: "for what's next.", style: 'em' }]} /></Reveal></section>
 
       {/* The Spectra Workplace */}
-      <section id="company-team" className="team-section"><div className="section-kicker"><span>05</span><span>THE SPECTRA WORKPLACE</span></div><div className="team-grid"><div><Reveal><p className="eyebrow">ONE SYSTEM · THREE LAYERS</p><h2>Work from<br /><em>one workspace.</em></h2><p className="body-copy">The Spectra Workplace is the operational home of your entire security operation — guards, patrols, attendance, incidents and reporting, unified in one real-time command center.</p><a className="text-button" href="/workspace">Explore the Workplace <ArrowUpRight size={17} /></a></Reveal></div><img src="/images/spectra-operator.png" alt="The Spectra Workplace operations view" /></div></section>
+      <section id="company-team" className="team-section"><div className="section-kicker"><span>05</span><span>THE SPECTRA WORKPLACE</span></div><div className="team-grid"><div><Reveal><p className="eyebrow">ONE SYSTEM · THREE LAYERS</p><PrintText tag="h2" lines={[{ text: 'Work from' }, { text: 'one workspace.', style: 'em' }]} /><p className="body-copy">The Spectra Workplace is the operational home of your entire security operation — guards, patrols, attendance, incidents and reporting, unified in one real-time command center.</p><a className="text-button" href="/workspace">Explore the Workplace <ArrowUpRight size={17} /></a></Reveal></div><img src="/images/spectra-operator.png" alt="The Spectra Workplace operations view" /></div></section>
 
       {/* Partners — before news, per brand structure */}
       <section id="partners" className="bastion-intro">
         <div className="section-kicker"><span>PARTNERS</span><span>BUILD WITH US</span></div>
         <div className="bastion-intro-grid">
-          <Reveal><h2>Built to<br /><em>build on.</em></h2></Reveal>
+          <PrintText tag="h2" lines={[{ text: 'Built to' }, { text: 'build on.', style: 'em' }]} />
           <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy">Technology integrations, channel partnerships and co-development — teams building on the Spectra architecture, from first signal to final decision.</p>
+            <p className="body-copy"><PrintText tag="span" lines="Technology integrations, channel partnerships and co-development — teams building on the Spectra architecture, from first signal to final decision." speed={10} /></p>
             <a className="text-button" href="/partners">Explore partnerships <ArrowUpRight size={17} /></a>
           </div></Reveal>
         </div>
@@ -98,9 +120,9 @@ export default function Page() {
 
       <section className="press-section"><div className="section-kicker"><span>LATEST NEWS</span><span>RESEARCH &amp; INSIGHTS</span></div><div className="press-grid">{newsItems.slice(0, pressExpanded ? 3 : 2).map(([source, title, date]) => <article key={source}><p className="eyebrow">{source}</p><h3>{title}</h3><div><span>{date}</span><ArrowUpRight size={17} /></div></article>)}</div><div className="press-actions"><button className="outline-button center-button" onClick={() => setPressExpanded(!pressExpanded)}>{pressExpanded ? 'Show less' : 'View all articles'} <Plus size={17} /></button><a className="text-button" href="/newsroom">News <ArrowUpRight size={17} /></a><a className="text-button" href="/journal">The Spectra Journal <ArrowUpRight size={17} /></a><a className="text-button" href="/research">Research &amp; Insights <ArrowUpRight size={17} /></a></div></section>
 
-      <section id="careers" className="careers-section"><img src="/images/spectra-careers.png" alt="Engineer on a maritime test pier" /><div className="careers-overlay" /><div className="careers-content"><p className="eyebrow">CAREERS</p><h2>Work on<br /><em>what&apos;s next.</em></h2><button className="outline-button" onClick={() => scrollTo('contact')}>See open roles <ArrowUpRight size={17} /></button></div></section>
+      <section id="careers" className="careers-section"><img src="/images/spectra-careers.png" alt="Engineer on a maritime test pier" /><div className="careers-overlay" /><div className="careers-content"><p className="eyebrow">CAREERS</p><PrintText tag="h2" lines={[{ text: 'Work on' }, { text: "what's next.", style: 'em' }]} /><button className="outline-button" onClick={() => scrollTo('contact')}>See open roles <ArrowUpRight size={17} /></button></div></section>
 
-      <section id="contact" className="contact-section"><div className="section-kicker"><span>07</span><span>WORK WITH US</span></div><Reveal><h2>Let&apos;s talk about<br /><em>the mission.</em></h2></Reveal><div className="contact-bottom"><p>Tell us what you&apos;re trying to see, understand or protect. We&apos;ll show you what&apos;s possible.</p><a className="solid-button" href={`${APP_URL}/request-demo`}>Start a conversation <ArrowUpRight size={17} /></a></div></section>
+      <section id="contact" className="contact-section"><div className="section-kicker"><span>07</span><span>WORK WITH US</span></div><PrintText tag="h2" lines={[{ text: "Let's talk about" }, { text: 'the mission.', style: 'em' }]} /><div className="contact-bottom"><PrintText tag="p" lines="Tell us what you're trying to see, understand or protect. We'll show you what's possible." speed={10} /><a className="solid-button" href={`${APP_URL}/request-demo`}>Start a conversation <ArrowUpRight size={17} /></a></div></section>
 
       <SiteFooter />
     </main>
