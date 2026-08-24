@@ -542,7 +542,7 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 /* Container for the animation inside the capabilities stage.
    The stage is taller than the viewport so the pinned scene has room to
    "travel" down the page before it releases. */
-.capability-stage { display: flex; flex-direction: column; min-height: 155vh; }
+.capability-stage { display: flex; flex-direction: column; min-height: 62vh; }
 .capability-animation-wrap { align-self: flex-start; position: sticky; top: 110px; width: 100%; }
 .capability-animation-wrap .iso-scene { margin-top: -8px; }
 
