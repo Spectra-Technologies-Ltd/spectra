@@ -52,17 +52,6 @@ export default function Page() {
 
       <section className="manifesto-section" id="company"><Reveal><h2>The infrastructure<br /><em>for intelligence.</em></h2></Reveal><div className="manifesto-meta"><p>Spectra Technologies builds deep technology — operating environments, machine intelligence, and autonomous systems — engineered for the places where the hardest problems live.</p><ArrowDownRight size={28} /></div></section>
 
-      {/* Intro copy before the Bastion slide */}
-      <section className="bastion-intro">
-        <div className="section-kicker"><span>02</span><span>THE OPERATING FOUNDATION</span></div>
-        <div className="bastion-intro-grid">
-          <Reveal><h2>Security operations run on<br /><em>people, sites and patrols.</em></h2></Reveal>
-          <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy">Every shift, every guard, every site generates data — but it lives in spreadsheets, radio calls and paper records. The platform below brings it all into one real-time operating picture.</p>
-          </div></Reveal>
-        </div>
-      </section>
-
       {/* BastionOS — the small section the nav Overview links to */}
       <section id="bastion" className="bastion-intro">
         <div className="section-kicker"><span className="brand-name">BastionOS</span><span>THE OPERATING FOUNDATION</span></div>
