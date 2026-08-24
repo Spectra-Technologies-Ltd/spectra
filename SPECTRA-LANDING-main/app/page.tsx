@@ -56,9 +56,9 @@ export default function Page() {
       <section id="bastion" className="bastion-intro">
         <div className="section-kicker"><span className="brand-name">BastionOS</span><span>THE FLAGSHIP PRODUCT</span></div>
         <div className="bastion-intro-grid">
-          <Reveal><h2><span className="brand-name">BastionOS</span><br /><em>Our flagship Product</em></h2></Reveal>
+          <Reveal><h2><span className="brand-name">BastionOS</span><br /><em>our flagship product</em></h2></Reveal>
           <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy"><strong className="brand-name">Bastion</strong> is Spectra&apos;s flagship product — a modular security operations platform that unifies guard operations, patrols, attendance, incidents, reporting and analytics into one automated, real-time system.</p>
+            <p className="body-copy"><strong className="brand-name">BastionOS</strong> is Spectra&apos;s flagship product — a modular security operations platform that unifies guard operations, patrols, attendance, incidents, reporting and analytics into one automated, real-time system.</p>
             <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
           </div></Reveal>
         </div>
