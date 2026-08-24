@@ -78,9 +78,8 @@ export default function Page() {
       <section id="bastion" className="bastion-intro">
         <div className="section-kicker"><span className="brand-name">BastionOS</span><span>OUR FLAGSHIP</span></div>
         <div className="bastion-intro-grid">
-          <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'our flagship', style: 'em' }]} />
+          <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'Our Flagship Product', style: 'em' }]} />
           <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy"><strong className="brand-name">BastionOS</strong>{' '}<PrintText tag="span" lines="is our flagship — a modular security operations platform that unifies guard operations, patrols, attendance, incidents, reporting and analytics into one automated, real-time system." speed={10} /></p>
             <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
           </div></Reveal>
         </div>
@@ -90,9 +89,9 @@ export default function Page() {
       <section id="napoleon" className="bastion-intro">
         <div className="section-kicker"><span className="brand-name">Napoleon</span><span>THE INTELLIGENCE LAYER</span></div>
         <div className="bastion-intro-grid">
-          <PrintText tag="h2" lines={[{ text: 'Napoleon', style: 'brand' }, { text: 'Compute what comes next.', style: 'em' }]} />
+          <PrintText tag="h2" lines={[{ text: 'Napoleon', style: 'brand' }, { text: 'Compute What Comes Next', style: 'em' }]} />
           <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy"><strong className="brand-name">Napoleon</strong>{' '}<PrintText tag="span" lines="is the machine intelligence layer of the Spectra platform — it thinks, learns and predicts. It reads the operational data your teams already produce — attendance, patrols, incidents, sensors — and computes what comes next: patterns, predictions, decisions." speed={10} /></p>
+            <p className="body-copy"><strong className="brand-name">Napoleon</strong>{' '}<PrintText tag="span" lines="is the machine intelligence layer of the Spectra platform — it thinks, learns and predicts. It reads the operational data your teams already produce and computes what comes next: patterns, predictions, decisions." speed={10} /></p>
             <a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a>
           </div></Reveal>
         </div>
