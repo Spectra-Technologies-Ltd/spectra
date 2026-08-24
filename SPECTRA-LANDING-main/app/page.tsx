@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import { ArrowDownRight, ArrowUpRight, MoveRight, Plus } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, MoveRight } from 'lucide-react'
 import SiteHeader from '../components/site-header'
 import SiteFooter from '../components/site-footer'
 import { Reveal } from '../components/reveal'
@@ -22,8 +22,6 @@ const newsItems = [
 ]
 
 export default function Page() {
-  const [pressExpanded, setPressExpanded] = useState(false)
-
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -112,7 +110,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="press-section"><div className="section-kicker"><span>LATEST NEWS</span><span>RESEARCH &amp; INSIGHTS</span></div><div className="press-grid">{newsItems.slice(0, pressExpanded ? 3 : 2).map(([source, title, date]) => <article key={source}><p className="eyebrow">{source}</p><h3>{title}</h3><div><span>{date}</span><ArrowUpRight size={17} /></div></article>)}</div><div className="press-actions"><button className="outline-button center-button" onClick={() => setPressExpanded(!pressExpanded)}>{pressExpanded ? 'Show less' : 'View all articles'} <Plus size={17} /></button><a className="text-button" href="/newsroom">News <ArrowUpRight size={17} /></a><a className="text-button" href="/journal">The Spectra Journal <ArrowUpRight size={17} /></a><a className="text-button" href="/research">Research &amp; Insights <ArrowUpRight size={17} /></a></div></section>
+      <section className="press-section"><div className="section-kicker"><span>LATEST NEWS</span><span>RESEARCH &amp; INSIGHTS</span></div><div className="press-grid">{newsItems.slice(0, 2).map(([source, title, date]) => <article key={source}><p className="eyebrow">{source}</p><h3>{title}</h3><div><span>{date}</span><ArrowUpRight size={17} /></div></article>)}</div><div className="press-actions"><a className="outline-button center-button" href="/newsroom">View all news <ArrowUpRight size={17} /></a><a className="text-button" href="/journal">The Spectra Journal <ArrowUpRight size={17} /></a><a className="text-button" href="/research">Research &amp; Insights <ArrowUpRight size={17} /></a></div></section>
 
       <section id="contact" className="contact-section"><div className="section-kicker"><span>07</span><span>WORK WITH US</span></div><PrintText tag="h2" lines={[{ text: "Let's talk about" }, { text: 'the mission.', style: 'em' }]} /><div className="contact-bottom"><PrintText tag="p" lines="Tell us what you're trying to see, understand or protect. We'll show you what's possible." speed={10} /><a className="solid-button" href={`${APP_URL}/request-demo`}>Start a conversation <ArrowUpRight size={17} /></a></div></section>
 
