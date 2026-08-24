@@ -106,7 +106,7 @@ export default function Page() {
         <div className="bastion-intro-grid">
           <h2>Build with<br /><em>Spectra</em></h2>
           <Reveal><div className="bastion-intro-copy">
-            <p className="body-copy"><PrintText tag="span" lines="Technology integrations, channel partnerships and co-development — teams building on the Spectra architecture, from first signal to final decision." speed={10} /></p>
+            <p className="body-copy">Technology integrations, channel partnerships and co-development — teams building on the Spectra architecture, from first signal to final decision.</p>
             <a className="text-button" href="/partners">Explore partnerships <ArrowUpRight size={17} /></a>
           </div></Reveal>
         </div>
