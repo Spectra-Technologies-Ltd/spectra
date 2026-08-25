@@ -42,8 +42,9 @@ export default function CeaserScene() {
     scene.background = new THREE.Color(0x05070a)
     scene.fog = new THREE.FogExp2(0x05070a, 0.14)
 
-    const camera = new THREE.PerspectiveCamera(34, window.innerWidth / window.innerHeight, 0.1, 100)
-    camera.position.set(0.1, 0.7, 3.7)
+    const isMobile = window.innerWidth < 768
+    const camera = new THREE.PerspectiveCamera(isMobile ? 52 : 34, window.innerWidth / window.innerHeight, 0.1, 100)
+    camera.position.set(0.1, isMobile ? 0.55 : 0.7, isMobile ? 5.2 : 3.7)
     const camTarget = new THREE.Vector3(0, 0.62, -0.1)
 
     /* ---------- lights ---------- */
@@ -904,7 +905,10 @@ export default function CeaserScene() {
 
     /* ---------- resize ---------- */
     function onResize() {
+      const m = window.innerWidth < 768
       camera.aspect = window.innerWidth / window.innerHeight
+      camera.fov = m ? 52 : 34
+      camera.position.set(0.1, m ? 0.55 : 0.7, m ? 5.2 : 3.7)
       camera.updateProjectionMatrix()
       renderer?.setSize(window.innerWidth, window.innerHeight)
       composer?.setSize(window.innerWidth, window.innerHeight)

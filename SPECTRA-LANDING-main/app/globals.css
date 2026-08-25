@@ -514,7 +514,7 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 
 .iso-stage {
   transform-style: preserve-3d;
-  transform: rotateX(58deg) rotateZ(-45deg);
+  transform: rotateX(58deg) rotateZ(-45deg) scale(var(--iso-scale, 1));
   animation: iso-bob 9s ease-in-out infinite;
 }
 
@@ -530,8 +530,8 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
 
 @keyframes iso-bob {
   0%,
-  100% { transform: rotateX(58deg) rotateZ(-45deg) translateZ(0); }
-  50% { transform: rotateX(58deg) rotateZ(-45deg) translateZ(-14px); }
+  100% { transform: rotateX(58deg) rotateZ(-45deg) translateZ(0) scale(var(--iso-scale, 1)); }
+  50% { transform: rotateX(58deg) rotateZ(-45deg) translateZ(-14px) scale(var(--iso-scale, 1)); }
 }
 
 @keyframes iso-float {
@@ -584,6 +584,7 @@ footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items
   .capability-stage { min-height: 0; }
   .capability-animation-wrap { position: static; }
   .capability-animation-wrap .iso-scene { height: 460px; }
+  .capability-animation-wrap .iso-stage { --iso-scale: 0.58; }
 }
 
 /* ── BastionOS overview section (homepage mini-intro) ── */
@@ -747,6 +748,7 @@ section[id] { scroll-margin-top: 90px; }
   .core-ring { height: 58px; width: 58px; }
   .command-visual { min-height: 340px; }
   .capability-animation-wrap .iso-scene { height: 270px; }
+  .capability-animation-wrap .iso-stage { --iso-scale: 0.5; }
   /* Type scale tightens for small screens */
   section:not(.hero-section):not(.careers-section) { padding: 64px 18px; }
   .manifesto-section h2, .capability-sticky h2, .fleet-intro h2, .team-grid h2 { font-size: 40px; }
