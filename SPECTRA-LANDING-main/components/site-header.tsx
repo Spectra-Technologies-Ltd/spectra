@@ -69,21 +69,6 @@ const NAV_NEWS = {
 } as const
 
 /* ── Mobile full-screen menu ── */
-const WORK_GROUP = [
-  ['01', 'Partners', '/partners'],
-] as const
-
-const MORE_LINKS = [
-  ['Home', '/'],
-  ['BastionOS', '/bastionos'],
-  ['Napoleon', '/napoleon'],
-  ['Spectra Workplace', '/workspace'],
-  ['News', '/newsroom'],
-  ['The Journal', '/journal'],
-  ['Research', '/research'],
-  ['Work with us', '/contact'],
-  ['Contact', '/contact'],
-] as const
 
 export function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -277,31 +262,50 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
 
       {/* Mobile full-screen menu */}
       <div className={`menu-panel ${menuOpen ? 'menu-open' : ''}`} aria-hidden={!menuOpen}>
-        <div className="menu-panel-top"><span className="menu-panel-brand">SPECTRA<span>.</span></span><span className="header-center">TECHNOLOGIES / INDEX</span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
+        <div className="menu-panel-top"><span className="menu-panel-brand">SPECTRA<span>.</span></span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
         <nav className="menu-links">
           <div className="menu-group">
-            <span className="menu-group-title menu-group-title--brand">BastionOS — Operating Foundation</span>
-            <button onClick={() => go('/#fleet-bastion')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
+            <span className="menu-group-title">Products</span>
+            <div className="menu-product">
+              <span className="menu-product-name">BastionOS</span>
+              <span className="menu-product-desc">The Operating Foundation</span>
+              <div className="menu-product-links">
+                <button onClick={() => go('/#bastion')}>Overview <ArrowUpRight size={15} /></button>
+                <button onClick={() => go('/bastionos')}>Explore BastionOS <ArrowUpRight size={15} /></button>
+              </div>
+            </div>
+            <div className="menu-product">
+              <span className="menu-product-name">Napoleon</span>
+              <span className="menu-product-desc">The Intelligence Layer</span>
+              <div className="menu-product-links">
+                <button onClick={() => go('/#napoleon')}>Overview <ArrowUpRight size={15} /></button>
+                <button onClick={() => go('/napoleon')}>Explore Napoleon <ArrowUpRight size={15} /></button>
+              </div>
+            </div>
+            <div className="menu-product">
+              <span className="menu-product-name">Spectra Workplace</span>
+              <span className="menu-product-desc">Design Your Intelligence</span>
+              <div className="menu-product-links">
+                <button onClick={() => go('/workspace')}>Enter the Workplace <ArrowUpRight size={15} /></button>
+              </div>
+            </div>
           </div>
           <div className="menu-group">
-            <span className="menu-group-title menu-group-title--brand">Napoleon — Intelligence Layer</span>
-            <button onClick={() => go('/#fleet-napoleon')}><span>01</span><strong>Overview</strong><ArrowUpRight size={20} /></button>
-          </div>
-          <div className="menu-group">
-            <span className="menu-group-title">Spectra Workplace</span>
-            <button onClick={() => go(`${APP_URL}/login`)}><span>01</span><strong>Open Spectra Workplace</strong><ArrowUpRight size={20} /></button>
+            <span className="menu-group-title">Newsroom</span>
+            <div className="menu-product-links">
+              <button onClick={() => go('/newsroom')}>Latest News <ArrowUpRight size={15} /></button>
+              <button onClick={() => go('/journal')}>The Spectra Journal <ArrowUpRight size={15} /></button>
+              <button onClick={() => go('/research')}>Research &amp; Insights <ArrowUpRight size={15} /></button>
+            </div>
           </div>
           <div className="menu-group">
             <span className="menu-group-title">Work With Us</span>
-            {WORK_GROUP.map(([number, label, target]) => <button key={label} onClick={() => go(target)}><span>{number}</span><strong>{label}</strong><ArrowUpRight size={20} /></button>)}
+            <div className="menu-product-links">
+              <button onClick={() => go('/partners')}>Partners <ArrowUpRight size={15} /></button>
+              <button onClick={() => go('/contact')}>Contact Us <ArrowUpRight size={15} /></button>
+            </div>
           </div>
         </nav>
-        <div className="menu-more">
-          <span className="menu-group-title">More</span>
-          <div className="menu-more-links">
-            {MORE_LINKS.map(([label, target]) => <button key={label} onClick={() => go(target)}>{label}</button>)}
-          </div>
-        </div>
         <div className="menu-newsletter">
           <span className="menu-group-title">Sign up for the newsletter</span>
           <NewsletterForm />
