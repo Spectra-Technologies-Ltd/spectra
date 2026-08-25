@@ -59,7 +59,6 @@ export default function Page() {
           <PrintText
             tag="p"
             lines="Spectra Technologies builds deep technology — operating environments, machine intelligence, and autonomous systems — engineered for the places where the hardest problems live."
-            speed={10}
           />
           <ArrowDownRight size={28} />
         </div>
@@ -112,7 +111,7 @@ export default function Page() {
 
       <section className="press-section"><div className="section-kicker"><span>LATEST NEWS</span><span>RESEARCH &amp; INSIGHTS</span></div><div className="press-grid">{newsItems.slice(0, 2).map(([source, title, date]) => <article key={source}><p className="eyebrow">{source}</p><h3>{title}</h3><div><span>{date}</span><ArrowUpRight size={17} /></div></article>)}</div><div className="press-actions"><a className="outline-button center-button" href="/newsroom">View all news <ArrowUpRight size={17} /></a><a className="text-button" href="/journal">The Spectra Journal <ArrowUpRight size={17} /></a><a className="text-button" href="/research">Research &amp; Insights <ArrowUpRight size={17} /></a></div></section>
 
-      <section id="contact" className="contact-section"><div className="section-kicker"><span>07</span><span>WORK WITH US</span></div><PrintText tag="h2" lines={[{ text: "Let's talk about" }, { text: 'the mission.', style: 'em' }]} /><div className="contact-bottom"><PrintText tag="p" lines="Tell us what you're trying to see, understand or protect. We'll show you what's possible." speed={10} /><a className="solid-button" href={`${APP_URL}/request-demo`}>Start a conversation <ArrowUpRight size={17} /></a></div></section>
+      <section id="contact" className="contact-section"><div className="section-kicker"><span>07</span><span>WORK WITH US</span></div><PrintText tag="h2" lines={[{ text: "Let's talk about" }, { text: 'the mission.', style: 'em' }]} /><div className="contact-bottom"><PrintText tag="p" lines="Tell us what you're trying to see, understand or protect. We'll show you what's possible." /><a className="solid-button" href={`${APP_URL}/request-demo`}>Start a conversation <ArrowUpRight size={17} /></a></div></section>
 
       <SiteFooter />
     </main>

@@ -1,52 +1,70 @@
 'use client'
 
-import { Fragment, useEffect, useRef, useState, type ElementType, type ReactNode } from 'react'
+import { Fragment, useEffect, useRef, type CSSProperties, type ElementType, type ReactNode } from 'react'
 
 export type PrintLine = { text: string; style?: 'em' | 'brand' }
 
 /**
- * Scroll-linked "print" text: characters type in as the element scrolls into
- * view and un-print as it leaves the viewport. Pass plain text or styled lines
- * for <em> (accent) or brand-name runs. Motion is opacity-only (GPU friendly)
- * and collapses to instant under prefers-reduced-motion via globals.css.
+ * Scroll-linked word reveal: words appear one at a time as the element scrolls
+ * into view and un-print as it leaves. A `--progress` value (0→1) is written to
+ * the element on scroll; each word computes its own opacity from it in CSS, so
+ * the reveal is driven directly by scroll position — slower and calmer than a
+ * timed typewriter. Reduced-motion users get all words at once via CSS.
  */
 export function PrintText({
   tag: Tag = 'span',
   lines,
   className,
-  speed = 24,
-  delay = 0,
 }: {
   tag?: ElementType
   lines: PrintLine[] | string
   className?: string
-  speed?: number
-  delay?: number
 }) {
   const ref = useRef<HTMLElement | null>(null)
-  const [on, setOn] = useState(false)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const io = new IntersectionObserver(
-      ([entry]) => setOn(entry.isIntersecting && entry.intersectionRatio > 0.25),
-      { threshold: [0, 0.25, 0.75, 1] },
-    )
-    io.observe(el)
-    return () => io.disconnect()
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const rect = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      const c = rect.top + rect.height / 2
+      const inStart = vh * 0.98
+      const inEnd = vh * 0.42
+      const outEnd = -vh * 0.4
+      let p = 0
+      if (c <= inStart) p = Math.min(1, (inStart - c) / (inStart - inEnd))
+      if (c < inEnd) p = Math.min(p, Math.max(0, (c - outEnd) / (inEnd - outEnd)))
+      el.style.setProperty('--progress', p.toFixed(4))
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [])
 
   const list: PrintLine[] = typeof lines === 'string' ? [{ text: lines }] : lines
   const full = list.map((l) => l.text).join(' ')
   const isHeading = typeof Tag === 'string' && /^h[1-6]$/.test(Tag)
 
-  let offset = 0
+  const totalWords = list.reduce((n, l) => n + l.text.trim().split(/\s+/).filter(Boolean).length, 0)
+
+  let wordIndex = 0
   const runs: ReactNode[] = list.map((line, li) => {
+    const words = line.text.trim().split(/\s+/).filter(Boolean)
     const run = (
-      <PrintRun key={li} text={line.text} style={line.style} speed={speed} delay={delay + offset * speed} />
+      <PrintRun key={li} words={words} style={line.style} startIndex={wordIndex} total={totalWords} />
     )
-    offset += line.text.length
+    wordIndex += words.length
     return li === 0 ? run : (
       <Fragment key={li}>
         <br />
@@ -59,7 +77,7 @@ export function PrintText({
     <Tag
       ref={ref as never}
       className={className}
-      data-print={on ? 'true' : 'false'}
+      style={{ '--total': totalWords } as CSSProperties}
       aria-label={full}
       role={isHeading ? undefined : 'text'}
     >
@@ -69,23 +87,28 @@ export function PrintText({
 }
 
 function PrintRun({
-  text,
+  words,
   style,
-  speed,
-  delay,
+  startIndex,
+  total,
 }: {
-  text: string
+  words: string[]
   style?: 'em' | 'brand'
-  speed: number
-  delay: number
+  startIndex: number
+  total: number
 }) {
   const Wrapper: ElementType = style === 'em' ? 'em' : 'span'
   const cls = style === 'brand' ? 'brand-name' : undefined
   return (
     <Wrapper className={cls} aria-hidden="true">
-      {Array.from(text).map((ch, i) => (
-        <span key={i} className="print-char" style={{ transitionDelay: `${delay + i * speed}ms` }}>
-          {ch}
+      {words.map((w, i) => (
+        <span
+          key={i}
+          className="print-word"
+          style={{ '--i': startIndex + i } as CSSProperties}
+        >
+          {w}
+          {i < words.length - 1 ? ' ' : ''}
         </span>
       ))}
     </Wrapper>

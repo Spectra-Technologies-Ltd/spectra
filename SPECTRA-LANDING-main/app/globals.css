@@ -147,9 +147,9 @@ h1 em, h2 em, .statement-section em, .careers-section em, .contact-section em { 
 .hero-bottom { bottom: 28px; display: flex; justify-content: space-between; left: 34px; position: absolute; right: 34px; z-index: 1; }
 .hero-bottom > span:only-child, .statement-foot > :only-child { margin-left: auto; }
 
-/* Scroll-linked "print" text — characters type in/out with the viewport */
-.print-char { opacity: 0; transition: opacity .1s linear; }
-[data-print="true"] .print-char { opacity: 1; }
+/* Scroll-linked word reveal — one word appears at a time with the scroll */
+.print-word { opacity: clamp(0, calc(var(--progress, 0) * var(--total, 1) - var(--i, 0)), 1); transition: opacity .12s linear; }
+@media (prefers-reduced-motion: reduce) { .print-word { opacity: 1 !important; } }
 
 section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 .section-kicker { border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding-bottom: 16px; }
