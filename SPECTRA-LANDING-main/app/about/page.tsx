@@ -60,6 +60,18 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Mission & vision */}
+      <section className="bastion-intro">
+        <div className="section-kicker"><span>MISSION</span><span>WHY SPECTRA</span></div>
+        <div className="bastion-intro-grid">
+          <Reveal><h2>Built to<br /><em>strengthen what matters.</em></h2></Reveal>
+          <Reveal><div className="bastion-intro-copy">
+            <p className="body-copy">Our mission is to empower organizations with intelligent technologies that automate operations, strengthen security and enable data-driven decision-making — while fostering the innovation that advances Nigeria&apos;s technological sovereignty.</p>
+            <p className="body-copy">Our long-term vision is to become Africa&apos;s leading defense, security and operational intelligence technology company — engineering world-class systems that protect critical infrastructure, advance public safety and strengthen national resilience.</p>
+          </div></Reveal>
+        </div>
+      </section>
+
       {/* Workspace — the team-grid concept reworked around the workplace */}
       <section id="company-team" className="team-section">
         <div className="section-kicker"><span>03</span><span>ABOUT THE WORKSPACE</span></div>

@@ -66,7 +66,7 @@ export default function Page() {
       <section id="bastion" className="bastion-intro bastion-centered">
         <div className="section-kicker"><span className="brand-name">BastionOS</span></div>
         <div className="bastion-hero-center">
-          <h2><span className="brand-name">BastionOS</span><br /><em>Our Flagship</em><br /><em>Product</em></h2>
+          <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'Our Flagship', style: 'em' }, { text: 'Product', style: 'em' }]} />
           <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
         </div>
       </section>
@@ -75,7 +75,7 @@ export default function Page() {
       <section id="napoleon" className="bastion-intro bastion-centered">
         <div className="section-kicker"><span className="brand-name">Napoleon</span><span>THE INTELLIGENCE LAYER</span></div>
         <div className="bastion-hero-center">
-          <h2><span className="brand-name">Napoleon</span><br /><em>Compute What</em><br /><em>Comes Next</em></h2>
+          <PrintText tag="h2" lines={[{ text: 'Napoleon', style: 'brand' }, { text: 'Compute What', style: 'em' }, { text: 'Comes Next', style: 'em' }]} />
           <a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a>
         </div>
       </section>

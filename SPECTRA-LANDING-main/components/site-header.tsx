@@ -252,6 +252,8 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
               </div>
             </div>
           </div>
+
+          <Link className="site-nav-trigger" href="/about" onClick={() => setOpenNav(null)}>About Spectra</Link>
         </nav>
 
         <div className="header-actions">
@@ -302,6 +304,7 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
             <span className="menu-group-title">Work With Us</span>
             <div className="menu-product-links">
               <button onClick={() => go('/partners')}>Partners <ArrowUpRight size={15} /></button>
+              <button onClick={() => go('/about')}>About Spectra <ArrowUpRight size={15} /></button>
               <button onClick={() => go('/contact')}>Contact Us <ArrowUpRight size={15} /></button>
             </div>
           </div>
