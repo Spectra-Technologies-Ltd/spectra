@@ -5,8 +5,6 @@ import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
-
 export const metadata = {
   title: 'Partners — Spectra Technologies',
   description:
@@ -36,7 +34,7 @@ export default function PartnersPage() {
           Partnerships, integrations and collaborations — teams building on BastionOS, Napoleon and
           the infrastructure beneath them.
         </p>
-        <Link className="outline-button" href={`${APP_URL}/request-demo`}>Become a partner <ArrowUpRight size={17} /></Link>
+        <Link className="outline-button" href="/request-demo">Become a partner <ArrowUpRight size={17} /></Link>
       </PageHero>
 
       {/* Programs */}
@@ -79,7 +77,7 @@ export default function PartnersPage() {
           <h2>Build with us.</h2>
         </Reveal>
         <div className="statement-foot">
-          <Link className="text-button" href={`${APP_URL}/request-demo`}>Start the conversation <ArrowUpRight size={17} /></Link>
+          <Link className="text-button" href="/request-demo">Start the conversation <ArrowUpRight size={17} /></Link>
         </div>
       </section>
 

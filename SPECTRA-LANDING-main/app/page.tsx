@@ -8,8 +8,6 @@ import SiteFooter from '../components/site-footer'
 import { Reveal } from '../components/reveal'
 import { PrintText } from '../components/print-text'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
-
 // Heavy 3D scenes are code-split so three.js and the isometric scene don't slow
 // down every edit/build of the page.
 const CeaserScene = dynamic(() => import('../components/CeaserScene'), { ssr: false })
@@ -49,7 +47,7 @@ export default function Page() {
         <div className="hero-copy">
           <h1>Intelligence.<br /><em>Engineered.</em></h1>
           <p className="hero-description">Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems.</p>
-          <a className="outline-button" href={`${APP_URL}/request-demo`}>Get Started <MoveRight size={17} /></a>
+          <a className="outline-button" href="/request-demo">Get Started <MoveRight size={17} /></a>
         </div>
       </section>
 
@@ -68,7 +66,7 @@ export default function Page() {
       <section id="bastion" className="bastion-intro bastion-centered">
         <div className="section-kicker"><span className="brand-name">BastionOS</span></div>
         <div className="bastion-hero-center">
-          <PrintText tag="h2" lines={[{ text: 'BastionOS', style: 'brand' }, { text: 'Our Flagship', style: 'em' }, { text: 'Product', style: 'em' }]} />
+          <h2><span className="brand-name">BastionOS</span><br /><em>Our Flagship</em><br /><em>Product</em></h2>
           <a className="text-button" href="/bastionos">Explore BastionOS <ArrowUpRight size={17} /></a>
         </div>
       </section>
@@ -77,7 +75,7 @@ export default function Page() {
       <section id="napoleon" className="bastion-intro bastion-centered">
         <div className="section-kicker"><span className="brand-name">Napoleon</span><span>THE INTELLIGENCE LAYER</span></div>
         <div className="bastion-hero-center">
-          <PrintText tag="h2" lines={[{ text: 'Napoleon', style: 'brand' }, { text: 'Compute What', style: 'em' }, { text: 'Comes Next', style: 'em' }]} />
+          <h2><span className="brand-name">Napoleon</span><br /><em>Compute What</em><br /><em>Comes Next</em></h2>
           <a className="text-button" href="/napoleon">Explore Napoleon <ArrowUpRight size={17} /></a>
         </div>
       </section>
@@ -111,7 +109,7 @@ export default function Page() {
 
       <section className="press-section"><div className="section-kicker"><span>LATEST NEWS</span><span>RESEARCH &amp; INSIGHTS</span></div><div className="press-grid">{newsItems.slice(0, 2).map(([source, title, date]) => <article key={source}><p className="eyebrow">{source}</p><h3>{title}</h3><div><span>{date}</span><ArrowUpRight size={17} /></div></article>)}</div><div className="press-actions"><a className="outline-button center-button" href="/newsroom">View all news <ArrowUpRight size={17} /></a><a className="text-button" href="/journal">The Spectra Journal <ArrowUpRight size={17} /></a><a className="text-button" href="/research">Research &amp; Insights <ArrowUpRight size={17} /></a></div></section>
 
-      <section id="contact" className="contact-section"><div className="section-kicker"><span>07</span><span>WORK WITH US</span></div><PrintText tag="h2" lines={[{ text: "Let's talk about" }, { text: 'the mission.', style: 'em' }]} /><div className="contact-bottom"><PrintText tag="p" lines="Tell us what you're trying to see, understand or protect. We'll show you what's possible." /><a className="solid-button" href={`${APP_URL}/request-demo`}>Start a conversation <ArrowUpRight size={17} /></a></div></section>
+      <section id="contact" className="contact-section"><div className="section-kicker"><span>07</span><span>WORK WITH US</span></div><PrintText tag="h2" lines={[{ text: "Let's talk about" }, { text: 'the mission.', style: 'em' }]} /><div className="contact-bottom"><PrintText tag="p" lines="Tell us what you're trying to see, understand or protect. We'll show you what's possible." /><a className="solid-button" href="/request-demo">Start a conversation <ArrowUpRight size={17} /></a></div></section>
 
       <SiteFooter />
     </main>
