@@ -3,14 +3,14 @@
 import { useState } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 
-/** Standard one-page contact form — the second form in the innov8hub demo. */
+/** Standard one-page contact form. */
 export function StandardForm() {
   const [sent, setSent] = useState(false)
 
   if (sent) {
     return (
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', color: '#0c0c0c', fontSize: 14 }}>
-        <CheckCircle2 size={20} color="#FB880B" />
+        <CheckCircle2 size={20} color="#57d7d4" />
         Message received — we&apos;ll be in touch.
       </div>
     )
@@ -24,7 +24,7 @@ export function StandardForm() {
         setSent(true)
       }}
     >
-      <div className="contact-form-row" style={{ display: 'grid', gap: 14, gridTemplateColumns: '1fr 1fr' }}>
+      <div className="contact-form-row">
         <div className="field">
           <label htmlFor="first">First Name</label>
           <input id="first" name="first" type="text" required placeholder="First name" />

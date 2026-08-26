@@ -49,7 +49,7 @@ export default function JournalPage() {
               that took three shifts to file, and an analyst who could see the pattern if only the
               data were in one place. BastionOS is the answer we keep building.
             </p>
-            <Link className="text-button" href="/contact" style={{ marginTop: 22 }}>
+            <Link className="text-button" href="/journal" style={{ marginTop: 22 }}>
               Read the full entry <ArrowUpRight size={15} />
             </Link>
           </div>

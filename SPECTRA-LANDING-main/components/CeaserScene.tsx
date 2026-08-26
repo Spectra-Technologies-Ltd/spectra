@@ -724,7 +724,7 @@ export default function CeaserScene() {
       toolSel = 3
       chrome(g, 'IMAGERY ANALYSIS')
       panel(g, 60, 66, 220, H - 110, 'Image Library')
-      const sensors = [
+      const sensors: [string, number, string][] = [
         ['EO', 12305, COL.blue],
         ['SAR', 6532, COL.teal],
         ['MSI', 4110, COL.green],
