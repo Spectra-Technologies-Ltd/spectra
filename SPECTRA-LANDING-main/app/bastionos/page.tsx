@@ -58,11 +58,11 @@ export default function BastionOSPage() {
         <div className="section-kicker"><span>02</span><span>THE SYSTEM</span></div>
         <div className="capabilities-layout">
           <div className="capability-sticky">
-            <Reveal>
+            {/*<Reveal>
               <p className="eyebrow"><span className="brand-name">BastionOS</span> · <span className="brand-name">Napoleon</span> · ONE FOUNDATION</p>
               <h2>One system.<br /><em>Three layers.</em></h2>
               <p className="body-copy">BastionOS is the operating foundation. Napoleon is the intelligence layer. Together they form one architecture — from raw signal to decision.</p>
-            </Reveal>
+            </Reveal>*/}
             <div className="capability-detail" style={{ paddingTop: 34 }}>
               <div className="fade-swap">
                 <p className="body-copy">Personnel, clients, sites, assets and incidents — unified, automated and live. One real-time picture of the entire operation.</p>
@@ -70,20 +70,26 @@ export default function BastionOSPage() {
               <div className="cap-stat"><strong>1</strong><span>real-time view</span></div>
             </div>
           </div>
-          <div className="capability-stage">
+          {/*<div className="capability-stage">
             <div className="capability-animation-wrap">
               <IsometricPlatform />
               <div className="image-corner">SPECTRA / SYSTEM ARCHITECTURE</div>
-            </div>
-          </div>
+            </div>*/}
         </div>
       </section>
 
       {/* Full-bleed mission card — the landing page architecture-card concept */}
       <section id="capabilities" className="missions-section" style={{ paddingTop: 110 }}>
         <div className="section-kicker"><span>03</span><span>CORE CAPABILITIES</span></div>
-        <div className="mission-card">
-          <img src="/images/spectra-bastion-layer.jpg" alt="BastionOS layer" />
+        <div
+          className="mission-card"
+          style={{
+            border: '1px solid rgba(255,255,255,0.15)',
+            borderRadius: '12px',
+            overflow: 'hidden'
+          }}
+        >
+          <img src="/images/spectra-bastion-layer.jpg" alt="BastionOS layer" style={{ border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px' }} />
           <div className="mission-shade" />
           <div className="mission-number">06</div>
         </div>
