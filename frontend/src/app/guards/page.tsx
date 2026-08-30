@@ -7,12 +7,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import {
   Users, Search, Plus, Filter, MoreVertical, Shield,
-  X, Edit, Trash2, ArrowRightLeft,
+  X, Edit, Trash2, ArrowRightLeft, UploadCloud,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/Badge';
 import { Pagination } from '@/components/ui/Pagination';
 import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
+import { ImportGuardsModal } from '@/components/dashboard/import-guards-modal';
 
 interface Guard {
   id: string;
@@ -20,6 +21,7 @@ interface Guard {
   nin: string;
   status: string;
   currentShift: string;
+  performanceScore?: number;
   assignedSite?: { id: string; name: string };
 }
 
@@ -27,13 +29,45 @@ const STATUSES = ['ALL', 'ACTIVE', 'ON_LEAVE', 'SUSPENDED', 'INACTIVE'];
 
 export default function GuardsDirectoryPage() {
   const router = useRouter();
+  const [importOpen, setImportOpen] = useState(false);
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  // Saved views — persist filters in localStorage
+  const [search, setSearch] = useState<string>(() => {
+    try {
+      return localStorage.getItem('bastion-guards-search') ?? '';
+    } catch {
+      return '';
+    }
+  });
+  const [statusFilter, setStatusFilter] = useState<string>(() => {
+    try {
+      return localStorage.getItem('bastion-guards-status') ?? 'ALL';
+    } catch {
+      return 'ALL';
+    }
+  });
   const [showFilter, setShowFilter] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkSiteId, setBulkSiteId] = useState('');
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('bastion-guards-search', search);
+    } catch {
+      /* noop */
+    }
+  }, [search]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('bastion-guards-status', statusFilter);
+    } catch {
+      /* noop */
+    }
+  }, [statusFilter]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -55,6 +89,15 @@ export default function GuardsDirectoryPage() {
     },
   });
 
+  const { data: sitesData } = useQuery({
+    queryKey: ['guards-sites'],
+    queryFn: async () => {
+      const res = await api.get('/sites', { params: { limit: 100 } });
+      return res.data;
+    },
+    staleTime: 60000,
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (guardId: string) => api.delete(`/guards/${guardId}`),
     onSuccess: () => {
@@ -63,18 +106,37 @@ export default function GuardsDirectoryPage() {
     },
   });
 
+  const bulkAssignMutation = useMutation({
+    mutationFn: (dto: { siteId: string; guardIds: string[] }) =>
+      api.post('/guards/bulk-assign', dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guards'] });
+      setSelected(new Set());
+      setBulkSiteId('');
+    },
+  });
+
+  const toggleSelected = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
       case 'ON_LEAVE': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
       case 'SUSPENDED': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
-      default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+      default: return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
     }
   };
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" /> Guard Personnel
@@ -101,13 +163,57 @@ export default function GuardsDirectoryPage() {
             )}
           </button>
           <button
+            onClick={() => setImportOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-border bg-card hover:border-primary/40"
+          >
+            <UploadCloud className="h-4 w-4" /> Import
+          </button>
+          <button
             onClick={() => router.push('/guards/add')}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+            className="btn-accent flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
           >
             <Plus className="h-4 w-4" /> Add Guard
           </button>
         </div>
       </div>
+
+      {/* Bulk assign bar */}
+      {selected.size > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/40 bg-primary/10 p-3">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-primary">
+            {selected.size} selected
+          </span>
+          <select
+            value={bulkSiteId}
+            onChange={(e) => setBulkSiteId(e.target.value)}
+            className="rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground outline-none focus:border-ring"
+          >
+            <option value="">Assign to site…</option>
+            {(sitesData?.data ?? []).map((s: { id: string; name: string }) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => {
+              if (!bulkSiteId) return;
+              bulkAssignMutation.mutate({
+                siteId: bulkSiteId,
+                guardIds: Array.from(selected),
+              });
+            }}
+            disabled={!bulkSiteId || bulkAssignMutation.isPending}
+            className="btn-accent flex items-center gap-2 rounded-lg px-4 py-1.5 text-sm font-medium disabled:opacity-50"
+          >
+            {bulkAssignMutation.isPending ? 'Assigning…' : 'Assign'} <ArrowRightLeft className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setSelected(new Set())}
+            className="ml-auto font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground"
+          >
+            Clear
+          </button>
+        </div>
+      )}
 
       {/* Filter bar */}
       {showFilter && (
@@ -147,7 +253,7 @@ export default function GuardsDirectoryPage() {
               placeholder="Search by name, NIN, or phone..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
             />
           </div>
         </div>
@@ -163,20 +269,33 @@ export default function GuardsDirectoryPage() {
               <table className="w-full text-sm text-left">
                 <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
                   <tr>
+                    <th className="px-6 py-4 font-medium tracking-wider w-10">
+                      <span className="sr-only">Select</span>
+                    </th>
                     <th className="px-6 py-4 font-medium tracking-wider">Guard Name</th>
                     <th className="px-6 py-4 font-medium tracking-wider">National ID (NIN)</th>
                     <th className="px-6 py-4 font-medium tracking-wider">Assigned Site</th>
                     <th className="px-6 py-4 font-medium tracking-wider">Shift</th>
+                    <th className="px-6 py-4 font-medium tracking-wider">Performance</th>
                     <th className="px-6 py-4 font-medium tracking-wider">Status</th>
                     <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((guard: Guard) => (
-                    <tr key={guard.id} className="hover:bg-secondary/30 transition-colors group">
+                    <tr key={guard.id} className="table-row-hover group">
+                      <td className="px-6 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(guard.id)}
+                          onChange={() => toggleSelected(guard.id)}
+                          aria-label={`Select ${guard.fullName}`}
+                          className="size-4 rounded border-border accent-primary"
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 ring-1 ring-primary/25">
                             {guard.fullName.substring(0, 2).toUpperCase()}
                           </div>
                           <button
@@ -194,6 +313,20 @@ export default function GuardsDirectoryPage() {
                       <td className="px-6 py-4">
                         <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
                           {guard.currentShift}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center gap-1 font-mono text-xs font-bold ${
+                            (guard.performanceScore ?? 100) >= 85
+                              ? 'text-success'
+                              : (guard.performanceScore ?? 100) >= 70
+                                ? 'text-warning'
+                                : 'text-destructive'
+                          }`}
+                        >
+                          <span className="size-1.5 rounded-full bg-current" />
+                          {guard.performanceScore ?? 100}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -242,7 +375,7 @@ export default function GuardsDirectoryPage() {
             <div className="md:hidden divide-y divide-border">
               {data?.data?.map((guard: Guard) => (
                 <div key={guard.id} className="p-4 flex items-start gap-3 active:bg-secondary/30">
-                  <div className="h-10 w-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 ring-1 ring-primary/25">
                     {guard.fullName.substring(0, 2).toUpperCase()}
                   </div>
                   <button
@@ -310,6 +443,8 @@ export default function GuardsDirectoryPage() {
           />
         )}
       </div>
+
+      <ImportGuardsModal open={importOpen} onClose={() => setImportOpen(false)} />
     </DashboardLayout>
   );
 }

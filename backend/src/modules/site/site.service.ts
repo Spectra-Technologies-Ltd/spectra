@@ -94,8 +94,54 @@ export class SiteService {
     return this.prisma.site.update({ where: { id }, data: dto as any });
   }
 
-  async remove(id: string, organizationId: string) {
+  async remove(id: string, organizationId: string, userId?: string) {
     await this.findOne(id, organizationId);
-    return this.prisma.site.delete({ where: { id } });
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Unlink all guards assigned to this site
+      await tx.guard.updateMany({
+        where: { assignedSiteId: id },
+        data: { assignedSiteId: null },
+      });
+      // Delete all attendance records for this site
+      await tx.attendance.deleteMany({ where: { siteId: id } });
+      // Delete patrol logs associated with patrol routes for this site
+      const patrolRoutes = await tx.patrolRoute.findMany({
+        where: { siteId: id },
+        select: { id: true },
+      });
+      const patrolRouteIds = patrolRoutes.map((pr) => pr.id);
+      if (patrolRouteIds.length > 0) {
+        await tx.patrolLog.deleteMany({
+          where: { patrolRouteId: { in: patrolRouteIds } },
+        });
+        await tx.patrolRecord.deleteMany({
+          where: { routeId: { in: patrolRouteIds } },
+        });
+        await tx.patrolCheckpoint.deleteMany({
+          where: { patrolRouteId: { in: patrolRouteIds } },
+        });
+        await tx.patrolRoute.deleteMany({
+          where: { id: { in: patrolRouteIds } },
+        });
+      }
+      // Delete all incidents for this site
+      await tx.incident.deleteMany({ where: { siteId: id } });
+      // Delete the site
+      return tx.site.delete({ where: { id } });
+    });
+
+    // Write audit log (fire-and-forget)
+    this.prisma.auditLog.create({
+      data: {
+        userId: userId || '',
+        action: 'SITE_DELETED',
+        entity: 'Site',
+        entityId: id,
+        ipAddress: '',
+        userAgent: '',
+      },
+    }).catch(() => {});
+
+    return result;
   }
 }

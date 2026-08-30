@@ -14,6 +14,10 @@ export class CreateGuardDto {
   @IsString() @IsIn(['DAY', 'NIGHT', 'OFF']) currentShift: string;
   @IsString() @IsOptional() assignedSiteId?: string;
   @IsString() @IsOptional() assignedSupervisorId?: string;
+  @IsString() @IsOptional() trainingRecords?: string;
+  @IsString() @IsOptional() certificates?: string;
+  @IsString() @IsOptional() backgroundVerification?: string;
+  @IsString() @IsOptional() disciplinaryHistory?: string;
 }
 
 export class UpdateGuardDto {
@@ -28,6 +32,10 @@ export class UpdateGuardDto {
   @IsString() @IsOptional() assignedSiteId?: string;
   @IsString() @IsOptional() assignedSupervisorId?: string;
   @IsNumber() @IsOptional() performanceScore?: number;
+  @IsString() @IsOptional() trainingRecords?: string;
+  @IsString() @IsOptional() certificates?: string;
+  @IsString() @IsOptional() backgroundVerification?: string;
+  @IsString() @IsOptional() disciplinaryHistory?: string;
 }
 
 export class TransferGuardDto {

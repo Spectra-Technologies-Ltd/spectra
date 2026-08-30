@@ -71,7 +71,7 @@ export default function ClientsDirectoryPage() {
       case 'PAID': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
       case 'UNPAID': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
       case 'OVERDUE': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
-      default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+      default: return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
     }
   };
 
@@ -103,7 +103,7 @@ export default function ClientsDirectoryPage() {
           </button>
           <button
             onClick={() => router.push('/clients/add')}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+            className="btn-accent flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
           >
             <Plus className="h-4 w-4" /> Add Client
           </button>
@@ -144,7 +144,7 @@ export default function ClientsDirectoryPage() {
               placeholder="Search clients or estates..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
             />
           </div>
         </div>
@@ -167,9 +167,9 @@ export default function ClientsDirectoryPage() {
                     <th className="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((client: Client) => (
-                    <tr key={client.id} className="hover:bg-secondary/30 transition-colors group">
+                    <tr key={client.id} className="table-row-hover group">
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">

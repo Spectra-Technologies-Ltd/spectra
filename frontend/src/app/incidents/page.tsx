@@ -52,7 +52,7 @@ export default function IncidentsPage() {
       case 'MEDIUM': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
       case 'HIGH': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
       case 'CRITICAL': return 'bg-red-500/10 text-red-500 border-red-500/20';
-      default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+      default: return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
     }
   };
 
@@ -79,7 +79,7 @@ export default function IncidentsPage() {
               placeholder="Search incidents..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full bg-background border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-all"
             />
           </div>
         </div>
@@ -103,9 +103,9 @@ export default function IncidentsPage() {
                     <th className="px-6 py-4 font-medium tracking-wider">Reported At</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((incident: Incident) => (
-                    <tr key={incident.id} className="hover:bg-secondary/30 transition-colors group">
+                    <tr key={incident.id} className="table-row-hover group">
                       <td className="px-6 py-4">
                         <span className="font-medium text-foreground group-hover:text-primary transition-colors cursor-pointer">
                           {incident.title}

@@ -50,13 +50,13 @@ export default function AuthProvider({
   useEffect(() => {
     if (isLoading) return;
 
-    const publicPaths = ["/login", "/register"];
+    const publicPaths = ["/login", "/register", "/request-demo"];
     const isPublicPath = publicPaths.includes(pathname || "");
 
+    // Only guard private routes — let authenticated users view the auth pages
+    // so they can always sign in or create an account from the same place.
     if (!user && !isPublicPath) {
       router.push("/login");
-    } else if (user && isPublicPath) {
-      router.push("/");
     }
   }, [user, pathname, isLoading, router]);
 

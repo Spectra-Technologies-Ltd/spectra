@@ -6,7 +6,8 @@ const binExtension = process.platform === 'win32' ? '.cmd' : '';
 function runBinary(name, args) {
   const command = path.join(__dirname, '..', 'node_modules', '.bin', `${name}${binExtension}`);
   const isWindows = process.platform === 'win32';
-  const result = spawnSync(isWindows ? [command, ...args].join(' ') : command, isWindows ? [] : args, {
+  const commandLine = isWindows ? `"${command}" ${args.join(' ')}` : command;
+  const result = spawnSync(commandLine, isWindows ? [] : args, {
     cwd: path.join(__dirname, '..'),
     stdio: ['ignore', 'ignore', 'inherit'],
     shell: isWindows,

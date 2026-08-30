@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useSyncExternalStore } from 'react';
 
 interface SidebarContextValue {
   mobileOpen: boolean;
@@ -14,22 +14,27 @@ const SidebarContext = createContext<SidebarContextValue | null>(null);
 
 const STORAGE_KEY = 'spectra:sidebar-collapsed';
 
+// External store so the collapse preference can be read without an effect
+// (SSR-safe: the server snapshot is always false).
+function subscribe(callback: () => void) {
+  window.addEventListener('storage', callback);
+  return () => window.removeEventListener('storage', callback);
+}
+
+function readCollapsed() {
+  return window.localStorage.getItem(STORAGE_KEY) === '1';
+}
+
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [, forceRender] = useState(0);
 
-  // Restore the desktop collapse preference after mount (avoids SSR mismatch).
-  useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored === '1') setCollapsed(true);
-  }, []);
+  const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => false);
 
   const toggleCollapsed = () => {
-    setCollapsed((prev) => {
-      const next = !prev;
-      window.localStorage.setItem(STORAGE_KEY, next ? '1' : '0');
-      return next;
-    });
+    window.localStorage.setItem(STORAGE_KEY, collapsed ? '0' : '1');
+    // Re-read the store on the next render (storage events only fire in other tabs)
+    forceRender((v) => v + 1);
   };
 
   return (

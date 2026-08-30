@@ -55,6 +55,63 @@ export class ClientService {
     return client;
   }
 
+  /** Full data bundle for a client — sites, incidents and attendance summary. */
+  async exportData(id: string, organizationId?: string) {
+    const client = await this.findOne(id, organizationId);
+    const sites = await this.prisma.site.findMany({
+      where: { clientId: id },
+      include: {
+        _count: { select: { guards: true, incidents: true } },
+        incidents: {
+          orderBy: { reportedAt: 'desc' },
+          take: 50,
+          select: {
+            id: true,
+            title: true,
+            incidentType: true,
+            severity: true,
+            status: true,
+            reportedAt: true,
+            description: true,
+          },
+        },
+      },
+    });
+    const attendance = await this.prisma.attendance.findMany({
+      where: { site: { clientId: id } },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      select: {
+        id: true,
+        status: true,
+        isLate: true,
+        checkInTime: true,
+        checkOutTime: true,
+        guard: { select: { fullName: true } },
+        site: { select: { name: true } },
+      },
+    });
+
+    return {
+      exportedAt: new Date().toISOString(),
+      client: {
+        id: client.id,
+        companyName: client.companyName,
+        estateName: client.estateName,
+        contactPerson: client.contactPerson,
+        phone: client.phone,
+        email: client.email,
+        contractStart: client.contractStart,
+        contractEnd: client.contractEnd,
+        monthlyFee: client.monthlyFee,
+        numberOfGuardsAllocated: client.numberOfGuardsAllocated,
+        billingStatus: client.billingStatus,
+      },
+      sites,
+      recentAttendance: attendance,
+    };
+  }
+
   async create(dto: CreateClientDto, organizationId: string) {
     return this.prisma.client.create({
       data: {
@@ -82,8 +139,58 @@ export class ClientService {
     return this.prisma.client.update({ where: { id }, data });
   }
 
-  async remove(id: string, organizationId: string) {
+  async remove(id: string, organizationId: string, userId?: string) {
     await this.findOne(id, organizationId);
-    return this.prisma.client.delete({ where: { id } });
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Find all sites belonging to this client
+      const sites = await tx.site.findMany({ where: { clientId: id } });
+      const siteIds = sites.map((s) => s.id);
+
+      if (siteIds.length > 0) {
+        // Unlink guards from these sites
+        await tx.guard.updateMany({
+          where: { assignedSiteId: { in: siteIds } },
+          data: { assignedSiteId: null },
+        });
+        // Delete attendance records, patrol routes, incidents for these sites
+        await tx.attendance.deleteMany({
+          where: { siteId: { in: siteIds } },
+        });
+        await tx.patrolLog.deleteMany({
+          where: { patrolRoute: { siteId: { in: siteIds } } },
+        });
+        await tx.patrolRecord.deleteMany({
+          where: { route: { siteId: { in: siteIds } } },
+        });
+        await tx.patrolCheckpoint.deleteMany({
+          where: { patrolRoute: { siteId: { in: siteIds } } },
+        });
+        await tx.patrolRoute.deleteMany({
+          where: { siteId: { in: siteIds } },
+        });
+        await tx.incident.deleteMany({
+          where: { siteId: { in: siteIds } },
+        });
+        // Delete the sites
+        await tx.site.deleteMany({ where: { id: { in: siteIds } } });
+      }
+
+      // Delete the client
+      return tx.client.delete({ where: { id } });
+    });
+
+    // Write audit log (fire-and-forget)
+    this.prisma.auditLog.create({
+      data: {
+        userId: userId || '',
+        action: 'CLIENT_DELETED',
+        entity: 'Client',
+        entityId: id,
+        ipAddress: '',
+        userAgent: '',
+      },
+    }).catch(() => {});
+
+    return result;
   }
 }

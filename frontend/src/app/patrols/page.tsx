@@ -37,7 +37,7 @@ function getStatusBadge(status: string) {
     case "COMPLETED":
       return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
     default:
-      return "bg-slate-500/10 text-slate-500 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-500 border-zinc-500/20";
   }
 }
 
@@ -85,11 +85,11 @@ export default function PatrolsPage() {
                     <th className="px-6 py-4 font-medium tracking-wider">Completion %</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((record: PatrolRecord) => (
                     <tr
                       key={record.id}
-                      className="hover:bg-secondary/30 transition-colors group"
+                      className="table-row-hover group"
                     >
                       <td className="px-6 py-4 font-medium text-foreground">
                         {record.route.name}

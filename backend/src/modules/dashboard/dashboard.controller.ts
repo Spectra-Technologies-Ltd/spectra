@@ -34,9 +34,33 @@ export class DashboardController {
     return this.dashboardService.getAttendanceTrend(user.organizationId);
   }
 
+  @Get('patrol-stats')
+  @Roles('ADMIN', 'EMPLOYEE')
+  getPatrolStats(@CurrentUser() user: any) {
+    return this.dashboardService.getPatrolStats(user.organizationId);
+  }
+
   @Get('recent-activities')
   @Roles('ADMIN', 'EMPLOYEE')
   getRecentActivities(@CurrentUser() user: any) {
     return this.dashboardService.getRecentActivities(user.organizationId);
+  }
+
+  @Get('guard-stats')
+  @Roles('ADMIN')
+  getGuardStats(@CurrentUser() user: any) {
+    return this.dashboardService.getGuardStats(user.organizationId);
+  }
+
+  @Get('site-comparison')
+  @Roles('ADMIN')
+  getSiteComparison(@CurrentUser() user: any) {
+    return this.dashboardService.getSiteComparison(user.organizationId);
+  }
+
+  @Get('map-data')
+  @Roles('ADMIN', 'EMPLOYEE')
+  getMapData(@CurrentUser() user: any) {
+    return this.dashboardService.getMapData(user.organizationId);
   }
 }

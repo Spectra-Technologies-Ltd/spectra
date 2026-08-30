@@ -69,6 +69,6 @@ export class SiteController {
   @Delete(':id')
   @Roles('ADMIN')
   async remove(@Param('id') id: string, @CurrentUser() user: any) {
-    return this.siteService.remove(id, user.organizationId);
+    return this.siteService.remove(id, user.organizationId, user.id);
   }
 }

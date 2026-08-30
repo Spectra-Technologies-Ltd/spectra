@@ -1,12 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Shield, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import {
+  Shield,
+  Eye,
+  EyeOff,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  ArrowRight,
+  Mail,
+  LockKeyhole,
+} from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import api from "@/lib/api";
+import BrandPanel from "@/components/auth/BrandPanel";
+import AuthModeSwitch from "@/components/auth/AuthModeSwitch";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -18,10 +31,23 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const registered = searchParams.get("registered");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tfaToken, setTfaToken] = useState<string | null>(null);
+  const [tfaCode, setTfaCode] = useState("");
+  const [tfaEmail, setTfaEmail] = useState("");
 
   const {
     register,
@@ -36,6 +62,12 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       const response = await api.post("/auth/login", data);
+      if (response.data?.requiresTwoFactor) {
+        // Step two: authenticator code required
+        setTfaToken(response.data.tfaToken);
+        setTfaEmail(data.email);
+        return;
+      }
       const { user } = response.data;
       login(user);
     } catch (err: any) {
@@ -48,116 +80,261 @@ export default function LoginPage() {
     }
   };
 
+  const onTfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tfaToken || tfaCode.trim().length < 6) {
+      setError("Please enter the 6-digit code from your authenticator app.");
+      return;
+    }
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      const response = await api.post("/auth/tfa/login", {
+        tfaToken,
+        code: tfaCode.trim(),
+      });
+      login(response.data.user);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Invalid two-factor code.");
+      setTfaCode("");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const labelClass = "font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground";
+  const inputClass = (hasError: boolean) =>
+    `w-full rounded-md border bg-card py-2.5 pl-9 pr-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 sm:text-sm ${
+      hasError
+        ? "border-destructive/40 focus:border-destructive focus:ring-destructive/15"
+        : "border-border focus:border-ring focus:ring-ring/15"
+    }`;
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-card border border-border p-8 rounded-xl shadow-2xl backdrop-blur-md">
-        {/* Header */}
-        <div className="flex flex-col items-center justify-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 mb-3">
-            <Shield className="h-6 w-6 animate-pulse" />
+    <div className="flex min-h-screen min-h-dvh bg-background">
+      <BrandPanel />
+
+      <div className="flex flex-1 items-center justify-center px-4 py-12 sm:px-8">
+        <div className="w-full max-w-[400px]">
+          {/* Mobile brand */}
+          <div className="animate-rise mb-10 flex flex-col items-center gap-3 lg:hidden">
+            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg">
+              <Shield className="h-6 w-6" />
+            </div>
+            <p className="font-mono text-sm font-bold tracking-[0.3em] text-foreground">
+              BASTION<span className="text-primary">OS</span>
+            </p>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            SPECTRA OPERATIONS
+
+          {tfaToken ? (
+            /* ── 2FA verification step ── */
+            <>
+              <p className="animate-rise font-mono text-[11px] font-bold tracking-[0.28em] text-primary" style={{ animationDelay: "180ms" }}>
+                TWO-FACTOR VERIFICATION
+              </p>
+              <div className="animate-rise mt-4 flex items-start gap-3 rounded-md border border-primary/30 bg-primary/5 p-4 text-sm text-foreground" style={{ animationDelay: "240ms" }}>
+                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <div>
+                  <p className="font-bold">Authentication required</p>
+                  <p className="mt-0.5 text-muted-foreground">
+                    Enter the 6-digit code from your authenticator app to finish
+                    signing in as <span className="font-semibold text-foreground">{tfaEmail}</span>.
+                  </p>
+                </div>
+              </div>
+
+              {error && (
+                <div className="animate-rise mt-4 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive" style={{ animationDelay: "300ms" }}>
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <div>
+                    <p className="font-bold">Verification failed</p>
+                    <p className="mt-0.5">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              <form className="mt-8 space-y-5" onSubmit={onTfaSubmit} noValidate>
+                <div>
+                  <label htmlFor="tfa" className={labelClass}>
+                    Authenticator Code
+                  </label>
+                  <div className="relative mt-1.5">
+                    <Shield className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      id="tfa"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      autoFocus
+                      maxLength={6}
+                      placeholder="000000"
+                      value={tfaCode}
+                      onChange={(e) =>
+                        setTfaCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))
+                      }
+                      className="w-full rounded-md border border-border bg-card py-2.5 pl-9 pr-3 font-mono text-lg tracking-[0.4em] text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/15 sm:text-base"
+                    />
+                  </div>
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    Backup codes also work here.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn-accent group flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Verifying...
+                    </>
+                  ) : (
+                    <>
+                      Verify & Enter
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTfaToken(null);
+                    setTfaCode("");
+                    setError(null);
+                  }}
+                  className="w-full text-center text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  ← Back to sign in
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+          <p className="animate-rise font-mono text-[11px] font-bold tracking-[0.28em] text-primary">
+            SECURE SIGN-IN
+          </p>
+          <h2 className="animate-rise mt-3 text-3xl font-black tracking-tight text-foreground" style={{ animationDelay: "60ms" }}>
+            Welcome back
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Secure client sign-in to Operations Command Center
+          <p className="animate-rise mt-2 text-sm text-muted-foreground" style={{ animationDelay: "120ms" }}>
+            Sign in to the BastionOS Operations Command Center.
           </p>
-        </div>
 
-        {/* Error Notification */}
-        {error && (
-          <div className="flex items-start gap-3 rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
-            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+          <AuthModeSwitch mode="signin" />
+
+          {registered === "1" && (
+            <div className="mt-6 flex items-start gap-3 rounded-md border border-success/30 bg-success/10 p-4 text-sm text-success">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p className="font-bold">Account created</p>
+                <p className="mt-0.5">
+                  Your security account is ready. Sign in to continue.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-6 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p className="font-bold">Authentication error</p>
+                <p className="mt-0.5">{error}</p>
+              </div>
+            </div>
+          )}
+
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div>
-              <h5 className="font-semibold">Authentication Error</h5>
-              <p className="mt-0.5 opacity-90">{error}</p>
+              <label htmlFor="email" className={labelClass}>
+                Security Email
+              </label>
+              <div className="relative mt-1.5">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  autoFocus
+                  placeholder="operator@bastionos.com"
+                  {...register("email")}
+                  className={inputClass(!!errors.email)}
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-1.5 text-xs font-medium text-destructive">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
-          </div>
-        )}
 
-        {/* Login Form */}
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5"
-            >
-              Security Email Address
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="operator@spectra.com"
-              {...register("email")}
-              className={`w-full rounded-lg bg-secondary/50 border ${
-                errors.email ? "border-destructive" : "border-border"
-              } px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
-            />
-            {errors.email && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5"
-            >
-              Secure PIN / Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                placeholder="••••••••"
-                {...register("password")}
-                className={`w-full rounded-lg bg-secondary/50 border ${
-                  errors.password ? "border-destructive" : "border-border"
-                } px-3.5 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground focus:outline-none"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
+            <div>
+              <label htmlFor="password" className={labelClass}>
+                Password
+              </label>
+              <div className="relative mt-1.5">
+                <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className={`${inputClass(!!errors.password)} pr-10`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground transition hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-1.5 text-xs font-medium text-destructive">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
-            {errors.password && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.password.message}
-              </p>
-            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-accent group flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Authenticating...
+                </>
+              ) : (
+                <>
+                  Enter Command Center
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-7 flex items-center gap-3">
+            <span className="h-px flex-1 bg-border" />
+            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-muted-foreground">
+              SECURE ACCESS
+            </span>
+            <span className="h-px flex-1 bg-border" />
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full mt-4 flex justify-center items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 transition-all"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Authenticating
-                Security ID...
-              </>
-            ) : (
-              "Enter Security Dashboard"
-            )}
-          </button>
-        </form>
-
-        <div className="border-t border-border pt-4 text-center">
-          <p className="text-xs text-muted-foreground">
-            Protected by Spectra Cryptographic Protocol. All attempts logged.
+          <p className="mt-10 text-center font-mono text-[10px] tracking-[0.14em] text-muted-foreground">
+            PROTECTED BY BASTIONOS CRYPTOGRAPHIC PROTOCOL
           </p>
+            </>
+          )}
         </div>
       </div>
     </div>

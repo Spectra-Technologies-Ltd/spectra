@@ -21,7 +21,7 @@ const getRiskLevelColor = (level: string) => {
     case 'MEDIUM': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
     case 'HIGH': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
     case 'CRITICAL': return 'bg-red-500/10 text-red-500 border-red-500/20';
-    default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+    default: return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
   }
 };
 
@@ -45,7 +45,7 @@ export default function ReportsPage() {
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `Spectra_Report_${siteName}_${new Date().toISOString().split('T')[0]}.pdf`);
+      link.setAttribute('download', `BastionOS_Report_${siteName}_${new Date().toISOString().split('T')[0]}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -120,7 +120,7 @@ export default function ReportsPage() {
                 <button
                   onClick={() => downloadPdf(site.id, site.name)}
                   disabled={isDownloading(site.id)}
-                  className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(139,92,246,0.3)] disabled:opacity-50"
+                  className="btn-accent inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-50"
                 >
                   {isDownloading(site.id) ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />

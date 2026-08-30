@@ -7,10 +7,16 @@ import {
   Body,
   Param,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   HttpCode,
   HttpStatus,
+  Header,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { GuardService } from './guard.service';
 import {
   CreateGuardDto,
@@ -57,8 +63,99 @@ export class GuardController {
     return this.guardService.getStats(user.organizationId);
   }
 
-  @Get(':id')
+  @Get('performance')
   @Roles('ADMIN')
+  async getPerformance(@CurrentUser() user: any) {
+    return this.guardService.getPerformance(user.organizationId);
+  }
+
+  @Get('unassigned')
+  @Roles('ADMIN')
+  async findUnassigned(@CurrentUser() user: any) {
+    return this.guardService.findUnassigned(user.organizationId);
+  }
+
+  @Get('attendance-stats')
+  @Roles('ADMIN')
+  async findWithAttendanceStats(@CurrentUser() user: any, @Query('date') date?: string) {
+    return this.guardService.findWithAttendanceStats(date || new Date().toISOString().split('T')[0], user.organizationId);
+  }
+
+  @Post('bulk-assign')
+  @Roles('ADMIN')
+  async bulkAssign(@Body() dto: { siteId: string; guardIds: string[] }, @CurrentUser() user: any) {
+    return this.guardService.bulkAssign(dto, user.organizationId);
+  }
+
+  // ── Bulk import ────────────────────────────────────────────────────────────
+
+  @Get('import/template')
+  @Roles('ADMIN')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  async importTemplate(@Res() res: Response) {
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="guards-import-template.csv"',
+    );
+    res.send(this.guardService.buildCsvTemplate());
+  }
+
+  @Post('import')
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  async importGuards(
+    @Body()
+    body: {
+      rows: Record<string, any>[];
+      createAccounts?: boolean;
+      mode?: 'create' | 'upsert';
+    },
+    @CurrentUser() user: any,
+  ) {
+    if (!body?.rows?.length) {
+      return {
+        total: 0,
+        created: 0,
+        updated: 0,
+        skipped: 0,
+        accountsCreated: 0,
+        createdAccounts: [],
+        errors: [{ row: 0, reason: 'No rows provided' }],
+        errorsTruncated: false,
+      };
+    }
+    return this.guardService.importGuards({
+      rows: body.rows,
+      createAccounts: body.createAccounts,
+      mode: body.mode,
+      organizationId: user.organizationId,
+    });
+  }
+
+  @Post('import/csv')
+  @Roles('ADMIN')
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.OK)
+  async importCsv(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { createAccounts?: string; mode?: string },
+    @CurrentUser() user: any,
+  ) {
+    if (!file) {
+      return { error: 'Upload a CSV file with the field named "file"' };
+    }
+    const text = file.buffer?.toString('utf8') ?? '';
+    const rows = this.guardService.importFromCsv(text, user.organizationId);
+    return this.guardService.importGuards({
+      rows,
+      createAccounts: body.createAccounts === 'true',
+      mode: (body.mode as 'create' | 'upsert') ?? 'create',
+      organizationId: user.organizationId,
+    });
+  }
+
+  @Get(':id')
+  @Roles('ADMIN', 'EMPLOYEE')
   async findOne(@Param('id') id: string, @CurrentUser() user: any) {
     return this.guardService.findOne(id, user.organizationId);
   }
@@ -90,9 +187,20 @@ export class GuardController {
     return this.guardService.transfer(id, dto, user.organizationId);
   }
 
+  @Patch(':id/verification')
+  @Roles('ADMIN')
+  async updateVerification(
+    @Param('id') id: string,
+    @Body() dto: { status: string; verifiedBy?: string; date?: string },
+    @CurrentUser() user: any,
+  ) {
+    return this.guardService.updateVerification(id, dto, user.organizationId);
+  }
+
   @Delete(':id')
   @Roles('ADMIN')
-  async deactivate(@Param('id') id: string, @CurrentUser() user: any) {
-    return this.guardService.deactivate(id, user.organizationId);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+    await this.guardService.remove(id, user.organizationId, user.id);
   }
 }

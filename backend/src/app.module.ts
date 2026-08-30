@@ -14,6 +14,11 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { ReportsModule } from './modules/reports/reports.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { LeadsModule } from './modules/leads/leads.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { RealtimeModule } from './modules/realtime/realtime.module';
+import { NapoleonModule } from './modules/napoleon/napoleon.module';
+import { PushModule } from './modules/push/push.module';
 
 @Module({
   imports: [
@@ -41,6 +46,11 @@ import { UploadsModule } from './modules/uploads/uploads.module';
     ReportsModule,
     DashboardModule,
     UploadsModule,
+    LeadsModule,
+    AuditModule,
+    RealtimeModule,
+    NapoleonModule,
+    PushModule,
   ],
   controllers: [AppController],
   providers: [AppService],

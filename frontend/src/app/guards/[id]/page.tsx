@@ -66,9 +66,9 @@ function getStatusBadge(status: string) {
     case "SUSPENDED":
       return "bg-rose-500/10 text-rose-400 border-rose-500/20";
     case "INACTIVE":
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
     default:
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 }
 
@@ -77,9 +77,9 @@ function getShiftBadge(shift: string) {
     case "DAY":
       return "bg-amber-500/10 text-amber-400 border-amber-500/20";
     case "NIGHT":
-      return "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
+      return "bg-zinc-500/10 text-zinc-500 border-zinc-500/20";
     default:
-      return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 }
 
@@ -448,13 +448,18 @@ export default function GuardProfilePage() {
                       Training Records
                     </p>
                     <div className="space-y-2">
-                      {trainingList.map((training: string, i: number) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-2 text-sm text-foreground bg-secondary/20 rounded-lg px-3 py-2"
-                        >
-                          <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0" />
-                          {training}
+                      {trainingList.map((training: any, i: number) => (
+                        <div key={i} className="flex items-start gap-2 text-sm bg-secondary/20 rounded-lg px-3 py-2">
+                          <ChevronRight className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                          <div className="min-w-0">
+                            <p className="text-foreground">{typeof training === 'string' ? training : training.course || training.name}</p>
+                            {(training.date || training.expiry) && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {training.date && `Completed: ${formatDate(training.date)}`}
+                                {training.expiry && ` · Expires: ${formatDate(training.expiry)}`}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -466,13 +471,18 @@ export default function GuardProfilePage() {
                       Certificates
                     </p>
                     <div className="space-y-2">
-                      {certList.map((cert: string, i: number) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-2 text-sm text-foreground bg-secondary/20 rounded-lg px-3 py-2"
-                        >
-                          <Award className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                          {cert}
+                      {certList.map((cert: any, i: number) => (
+                        <div key={i} className="flex items-start gap-2 text-sm bg-secondary/20 rounded-lg px-3 py-2">
+                          <Award className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                          <div className="min-w-0">
+                            <p className="text-foreground">{typeof cert === 'string' ? cert : cert.name}</p>
+                            {(cert.issued || cert.issuer) && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {cert.issuer && `${cert.issuer}`}
+                                {cert.issued && ` · ${formatDate(cert.issued)}`}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>

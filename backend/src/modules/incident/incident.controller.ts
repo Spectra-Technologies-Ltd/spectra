@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Body,
   Query,
   Param,
@@ -11,7 +12,11 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { IncidentService } from './incident.service';
-import { ReportIncidentDto, UpdateIncidentStatusDto } from './dto/incident.dto';
+import {
+  ReportIncidentDto,
+  UpdateIncidentDto,
+  UpdateIncidentStatusDto,
+} from './dto/incident.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -42,6 +47,16 @@ export class IncidentController {
     return this.incidentService.updateStatus(id, dto, user.organizationId);
   }
 
+  @Patch(':id')
+  @Roles('ADMIN')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateIncidentDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.incidentService.update(id, dto, user.organizationId);
+  }
+
   @Get()
   @Roles('ADMIN', 'EMPLOYEE')
   async findAll(
@@ -62,6 +77,13 @@ export class IncidentController {
       search,
       organizationId: user.organizationId,
     });
+  }
+
+  @Delete(':id')
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+    await this.incidentService.remove(id, user.organizationId);
   }
 
   @Get(':id')

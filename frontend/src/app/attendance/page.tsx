@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { ClipboardCheck } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ClipboardCheck, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Pagination } from '@/components/ui/Pagination';
 import { EmptyState, LoadingState } from '@/components/ui/EmptyState';
@@ -41,7 +40,7 @@ function getStatusStyle(status: string) {
     case 'ABSENT':
       return 'bg-red-500/10 text-red-500 border-red-500/20';
     default:
-      return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+      return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
   }
 }
 
@@ -69,6 +68,12 @@ export default function AttendancePage() {
             Monitor guard check-ins, check-outs, and attendance status across all sites.
           </p>
         </div>
+        <a
+          href="/api/v1/attendance/export"
+          className="btn-accent inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium"
+        >
+          <Download className="h-4 w-4" /> Export CSV
+        </a>
       </div>
 
       <div className="rounded-xl border border-border bg-card overflow-hidden flex flex-col">
@@ -90,9 +95,9 @@ export default function AttendancePage() {
                     <th className="px-6 py-4 font-medium tracking-wider">Method</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border table-zebra">
                   {data?.data?.map((record: AttendanceRecord) => (
-                    <tr key={record.id} className="hover:bg-secondary/30 transition-colors group">
+                    <tr key={record.id} className="table-row-hover group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">

@@ -259,7 +259,7 @@ export default function MobilePatrolPage() {
                 isScanned && "bg-emerald-500/10 border-emerald-500/20",
                 isMissed && "bg-rose-500/10 border-rose-500/20",
                 isNext &&
-                  "border-primary shadow-[0_0_10px_rgba(139,92,246,0.1)]",
+                  "border-primary shadow-[0_0_10px_rgba(34,211,238,0.15)]",
                 !isScanned && !isMissed && !isNext && "bg-card border-border",
               )}
             >

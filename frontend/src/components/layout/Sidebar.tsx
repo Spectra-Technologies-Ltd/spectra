@@ -4,55 +4,67 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Shield,
+  ShieldCheck,
   LayoutDashboard,
+  Map,
   Users,
-  Building2,
-  MapPin,
-  ClipboardCheck,
   AlertTriangle,
+  ClipboardCheck,
   Route,
+  MapPin,
+  Building2,
   BarChart3,
   FileText,
-  ChevronLeft,
-  ChevronRight,
+  Bell,
+  Settings,
+  Sparkles,
+  BrainCircuit,
+  ChevronsLeft,
+  ChevronsRight,
   LogOut,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/providers/AuthProvider';
 import { useSidebar } from './SidebarContext';
+import { useQuery } from '@tanstack/react-query';
+import api from '@/lib/api';
 
 const navSections = [
   {
-    label: 'Overview',
-    items: [{ label: 'Dashboard', href: '/', icon: LayoutDashboard }],
+    label: 'Command',
+    items: [
+      { label: 'Ops Overview', href: '/', icon: LayoutDashboard },
+      { label: 'Live Map', href: '/map', icon: Map },
+      { label: 'Personnel', href: '/guards', icon: Users },
+      { label: 'Incidents', href: '/incidents', icon: AlertTriangle },
+    ],
   },
   {
     label: 'Operations',
     items: [
       { label: 'Attendance', href: '/attendance', icon: ClipboardCheck },
       { label: 'Patrols', href: '/patrols', icon: Route },
-      { label: 'Guards', href: '/guards', icon: Users },
-    ],
-  },
-  {
-    label: 'Management',
-    items: [
-      { label: 'Clients', href: '/clients', icon: Building2 },
       { label: 'Sites', href: '/sites', icon: MapPin },
+      { label: 'Clients', href: '/clients', icon: Building2 },
     ],
   },
   {
-    label: 'Security',
+    label: 'Intelligence',
     items: [
-      { label: 'Incidents', href: '/incidents', icon: AlertTriangle, badge: '5' },
+      { label: 'Napoleon', href: '/napoleon', icon: BrainCircuit },
+      { label: 'Analytics', href: '/analytics', icon: BarChart3 },
       { label: 'Reports', href: '/reports', icon: FileText },
     ],
   },
   {
-    label: 'Insights',
-    items: [{ label: 'Analytics', href: '/analytics', icon: BarChart3 }],
+    label: 'System',
+    items: [
+      { label: 'Security Center', href: '/security', icon: ShieldCheck },
+      { label: 'Notifications', href: '/notifications', icon: Bell },
+      { label: 'Settings', href: '/account', icon: Settings },
+      { label: "What's New", href: '/changelog', icon: Sparkles },
+    ],
   },
 ];
 
@@ -60,6 +72,24 @@ export default function Sidebar() {
   const { collapsed, toggleCollapsed, mobileOpen, closeMobile } = useSidebar();
   const pathname = usePathname();
   const { user, logout } = useAuth();
+
+  // Role-based access: field employees get the ops views; settings stay for leadership
+  const isLeader = !!user?.role && user.role !== 'EMPLOYEE';
+  const sections = navSections.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => item.href !== '/account' || isLeader),
+  }));
+
+  // Live count of open incidents for the sidebar badge
+  const { data: openIncidents } = useQuery({
+    queryKey: ['sidebar-open-incidents'],
+    queryFn: async () => {
+      const res = await api.get('/incidents', { params: { status: 'OPEN', limit: 1 } });
+      return res.data?.meta?.total ?? 0;
+    },
+    staleTime: 60000,
+    refetchInterval: 120000,
+  });
 
   useEffect(() => {
     closeMobile();
@@ -73,88 +103,148 @@ export default function Sidebar() {
     };
   }, [mobileOpen]);
 
+  // Keyboard shortcut: Ctrl/Cmd + B toggles the sidebar
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        const target = e.target as HTMLElement | null;
+        const typing =
+          target &&
+          (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.isContentEditable);
+        if (typing) return;
+        e.preventDefault();
+        toggleCollapsed();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [toggleCollapsed]);
+
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname?.startsWith(href);
+
   return (
     <>
       {mobileOpen && (
         <div
           onClick={closeMobile}
           aria-hidden="true"
-          className="fixed inset-0 z-40 animate-in fade-in bg-slate-950/55 backdrop-blur-[2px] duration-200 lg:hidden"
+          className="fixed inset-0 z-40 animate-fade-in bg-black/60 backdrop-blur-[2px] lg:hidden"
         />
       )}
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-[#07152b] text-slate-200 shadow-2xl shadow-slate-950/20 transition-transform duration-300 ease-in-out',
-          'lg:static lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300',
+          'fixed inset-y-0 left-0 z-50 flex h-screen supports-[height:100dvh]:h-dvh flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl shadow-black/40 transition-transform duration-300 ease-in-out',
+          'lg:relative lg:z-auto lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:ease-in-out',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
-          collapsed ? 'w-[260px] lg:w-[78px]' : 'w-[260px]',
+          collapsed ? 'w-[260px] lg:w-[76px]' : 'w-[260px]',
         )}
       >
-        <div className="flex h-18 shrink-0 items-center justify-between border-b border-white/10 px-4 py-4">
-          <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-400/40 bg-blue-500/15 text-blue-300">
-              <Shield className="h-5 w-5" />
+        {/* Brand */}
+        <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-sidebar-border px-5">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <ShieldCheck className="size-5" />
+          </div>
+          <div className={cn('min-w-0 overflow-hidden whitespace-nowrap leading-tight', collapsed && 'lg:hidden')}>
+            <div className="font-mono text-sm font-semibold tracking-wide">
+              BASTION<span className="text-primary">OS</span>
             </div>
-            <div className={cn('min-w-0', collapsed && 'lg:hidden')}>
-              <p className="whitespace-nowrap text-base font-black leading-tight tracking-[0.16em] text-white">
-                SPECTRA
-              </p>
-              <p className="truncate text-[10px] font-medium tracking-[0.14em] text-slate-400">
-                Security Platform
-              </p>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              Spectra Technology
             </div>
           </div>
+
           <button
             onClick={closeMobile}
             aria-label="Close menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-all hover:bg-white/10 hover:text-white lg:hidden"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground lg:hidden"
           >
-            <X className="h-4.5 w-4.5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
-          {navSections.map((section) => (
+        {/* Floating expand/collapse toggle (desktop) */}
+        <button
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'}
+          aria-expanded={!collapsed}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="absolute -right-3.5 top-1/2 z-20 hidden h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-lg shadow-black/40 transition-all hover:scale-110 hover:border-primary/50 hover:text-primary lg:flex"
+        >
+          {collapsed ? <ChevronsRight className="h-3.5 w-3.5" /> : <ChevronsLeft className="h-3.5 w-3.5" />}
+        </button>
+
+        {/* Navigation */}
+        <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
+          {sections.map((section) => (
             <div key={section.label}>
               <p
                 className={cn(
-                  'mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500',
-                  collapsed && 'lg:px-0 lg:text-center',
+                  'mb-2 flex items-center gap-2 px-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground',
+                  collapsed && 'lg:justify-center lg:px-0',
                 )}
               >
-                {collapsed ? '...' : section.label}
+                <span className={cn('min-w-0 flex-1', collapsed && 'lg:hidden')}>
+                  {section.label}
+                </span>
+                <span className={cn('h-px w-8 bg-sidebar-border', collapsed ? 'lg:hidden' : 'flex-1')} />
               </p>
               <div className="space-y-1">
                 {section.items.map((item) => {
-                  const isActive =
-                    item.href === '/' ? pathname === '/' : pathname?.startsWith(item.href);
+                  const active = isActive(item.href);
+                  const badge: string | null =
+                    item.href === '/incidents' && openIncidents && openIncidents > 0
+                      ? String(openIncidents)
+                      : null;
 
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       title={collapsed ? item.label : undefined}
+                      aria-current={active ? 'page' : undefined}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-150',
-                        isActive
-                          ? 'bg-blue-500 text-white shadow-lg shadow-blue-950/30'
-                          : 'text-slate-300 hover:bg-white/8 hover:text-white',
+                        'group flex items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium transition-colors',
+                        collapsed && 'lg:justify-center lg:px-0',
+                        active
+                          ? 'bg-sidebar-accent text-sidebar-foreground'
+                          : 'text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground',
                       )}
                     >
-                      <item.icon className="h-4.5 w-4.5 shrink-0" />
-                      <span className={cn('truncate', collapsed && 'lg:hidden')}>
+                      <item.icon
+                        className={cn(
+                          'h-[18px] w-[18px] shrink-0 transition-colors',
+                          active ? 'text-primary' : 'text-muted-foreground group-hover:text-sidebar-foreground',
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left',
+                          collapsed && 'lg:max-w-0 lg:opacity-0',
+                        )}
+                      >
                         {item.label}
                       </span>
-                      {'badge' in item && item.badge && (
+                      {badge && (
                         <span
                           className={cn(
-                            'ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white',
+                            'ml-auto shrink-0 rounded-full bg-destructive/90 px-1.5 py-0.5 text-[10px] font-bold text-white ring-1 ring-white/20',
                             collapsed && 'lg:hidden',
                           )}
                         >
-                          {item.badge}
+                          {badge}
                         </span>
+                      )}
+                      {active && (
+                        <span
+                          className={cn(
+                            'h-4 w-1 shrink-0 rounded-full bg-primary',
+                            collapsed && 'lg:hidden',
+                          )}
+                        />
                       )}
                     </Link>
                   );
@@ -164,38 +254,52 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        <div className="space-y-1 border-t border-white/10 p-3">
+        {/* Footer */}
+        <div className="space-y-1 border-t border-sidebar-border p-3">
           {user && (
-            <div className="flex items-center gap-2.5 px-3 py-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
-                {user.firstName?.[0]}
-                {user.lastName?.[0]}
+            <Link
+              href="/account"
+              title={collapsed ? 'My Profile' : undefined}
+              className={cn(
+                'group flex items-center gap-3 rounded-md bg-sidebar-accent/50 px-2 py-2 transition-colors hover:bg-sidebar-accent',
+                collapsed && 'lg:justify-center lg:px-0',
+              )}
+            >
+              <div className="relative shrink-0">
+                <div className="flex size-8 items-center justify-center rounded-full bg-primary/20 font-mono text-xs font-semibold text-primary transition-transform group-hover:scale-105">
+                  {user.firstName?.[0]}
+                  {user.lastName?.[0]}
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-success ring-2 ring-sidebar" />
               </div>
-              <div className={cn('overflow-hidden', collapsed && 'lg:hidden')}>
-                <p className="truncate text-xs font-semibold text-white">
+              <div className={cn('min-w-0 overflow-hidden whitespace-nowrap', collapsed && 'lg:hidden')}>
+                <p className="truncate text-xs font-medium text-sidebar-foreground">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="truncate text-[10px] uppercase tracking-wider text-slate-500">
+                <p className="truncate text-[10px] uppercase tracking-wider text-muted-foreground">
                   {user.role?.replace('_', ' ')}
                 </p>
               </div>
-            </div>
+            </Link>
           )}
 
           <button
             onClick={logout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-slate-400 transition-all hover:bg-red-500/10 hover:text-red-300"
+            title={collapsed ? 'Sign Out' : undefined}
+            className={cn(
+              'flex w-full items-center gap-3 rounded-md px-3 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive',
+              collapsed && 'lg:justify-center lg:px-0',
+            )}
           >
-            <LogOut className="h-4 w-4 shrink-0" />
-            <span className={cn(collapsed && 'lg:hidden')}>Sign Out</span>
-          </button>
-
-          <button
-            onClick={toggleCollapsed}
-            className="hidden w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-400 transition-all hover:bg-white/8 hover:text-white lg:flex"
-          >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-            <span className={cn(collapsed && 'lg:hidden')}>Collapse</span>
+            <LogOut className="h-[18px] w-[18px] shrink-0" />
+            <span
+              className={cn(
+                'min-w-0 flex-1 overflow-hidden whitespace-nowrap text-left',
+                collapsed && 'lg:max-w-0 lg:opacity-0',
+              )}
+            >
+              Sign Out
+            </span>
           </button>
         </div>
       </aside>

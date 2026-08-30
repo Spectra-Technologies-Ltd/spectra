@@ -1,35 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MulterModule } from '@nestjs/platform-express';
 import { UploadsController } from './uploads.controller';
-import { UploadsService } from './uploads.service';
 import { CloudinaryService } from './cloudinary.service';
+import { DatabaseModule } from '../../database/database.module';
 
 @Module({
-  imports: [
-    MulterModule.register({
-      storage: require('multer').memoryStorage(),
-      limits: {
-        fileSize: 10 * 1024 * 1024, // 10 MB
-      },
-      fileFilter: (_req: any, file: any, cb: any) => {
-        const allowed = [
-          'image/jpeg',
-          'image/png',
-          'image/webp',
-          'image/gif',
-          'video/mp4',
-          'video/webm',
-        ];
-        if (allowed.includes(file.mimetype)) {
-          cb(null, true);
-        } else {
-          cb(new Error('Invalid file type. Allowed: JPEG, PNG, WebP, GIF, MP4, WebM'), false);
-        }
-      },
-    }),
-  ],
+  imports: [DatabaseModule],
   controllers: [UploadsController],
-  providers: [UploadsService, CloudinaryService],
-  exports: [UploadsService],
+  providers: [CloudinaryService],
 })
 export class UploadsModule {}
