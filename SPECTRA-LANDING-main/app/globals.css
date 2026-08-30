@@ -280,14 +280,22 @@ section:not(.hero-section):not(.careers-section) { padding: 130px 7vw; }
 footer { background: #050815; padding: 65px 7vw 25px; }.footer-top { align-items: flex-start; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; padding-bottom: 45px; }.footer-tagline { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; }.odometer { align-items: flex-end; display: flex; flex-direction: column; }.odometer strong { color: var(--accent); font-family: var(--font-geist-mono), monospace; font-size: 38px; font-weight: 350; letter-spacing: -.1em; }.footer-links { display: grid; gap: 12vw; grid-template-columns: 1fr 1fr 1fr; padding: 45px 0 80px; }.footer-links > div { display: flex; flex-direction: column; gap: 9px; }.footer-links button, .footer-links p { background: none; border: 0; color: #a9b7cc; cursor: pointer; font-size: 13px; padding: 0; text-align: left; }.footer-links p { line-height: 1.6; margin: 0; }.footer-bottom { border-top: 1px solid var(--border); display: flex; justify-content: space-between; padding-top: 18px; }
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .55s ease, transform .55s ease; }.reveal.is-visible { opacity: 1; transform: translateY(0); }
 @media (max-width: 800px) {
-  .site-header { padding: 0 18px; }.header-center { display: none; } .menu-panel { padding: 22px 18px; }.menu-links { margin-top: 12vh; }.menu-links button { grid-template-columns: 45px 1fr 25px; padding: 15px 0; }.hero-copy { padding: 0 18px 17vh; }.hero-copy h1 { font-size: clamp(54px, 16vw, 92px); }.hero-bottom { bottom: 18px; left: 18px; right: 18px; }.hero-bottom > span:first-child, .hero-bottom > span:last-child { display: none; } section:not(.hero-section):not(.careers-section) { padding: 78px 18px; }.manifesto-section h2 { font-size: 52px; }.manifesto-meta { margin-top: 48px; }.capabilities-layout, .product-layout, .team-grid { display: flex; flex-direction: column; gap: 55px; }.capability-sticky { position: static; }.capability-tabs { margin-top: 40px; }.capability-detail { display: block; }.cap-stat { border-left: 0; border-top: 1px solid var(--border); margin-top: 26px; padding: 15px 0 0; }.section-heading-row, .fleet-intro, .contact-bottom { align-items: flex-start; flex-direction: column; gap: 28px; }.filter-list { flex-wrap: wrap; }.mission-card { aspect-ratio: .88; }.mission-content { bottom: 28px; left: 20px; right: 20px; }.mission-number { font-size: 42vw; }.carousel-controls { bottom: 20px; right: 20px; }.product-nav { gap: 18px; overflow-x: auto; }.product-nav button { min-width: max-content; }.product-visual { aspect-ratio: 1; }.hotspot span { display: none; }.statement-section { min-height: 70vh; }.statement-rule { margin-bottom: 60px; }.team-grid img { order: -1; }.press-grid { display: block; margin-top: 55px; }.press-grid article { margin-bottom: 25px; min-height: 190px; }.careers-section { min-height: 75vh; padding: 18px; }.contact-section h2 { margin: 65px 0 55px; }.footer-top { flex-wrap: wrap; gap: 24px; }.footer-tagline { order: 3; width: 100%; }.footer-links { gap: 40px; grid-template-columns: 1fr 1fr; padding-bottom: 55px; }.footer-links > div:last-child { grid-column: span 2; }.footer-bottom { flex-direction: column; gap: 10px; }.footer-bottom span:last-child { display: none; } }
-/* Mobile polish: kickers wrap, actions wrap, menu sits comfortably */
-@media (max-width: 800px) {
+  /* Mobile polish: kickers wrap, actions wrap, menu sits comfortably */
   .section-kicker { align-items: flex-start; flex-wrap: wrap; gap: 6px 14px; }
   .press-actions { flex-wrap: wrap; gap: 16px; justify-content: center; }
   .menu-links { margin-top: 6vh; }
   .menu-group { margin-bottom: 26px; }
   .menu-panel-top { padding-bottom: 10px; }
+  .menu-panel { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+  .menu-product-links button { padding: 11px 0; }
+}
+/* Touch & safe-area polish for phones and tablets */
+@media (max-width: 800px) {
+  html { -webkit-text-size-adjust: 100%; }
+  body { -webkit-tap-highlight-color: transparent; }
+  button, a { touch-action: manipulation; }
+  .site-header { padding-left: calc(18px + env(safe-area-inset-left)); padding-right: calc(18px + env(safe-area-inset-right)); }
+  .hero-copy { padding-bottom: calc(14vh + env(safe-area-inset-bottom)); }
 }
 /* Napoleon intelligence diagram — animation keyframes */
 @keyframes flow-up {
@@ -766,6 +774,10 @@ section[id] { scroll-margin-top: 90px; }
   .menu-product { padding: 15px 0; }
   .menu-group-title { font-size: 9px; }
   .menu-product-links button { font-size: 12px; padding: 8px 0; }
+  /* Headlines that were built for desktop widths now scale for small phones */
+  .statement-section h2 { font-size: 44px; }
+  .contact-section h2 { font-size: 46px; }
+  .bastion-hero-center h2 { font-size: 42px; }
 }
 
 /* ── Accessibility: respect reduced-motion preferences ── */
