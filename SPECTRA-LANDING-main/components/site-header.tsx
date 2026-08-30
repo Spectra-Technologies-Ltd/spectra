@@ -1,0 +1,320 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react'
+import { NewsletterForm } from './newsletter-form'
+
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://spectra-lime.vercel.app'
+
+/* ── Desktop inline nav (Palantir-style dropdowns) ── */
+const NAV_GROUPS = [
+  {
+    label: 'BastionOS',
+    eyebrow: 'The Operating Foundation',
+    description: '',
+    links: [['Overview', '/#bastion']],
+    footer: ['Explore BastionOS', '/bastionos'],
+  },
+  {
+    label: 'Napoleon',
+    eyebrow: 'The Intelligence Layer',
+    description: '',
+    links: [['Overview', '/#napoleon']],
+    footer: ['Explore Napoleon', '/napoleon'],
+  },
+  {
+    label: 'Spectra Workplace',
+    eyebrow: 'Spectra Workplace',
+    description: 'The operational command center for your entire security operation.',
+    links: [],
+    footer: ['Enter the Workplace', '/workspace'],
+  },
+] as const
+
+/* Work With Us — rendered after Newsroom in the nav order */
+const WORK_WITH_US_NAV = {
+  label: 'Work With Us',
+  eyebrow: '',
+  description: 'Partnerships, enterprise, government and press — direct access to the Spectra team.',
+  links: [
+    ['Partners', '/partners'],
+  ],
+  footer: ['Start a conversation', '/contact'],
+} as const
+
+const NAV_NEWS = {
+  label: 'Newsroom',
+  eyebrow: 'Newsroom / The Journal',
+  links: [
+    ['Latest News', '/newsroom'],
+    ['The Spectra Journal', '/journal'],
+    ['Research & Insights', '/research'],
+  ],
+  featured: [
+    {
+      source: 'SPECTRA JOURNAL',
+      title: 'BastionOS: the operating foundation for intelligent systems.',
+      tag: 'Read Here',
+      href: '/bastionos',
+    },
+    {
+      source: 'TECHNICAL BRIEF',
+      title: 'Napoleon: machine intelligence from signal to action.',
+      tag: 'Read Here',
+      href: '/napoleon',
+    },
+  ],
+} as const
+
+/* ── Mobile full-screen menu ── */
+
+export function scrollToSection(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+}
+
+export default function SiteHeader({ light = false }: { light?: boolean }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [openNav, setOpenNav] = useState<string | null>(null)
+  const pathname = usePathname()
+  const router = useRouter()
+  const navRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenNav(null)
+    }
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenNav(null)
+    }
+    // Fallback: when the URL hash points at a homepage section (e.g. after a
+    // cross-page anchor navigation), settle the scroll once the page paints.
+    const onHashChange = () => {
+      const id = window.location.hash.replace('#', '')
+      if (id) setTimeout(() => scrollToSection(id), 80)
+    }
+    document.addEventListener('mousedown', handler)
+    document.addEventListener('keydown', esc)
+    window.addEventListener('hashchange', onHashChange)
+    return () => {
+      document.removeEventListener('mousedown', handler)
+      document.removeEventListener('keydown', esc)
+      window.removeEventListener('hashchange', onHashChange)
+    }
+  }, [])
+
+  // Same-page anchor: smooth-scroll without a full reload; otherwise let the
+  // native <a href> navigation do its thing (works even without JS).
+  const handleMegaLink = (e: React.MouseEvent, target: string) => {
+    const [path, hash] = target.split('#')
+    if (hash && (path === '' || path === '/' || path === pathname)) {
+      e.preventDefault()
+      setOpenNav(null)
+      scrollToSection(hash)
+    } else {
+      setOpenNav(null)
+    }
+  }
+
+  const go = (target: string) => {
+    setMenuOpen(false)
+    setOpenNav(null)
+    if (target.startsWith('http')) {
+      window.open(target, '_blank', 'noopener,noreferrer')
+      return
+    }
+    const [path, hash] = target.split('#')
+    // Hash links scroll to the matching section on the current page
+    if (hash && (path === '' || path === '/' || path === pathname)) {
+      scrollToSection(hash)
+      return
+    }
+    if (hash) {
+      router.push(`${path || '/'}#${hash}`)
+      setTimeout(() => scrollToSection(hash), 600)
+      return
+    }
+    router.push(path || '/')
+  }
+
+  const goTop = () => {
+    setMenuOpen(false)
+    if (pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  return (
+    <>
+      <header className={`site-header ${light ? 'site-header-light' : ''} ${menuOpen ? 'header-hidden' : ''}`}>
+        <Link className="wordmark" href="/" onClick={goTop} aria-label="Spectra home">SPECTRA<span>.</span></Link>
+        <div className="header-center">INTELLIGENT INFRASTRUCTURE / MACHINE INTELLIGENCE</div>
+
+        {/* Desktop inline nav */}
+        <nav ref={navRef} className="site-nav" aria-label="Primary">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label} className={`site-nav-item ${openNav === group.label ? 'is-open' : ''}`}>
+              <button
+                className="site-nav-trigger"
+                aria-haspopup="true"
+                aria-expanded={openNav === group.label}
+                onClick={() => setOpenNav(openNav === group.label ? null : group.label)}
+              >
+                {group.label} <ChevronDown size={12} />
+              </button>
+              <div className="mega-panel">
+                <div className="mega-inner">
+                  <span className="mega-eyebrow">{group.eyebrow}</span>
+                  {group.links.length > 0 && (
+                    <div className="mega-links">
+                      {group.links.map(([label, target]) => (
+                        <a key={label} className="mega-link" href={target} onClick={(e) => handleMegaLink(e, target)}>
+                          {label} <ArrowUpRight size={15} />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  {group.description && <p className="mega-desc">{group.description}</p>}
+                  {group.footer[0] && group.footer[1] && (
+                    <div className="mega-footer">
+                      <button onClick={() => go(group.footer[1])}>{group.footer[0]} <ArrowUpRight size={15} /></button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div key={NAV_NEWS.label} className={`site-nav-item ${openNav === NAV_NEWS.label ? 'is-open' : ''}`}>
+            <button
+              className="site-nav-trigger"
+              aria-haspopup="true"
+              aria-expanded={openNav === NAV_NEWS.label}
+              onClick={() => setOpenNav(openNav === NAV_NEWS.label ? null : NAV_NEWS.label)}
+            >
+              {NAV_NEWS.label} <ChevronDown size={12} />
+            </button>
+            <div className="mega-panel">
+              <div className="mega-inner mega-inner-news">
+                <div className="mega-news-col">
+                  <span className="mega-eyebrow">{NAV_NEWS.eyebrow}</span>
+                  <div className="mega-links">
+                    {NAV_NEWS.links.map(([label, target]) => (
+                      <a key={label} className="mega-link" href={target} onClick={(e) => handleMegaLink(e, target)}>
+                        {label} <ArrowUpRight size={15} />
+                      </a>
+                    ))}
+                  </div>
+                  <div className="mega-newsletter">
+                    <span className="mega-eyebrow">Sign up for the newsletter</span>
+                    <NewsletterForm />
+                  </div>
+                </div>
+                <div className="mega-news-cards">
+                  {NAV_NEWS.featured.map((item) => (
+                    <button key={item.title} className="news-card" onClick={() => go(item.href)}>
+                      <span className="news-card-source">{item.source}</span>
+                      <span className="news-card-title">{item.title}</span>
+                      <span className="news-card-tag">{item.tag} <ArrowUpRight size={13} /></span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Work With Us — after Newsroom */}
+          <div key={WORK_WITH_US_NAV.label} className={`site-nav-item ${openNav === WORK_WITH_US_NAV.label ? 'is-open' : ''}`}>
+            <button
+              className="site-nav-trigger"
+              aria-haspopup="true"
+              aria-expanded={openNav === WORK_WITH_US_NAV.label}
+              onClick={() => setOpenNav(openNav === WORK_WITH_US_NAV.label ? null : WORK_WITH_US_NAV.label)}
+            >
+              {WORK_WITH_US_NAV.label} <ChevronDown size={12} />
+            </button>
+            <div className="mega-panel">
+              <div className="mega-inner">
+                {WORK_WITH_US_NAV.links.length > 0 && (
+                  <div className="mega-links">
+                    {WORK_WITH_US_NAV.links.map(([label, target]) => (
+                      <a key={label} className="mega-link" href={target} onClick={(e) => handleMegaLink(e, target)}>
+                        {label} <ArrowUpRight size={15} />
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {WORK_WITH_US_NAV.description && <p className="mega-desc">{WORK_WITH_US_NAV.description}</p>}
+                <div className="mega-footer">
+                  <button onClick={() => go(WORK_WITH_US_NAV.footer[1])}>{WORK_WITH_US_NAV.footer[0]} <ArrowUpRight size={15} /></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Link className="site-nav-trigger" href="/about" onClick={() => setOpenNav(null)}>About Spectra</Link>
+        </nav>
+
+        <div className="header-actions">
+          <Link className="header-cta" href="/contact">Contact Us <ArrowUpRight size={14} /></Link>
+          <button className="menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={18} /></button>
+        </div>
+      </header>
+
+      {/* Mobile full-screen menu */}
+      <div className={`menu-panel ${menuOpen ? 'menu-open' : ''}`} aria-hidden={!menuOpen}>
+        <div className="menu-panel-top"><span className="menu-panel-brand">SPECTRA<span>.</span></span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
+        <nav className="menu-links">
+          <div className="menu-group">
+            <span className="menu-group-title">Products</span>
+            <div className="menu-product">
+              <span className="menu-product-name">BastionOS</span>
+              <span className="menu-product-desc">The Operating Foundation</span>
+              <div className="menu-product-links">
+                <button onClick={() => go('/#bastion')}>Overview <ArrowUpRight size={15} /></button>
+                <button onClick={() => go('/bastionos')}>Explore BastionOS <ArrowUpRight size={15} /></button>
+              </div>
+            </div>
+            <div className="menu-product">
+              <span className="menu-product-name">Napoleon</span>
+              <span className="menu-product-desc">The Intelligence Layer</span>
+              <div className="menu-product-links">
+                <button onClick={() => go('/#napoleon')}>Overview <ArrowUpRight size={15} /></button>
+                <button onClick={() => go('/napoleon')}>Explore Napoleon <ArrowUpRight size={15} /></button>
+              </div>
+            </div>
+            <div className="menu-product">
+              <span className="menu-product-name">Spectra Workplace</span>
+              <span className="menu-product-desc">Design Your Intelligence</span>
+              <div className="menu-product-links">
+                <button onClick={() => go('/workspace')}>Enter the Workplace <ArrowUpRight size={15} /></button>
+              </div>
+            </div>
+          </div>
+          <div className="menu-group">
+            <span className="menu-group-title">Newsroom</span>
+            <div className="menu-product-links">
+              <button onClick={() => go('/newsroom')}>Latest News <ArrowUpRight size={15} /></button>
+              <button onClick={() => go('/journal')}>The Spectra Journal <ArrowUpRight size={15} /></button>
+              <button onClick={() => go('/research')}>Research &amp; Insights <ArrowUpRight size={15} /></button>
+            </div>
+          </div>
+          <div className="menu-group">
+            <span className="menu-group-title">Work With Us</span>
+            <div className="menu-product-links">
+              <button onClick={() => go('/partners')}>Partners <ArrowUpRight size={15} /></button>
+              <button onClick={() => go('/about')}>About Spectra <ArrowUpRight size={15} /></button>
+              <button onClick={() => go('/contact')}>Contact Us <ArrowUpRight size={15} /></button>
+            </div>
+          </div>
+        </nav>
+        <div className="menu-newsletter">
+          <span className="menu-group-title">Sign up for the newsletter</span>
+          <NewsletterForm />
+        </div>
+        <div className="menu-foot"><span>© SPECTRA 2026</span></div>
+      </div>
+    </>
+  )
+}
