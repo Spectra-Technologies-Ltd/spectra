@@ -148,7 +148,7 @@ export default function SitesDirectoryPage() {
           <EmptyState icon={MapPin} title="No sites found matching your criteria." />
         ) : (
           <>
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden md:block overflow-visible">
               <table className="w-full text-sm text-left">
                 <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
                   <tr>

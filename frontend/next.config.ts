@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   // may include /api/v1, so strip it before appending the rewrite suffix.
   async rewrites() {
     const apiBase = (
-      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1"
+      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1"
     ).replace(/\/api\/v1\/?$/, "");
     return [
       {
