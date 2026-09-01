@@ -90,7 +90,7 @@ export default function IncidentsPage() {
           <EmptyState icon={AlertTriangle} title="No incidents found." />
         ) : (
           <>
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden md:block overflow-visible">
               <table className="w-full text-sm text-left">
                 <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
                   <tr>

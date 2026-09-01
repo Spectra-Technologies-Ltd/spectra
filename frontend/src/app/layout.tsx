@@ -29,13 +29,6 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
-  themeColor: "#f5f7fb",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{

@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Bell, Search, Menu, PanelLeftClose, PanelLeft, Sun, Moon } from 'lucide-react';
+import { Bell, Search, Menu, PanelLeftClose, PanelLeft, Sun, Moon, CircleHelp } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';

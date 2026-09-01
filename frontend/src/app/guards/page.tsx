@@ -265,7 +265,7 @@ export default function GuardsDirectoryPage() {
         ) : (
           <>
             {/* Desktop / tablet table */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden md:block overflow-visible">
               <table className="w-full text-sm text-left">
                 <thead className="text-xs uppercase bg-secondary/50 text-muted-foreground">
                   <tr>
@@ -332,7 +332,7 @@ export default function GuardsDirectoryPage() {
                       <td className="px-6 py-4">
                         <Badge colorClassName={getStatusColor(guard.status)}>{guard.status}</Badge>
                       </td>
-                      <td className="px-6 py-4 text-right relative">
+                      <td className="px-6 py-4 text-right relative overflow-visible">
                         <button
                           onClick={() => setOpenMenu(openMenu === guard.id ? null : guard.id)}
                           className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-secondary transition-colors"
