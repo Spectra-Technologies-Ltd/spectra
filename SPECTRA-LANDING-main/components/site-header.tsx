@@ -103,6 +103,9 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
       window.removeEventListener('hashchange', onHashChange)
     }
   }, [])
+  useEffect(() => {
+    setOpenNav(null)
+  }, [pathname])
 
   // Same-page anchor: smooth-scroll without a full reload; otherwise let the
   // native <a href> navigation do its thing (works even without JS).
@@ -153,6 +156,7 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
 
         {/* Desktop inline nav */}
         <nav ref={navRef} className="site-nav" aria-label="Primary">
+          <Link className="site-nav-trigger" href="/about" onClick={() => setOpenNav(null)}>About Spectra</Link>
           {NAV_GROUPS.map((group) => (
             <div key={group.label} className={`site-nav-item ${openNav === group.label ? 'is-open' : ''}`}>
               <button
@@ -253,7 +257,7 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
             </div>
           </div>
 
-          <Link className="site-nav-trigger" href="/about" onClick={() => setOpenNav(null)}>About Spectra</Link>
+          
         </nav>
 
         <div className="header-actions">
@@ -267,8 +271,14 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
         <div className="menu-panel-top"><span className="menu-panel-brand">SPECTRA<span>.</span></span><button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X size={20} /></button></div>
         <nav className="menu-links">
           <div className="menu-group">
+            <span className="menu-group-title">Company</span>
+            <div className="menu-product-links">
+              <button onClick={() => go('/about')}>About Spectra <ArrowUpRight size={15} /></button>
+            </div>
+          </div>
+          <div className="menu-group">
             <span className="menu-group-title">Products</span>
-            <div className="menu-product">
+          <div className="menu-product">
               <span className="menu-product-name">BastionOS</span>
               <span className="menu-product-desc">The Operating Foundation</span>
               <div className="menu-product-links">
@@ -304,7 +314,6 @@ export default function SiteHeader({ light = false }: { light?: boolean }) {
             <span className="menu-group-title">Work With Us</span>
             <div className="menu-product-links">
               <button onClick={() => go('/partners')}>Partners <ArrowUpRight size={15} /></button>
-              <button onClick={() => go('/about')}>About Spectra <ArrowUpRight size={15} /></button>
               <button onClick={() => go('/contact')}>Contact Us <ArrowUpRight size={15} /></button>
             </div>
           </div>

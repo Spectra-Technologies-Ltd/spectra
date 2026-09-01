@@ -36,7 +36,7 @@ export default function NapoleonPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="NAPOLEON / THE INTELLIGENCE LAYER" title="Think, learn," em="predict." tag="NAPOLEON / INFERENCE">
+      			<PageHero kicker="NAPOLEON / THE INTELLIGENCE LAYER" title="Think, learn," em="predict." tag="NAPOLEON / INFERENCE" animate={false}>
         <p>
           NapoleonOS — the strategic intelligence engine. Named after history&apos;s greatest
           strategist, it represents the power of intelligence, adaptability and precision in
@@ -45,12 +45,9 @@ export default function NapoleonPage() {
       </PageHero>
 
       {/* Full-width intelligence scene — the animated Napoleon layer */}
-      <section id="inference" className="napoleon-scene">
-        <div className="section-kicker"><span>01</span><span>INFERENCE</span></div>
-        <div className="napoleon-scene-head">
-          <Reveal><p className="eyebrow">MACHINE INTELLIGENCE LAYER</p><h2>Signals in.<br /><em>Intelligence out.</em></h2></Reveal>
-        </div>
-        <div className="napoleon-scene-inner">
+      		<section id="inference" className="napoleon-scene">
+      			<div className="section-kicker"><span>01</span><span>INFERENCE</span></div>
+      			<div className="napoleon-scene-inner">
           <IntelligenceDiagram />
         </div>
       </section>
