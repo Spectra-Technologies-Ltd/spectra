@@ -1,0 +1,58 @@
+import { Module } from '@nestjs/common';
+import { BullModule } from '@nestjs/bullmq';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { GuardModule } from './modules/guard/guard.module';
+import { ClientModule } from './modules/client/client.module';
+import { SiteModule } from './modules/site/site.module';
+import { AttendanceModule } from './modules/attendance/attendance.module';
+import { PatrolModule } from './modules/patrol/patrol.module';
+import { IncidentModule } from './modules/incident/incident.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ReportsModule } from './modules/reports/reports.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
+import { LeadsModule } from './modules/leads/leads.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { RealtimeModule } from './modules/realtime/realtime.module';
+import { NapoleonModule } from './modules/napoleon/napoleon.module';
+import { PushModule } from './modules/push/push.module';
+
+@Module({
+  imports: [
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379'),
+        retryStrategy: (times: number) => {
+          if (times > 3) return null; // stop retrying after 3 attempts
+          return Math.min(times * 1000, 5000);
+        },
+        maxRetriesPerRequest: null,
+        enableReadyCheck: false,
+      },
+    }),
+    DatabaseModule,
+    AuthModule,
+    GuardModule,
+    ClientModule,
+    SiteModule,
+    AttendanceModule,
+    PatrolModule,
+    IncidentModule,
+    NotificationsModule,
+    ReportsModule,
+    DashboardModule,
+    UploadsModule,
+    LeadsModule,
+    AuditModule,
+    RealtimeModule,
+    NapoleonModule,
+    PushModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
