@@ -47,9 +47,9 @@ export default function NapoleonPage() {
       {/* Full-width intelligence scene — the animated Napoleon layer */}
       		<section id="inference" className="napoleon-scene">
       			<div className="section-kicker"><span>01</span><span>INFERENCE</span></div>
-      			<div className="napoleon-scene-inner">
-          <IntelligenceDiagram />
-        </div>
+			<div className="napoleon-scene-inner">
+				<IntelligenceDiagram />
+			</div>
       </section>
 
       {/* Manifesto rhythm — the Napoleon quote sits to the left of the heading */}

@@ -726,9 +726,6 @@ section[id] { scroll-margin-top: 90px; }
 
 /* ── Mobile responsiveness pass (top-notch) ── */
 @media (max-width: 800px) {
-  /* Animation scenes scale down to the viewport instead of overflowing */
-  .napoleon-scene-inner { min-width: 0; }
-  .napoleon-scene { overflow-x: hidden; }
   .capability-animation-wrap .iso-scene { height: 330px; }
   .command-visual { aspect-ratio: auto; min-height: 380px; }
   /* Hero fills the mobile viewport without dynamic-toolbar overflow */
