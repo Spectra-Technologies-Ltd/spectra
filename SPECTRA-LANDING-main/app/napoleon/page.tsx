@@ -36,7 +36,7 @@ export default function NapoleonPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      			<PageHero kicker="NAPOLEON / THE INTELLIGENCE LAYER" title="Think, learn," em="predict." tag="NAPOLEON / INFERENCE" animate={false}>
+			      <PageHero kicker="NAPOLEON / THE INTELLIGENCE LAYER" title="Think, learn," em="predict." tag="NAPOLEON / INFERENCE">
         <p>
           NapoleonOS — the strategic intelligence engine. Named after history&apos;s greatest
           strategist, it represents the power of intelligence, adaptability and precision in

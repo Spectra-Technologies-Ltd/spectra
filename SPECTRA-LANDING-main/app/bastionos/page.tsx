@@ -35,7 +35,7 @@ export default function BastionOSPage() {
     <main className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker={<><span className="brand-name">BastionOS</span> / THE OPERATING FOUNDATION</>} title="Security operations," em="unified." tag={<span className="brand-name">BastionOS</span>} animate={false}>
+      <PageHero kicker={<><span className="brand-name">BastionOS</span> / THE OPERATING FOUNDATION</>} title="Security operations," em="unified." tag={<span className="brand-name">BastionOS</span>}>
         <p>
           The operational command center for private security companies. BastionOS unifies guard
           operations, patrols, attendance, incidents, reporting and analytics into a single,
