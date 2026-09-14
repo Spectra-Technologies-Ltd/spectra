@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
+import { BaselinesService, type BaselineMetric } from '../baselines/baselines.service';
 
 const SEVERITY_WEIGHT: Record<string, number> = {
   CRITICAL: 40,
@@ -22,7 +23,24 @@ const clamp = (n: number, min = 0, max = 100) =>
 export class NapoleonService {
   private readonly logger = new Logger(NapoleonService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private baselines: BaselinesService,
+  ) {}
+
+  /**
+   * Surprise — how unexpected a single observation is for a site's baseline.
+   * Pairs with `GET /baselines/:siteId`, which reports the baseline itself.
+   */
+  getSurprise(
+    organizationId: string,
+    siteId: string,
+    metric: BaselineMetric,
+    value: number,
+    days: number,
+  ) {
+    return this.baselines.evaluateObservation(organizationId, siteId, metric, value, days);
+  }
 
   private startOfWindow(days: number): Date {
     const d = new Date();
