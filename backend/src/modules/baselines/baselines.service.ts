@@ -69,6 +69,27 @@ const stddev = (xs: number[]) => {
   return Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length);
 };
 
+/** Percentile of a sample, with linear interpolation between neighbours. */
+const percentile = (xs: number[], p: number) => {
+  if (xs.length === 0) return 0;
+  const sorted = [...xs].sort((a, b) => a - b);
+  if (sorted.length === 1) return sorted[0];
+  const idx = (p / 100) * (sorted.length - 1);
+  const lower = Math.floor(idx);
+  const upper = Math.ceil(idx);
+  if (lower === upper) return sorted[lower];
+  return sorted[lower] + (sorted[upper] - sorted[lower]) * (idx - lower);
+};
+
+/** Empirical share of baseline samples at or below `value`, as a percentage. */
+const empiricalPercentile = (xs: number[], value: number) => {
+  if (xs.length === 0) return null;
+  const atOrBelow = xs.filter((x) => x <= value).length;
+  return Math.round((atOrBelow / xs.length) * 100);
+};
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
 /**
  * Baselines — the reference behaviour of a site, and how far current reality
  * drifts from it. Metrics are derived from the same operational data Napoleon
@@ -117,7 +138,7 @@ export class BaselinesService {
    * Baseline vs actual for every tracked metric at a site. The baseline window
    * sits *before* the actual window so the two never overlap.
    */
-  async getSiteBaselines(
+  async getComparison(
     organizationId: string,
     siteId: string,
     actualDays = DEFAULT_ACTUAL_DAYS,
@@ -319,6 +340,147 @@ export class BaselinesService {
       severity,
       thresholds: { zScore: Z_FLAG, deviationPct: PCT_FLAG },
       explanation,
+    };
+  }
+
+  // ── Baseline statistics ───────────────────────────────────────────────────
+
+  /**
+   * Daily samples per metric over the last `days`, used as the site's baseline.
+   *
+   * - LATE_COUNT: samples only on days that have attendance (data days).
+   * - INCIDENT_COUNT: every day in the window (zeros included).
+   * - PATROL_DURATION_MS: daily mean duration, on days with completed patrols.
+   */
+  private async collectBaseline(organizationId: string, siteId: string, days: number) {
+    const now = Date.now();
+    const spanStart = this.startOfDay(new Date(now - days * DAY_MS));
+    const dayKeys = this.dayKeys(days, now);
+
+    const [attendance, incidents, patrols] = await Promise.all([
+      this.prisma.attendance.findMany({
+        where: { siteId, checkInTime: { gte: spanStart } },
+        select: { checkInTime: true, isLate: true, status: true },
+      }),
+      this.prisma.incident.findMany({
+        where: { siteId, reportedAt: { gte: spanStart } },
+        select: { reportedAt: true },
+      }),
+      this.prisma.patrolRecord.findMany({
+        where: { route: { siteId }, startTime: { gte: spanStart } },
+        select: { startTime: true, endTime: true },
+      }),
+    ]);
+
+    const attendanceByDay = new Map<string, { total: number; late: number }>();
+    for (const a of attendance) {
+      const k = this.dayKey(a.checkInTime);
+      const cur = attendanceByDay.get(k) ?? { total: 0, late: 0 };
+      cur.total += 1;
+      if (this.isLateRow(a)) cur.late += 1;
+      attendanceByDay.set(k, cur);
+    }
+
+    const incidentsByDay = new Map<string, number>();
+    for (const i of incidents) {
+      const k = this.dayKey(i.reportedAt);
+      incidentsByDay.set(k, (incidentsByDay.get(k) ?? 0) + 1);
+    }
+
+    const durationByDay = new Map<string, { total: number; n: number }>();
+    for (const p of patrols) {
+      if (!p.endTime) continue;
+      const ms = p.endTime.getTime() - p.startTime.getTime();
+      if (ms <= 0) continue;
+      const k = this.dayKey(p.startTime);
+      const cur = durationByDay.get(k) ?? { total: 0, n: 0 };
+      durationByDay.set(k, { total: cur.total + ms, n: cur.n + 1 });
+    }
+
+    return {
+      LATE_COUNT: dayKeys
+        .map((k) => attendanceByDay.get(k))
+        .filter((v): v is { total: number; late: number } => !!v && v.total > 0)
+        .map((v) => v.late),
+      INCIDENT_COUNT: dayKeys.map((k) => incidentsByDay.get(k) ?? 0),
+      PATROL_DURATION_MS: dayKeys
+        .map((k) => durationByDay.get(k))
+        .filter((v): v is { total: number; n: number } => !!v)
+        .map((v) => v.total / v.n),
+    } satisfies Record<BaselineMetric, number[]>;
+  }
+
+  /**
+   * Describe what is "normal" for a site: a baseline per metric with its
+   * spread, 95th percentile and sample size.
+   */
+  async getBaselineStats(
+    organizationId: string,
+    siteId: string,
+    days = DEFAULT_BASELINE_DAYS,
+  ) {
+    await this.assertSite(organizationId, siteId);
+    const samples = await this.collectBaseline(organizationId, siteId, days);
+
+    const summarise = (xs: number[]) => {
+      if (xs.length === 0) {
+        return { baselineMean: 0, baselineStdDev: 0, percentile95: 0, sampleSize: 0 };
+      }
+      return {
+        baselineMean: round2(mean(xs)),
+        baselineStdDev: round2(stddev(xs)),
+        percentile95: round2(percentile(xs, 95)),
+        sampleSize: xs.length,
+      };
+    };
+
+    return {
+      LATE_COUNT: summarise(samples.LATE_COUNT),
+      INCIDENT_COUNT: summarise(samples.INCIDENT_COUNT),
+      PATROL_DURATION_MS: summarise(samples.PATROL_DURATION_MS),
+    };
+  }
+
+  /**
+   * Surprise — how anomalous an observation is against the site's baseline.
+   *
+   * `surprise` is 0.3 at the mean (a baseline day is never a total surprise)
+   * and approaches 1 as the value moves away: 1 - 0.7 * exp(-z^2 / 2).
+   */
+  async getSurprise(
+    organizationId: string,
+    siteId: string,
+    metric: BaselineMetric,
+    value: number,
+    days = DEFAULT_BASELINE_DAYS,
+  ) {
+    await this.assertSite(organizationId, siteId);
+    const samples = (await this.collectBaseline(organizationId, siteId, days))[metric];
+
+    if (samples.length === 0) {
+      return {
+        surprise: value > 0 ? 1 : 0,
+        percentile: value > 0 ? 100 : 0,
+        zScore: null,
+        baselineMean: 0,
+      };
+    }
+
+    const baselineMean = mean(samples);
+    const sd = stddev(samples);
+    const zScore = sd > 0 ? (value - baselineMean) / sd : null;
+    const surprise =
+      zScore === null
+        ? value > baselineMean
+          ? 1
+          : 0.3
+        : 1 - 0.7 * Math.exp(-(zScore * zScore) / 2);
+
+    return {
+      surprise: round2(surprise),
+      percentile: empiricalPercentile(samples, value) ?? 0,
+      zScore: zScore === null ? null : round2(zScore),
+      baselineMean: round2(baselineMean),
     };
   }
 
