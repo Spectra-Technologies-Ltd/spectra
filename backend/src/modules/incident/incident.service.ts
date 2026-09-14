@@ -14,6 +14,7 @@ import {
 } from './dto/incident.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RealtimeService } from '../realtime/realtime.service';
+import { AlertsService } from '../alerts/alerts.service';
 
 @Injectable()
 export class IncidentService {
@@ -23,6 +24,7 @@ export class IncidentService {
     private prisma: PrismaService,
     private notifications: NotificationsService,
     private realtime: RealtimeService,
+    private alerts: AlertsService,
   ) {}
 
   async reportIncident(
@@ -37,8 +39,8 @@ export class IncidentService {
 
     const incident = await this.prisma.incident.create({
       data: {
-        title: dto.title,
-        description: dto.description,
+        title: dto.title ?? `${dto.type} incident reported`,
+        description: dto.description ?? '',
         incidentType: dto.type,
         severity: dto.severity,
         status: 'OPEN',
@@ -77,6 +79,23 @@ export class IncidentService {
       siteName: site.name,
       reportedAt: incident.reportedAt.toISOString(),
     });
+
+    // Evaluation for surge / critical / anomaly alerts. Awaited so callers see
+    // the resulting alerts immediately, but never allowed to fail the report.
+    try {
+      await this.alerts.evaluateIncident(
+        user.organizationId,
+        {
+          id: incident.id,
+          siteId: incident.siteId,
+          severity: incident.severity,
+          incidentType: incident.incidentType,
+        },
+        site.name,
+      );
+    } catch (err) {
+      this.logger.warn(`Alert evaluation failed: ${(err as Error).message}`);
+    }
 
     // Write audit log (fire-and-forget)
     this.prisma.auditLog.create({

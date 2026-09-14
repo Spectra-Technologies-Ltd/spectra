@@ -10,8 +10,8 @@ import {
 } from 'class-validator';
 
 export class ReportIncidentDto {
-  @IsString() @IsNotEmpty() title: string;
-  @IsString() @IsNotEmpty() description: string;
+  @IsString() @IsOptional() title?: string;
+  @IsString() @IsOptional() description?: string;
   @IsString()
   @IsNotEmpty()
   @IsEnum([
@@ -26,11 +26,11 @@ export class ReportIncidentDto {
   type: string;
   @IsString()
   @IsNotEmpty()
-  @IsEnum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'])
+  @IsEnum(['LOW', 'WARNING', 'MEDIUM', 'HIGH', 'CRITICAL'])
   severity: string;
   @IsString() @IsNotEmpty() siteId: string;
-  @IsNumber() @Min(-90) @Max(90) latitude: number;
-  @IsNumber() @Min(-180) @Max(180) longitude: number;
+  @IsNumber() @IsOptional() @Min(-90) @Max(90) latitude?: number;
+  @IsNumber() @IsOptional() @Min(-180) @Max(180) longitude?: number;
   @IsArray() @IsOptional() @IsString({ each: true }) mediaUrls?: string[];
   @IsArray() @IsOptional() @IsString({ each: true }) involvedParties?: string[];
 }

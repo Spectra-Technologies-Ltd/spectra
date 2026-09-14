@@ -63,6 +63,7 @@ model Organization {
   guards    Guard[]
   clients   Client[]
   sites     Site[]
+  alerts    Alert[]
 }
 
 model Guard {
@@ -158,6 +159,7 @@ model Site {
   attendances       Attendance[]
   patrolRoutes      PatrolRoute[]
   incidents         Incident[]
+  alerts            Alert[]
 }
 
 model Attendance {
@@ -297,6 +299,22 @@ model AuditLog {
   ipAddress String
   userAgent String
   createdAt DateTime @default(now())
+}
+
+model Alert {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  siteId         String?
+  site           Site?        @relation(fields: [siteId], references: [id])
+  // "INCIDENT_SURGE" | "CRITICAL_INCIDENT" | "ANOMALY"
+  code           String
+  severity       String // "WARNING" | "CRITICAL"
+  title          String
+  message        String
+  metadata       String       @default("{}")
+  incidentId     String?
+  createdAt      DateTime     @default(now())
 }
 
 model Notification {
