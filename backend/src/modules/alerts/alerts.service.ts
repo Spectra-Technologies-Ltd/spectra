@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { BaselinesService } from '../baselines/baselines.service';
 import { RealtimeService } from '../realtime/realtime.service';
@@ -12,6 +12,10 @@ export const SURGE_WINDOW_MINUTES = 10;
 /** Surprise score at or above which an observation counts as an anomaly. */
 export const ANOMALY_THRESHOLD = 0.9;
 
+/** Ranked-feed priorities. Anomalies score their surprise out of 100. */
+export const CRITICAL_SCORE = 100;
+export const SURGE_SCORE = 50;
+
 export type IncidentForAlert = {
   id: string;
   siteId: string;
@@ -24,6 +28,9 @@ type RaiseInput = {
   siteId: string;
   code: AlertCode;
   severity: 'WARNING' | 'CRITICAL';
+  score: number;
+  metric?: string;
+  metricValue?: number;
   title: string;
   message: string;
   metadata: Record<string, unknown>;
@@ -69,8 +76,11 @@ export class AlertsService {
         siteId: incident.siteId,
         code: 'INCIDENT_SURGE',
         severity: 'WARNING',
+        score: SURGE_SCORE,
+        metric: 'INCIDENT_COUNT',
+        metricValue: recentCount,
         title: `Incident surge at ${siteName}`,
-        message: `${recentCount} incidents reported at ${siteName} in the last ${SURGE_WINDOW_MINUTES} minutes (threshold ${SURGE_THRESHOLD}).`,
+        message: `${recentCount}+ incidents reported today`,
         metadata: {
           count: recentCount,
           threshold: SURGE_THRESHOLD,
@@ -88,8 +98,9 @@ export class AlertsService {
         siteId: incident.siteId,
         code: 'CRITICAL_INCIDENT',
         severity: 'CRITICAL',
+        score: CRITICAL_SCORE,
         title: `Critical incident at ${siteName}`,
-        message: `A CRITICAL ${incident.incidentType} incident was reported at ${siteName}.`,
+        message: `CRITICAL incident reported at ${siteName}`,
         metadata: { incidentType: incident.incidentType },
         incidentId: incident.id,
         windowStart,
@@ -109,8 +120,11 @@ export class AlertsService {
         siteId: incident.siteId,
         code: 'ANOMALY',
         severity: 'WARNING',
+        score: Math.round(surprise.surprise * 100),
+        metric: 'INCIDENT_COUNT',
+        metricValue: recentCount,
         title: `Anomalous incident volume at ${siteName}`,
-        message: `INCIDENT_COUNT of ${recentCount} scores ${surprise.surprise} surprise against the site baseline (mean ${surprise.baselineMean}, z ${surprise.zScore}).`,
+        message: `Unusual INCIDENT_COUNT: ${recentCount} (baseline: ${surprise.baselineMean})`,
         metadata: { ...surprise, value: recentCount, threshold: ANOMALY_THRESHOLD },
         incidentId: incident.id,
         windowStart,
@@ -119,6 +133,44 @@ export class AlertsService {
     }
 
     return created;
+  }
+
+  /**
+   * Ranked feed of unread alerts — critical incidents first (score 100), then
+   * anomalies by surprise score, then surges.
+   */
+  async unread(organizationId: string, opts: { siteId?: string; limit?: number } = {}) {
+    const where = {
+      organizationId,
+      isRead: false,
+      ...(opts.siteId ? { siteId: opts.siteId } : {}),
+    };
+
+    const [count, alerts] = await Promise.all([
+      this.prisma.alert.count({ where }),
+      this.prisma.alert.findMany({
+        where,
+        orderBy: [{ score: 'desc' }, { createdAt: 'desc' }],
+        take: Math.min(opts.limit ?? 50, 200),
+      }),
+    ]);
+
+    return { count, alerts: alerts.map((a) => toFeedItem(a)) };
+  }
+
+  /** Mark an alert as read so it drops out of the unread feed. */
+  async markRead(organizationId: string, alertId: string) {
+    const alert = await this.prisma.alert.findFirst({
+      where: { id: alertId, organizationId },
+      select: { id: true },
+    });
+    if (!alert) throw new NotFoundException(`Alert ${alertId} not found`);
+
+    return this.prisma.alert.update({
+      where: { id: alertId },
+      data: { isRead: true },
+      select: { id: true, isRead: true },
+    });
   }
 
   /** Recent alerts for the organization, newest first. */
@@ -137,11 +189,15 @@ export class AlertsService {
       id: a.id,
       code: a.code,
       severity: a.severity,
+      score: a.score,
+      metric: a.metric,
+      metricValue: a.metricValue,
       title: a.title,
       message: a.message,
       siteId: a.siteId,
       siteName: a.site?.name ?? null,
       incidentId: a.incidentId,
+      isRead: a.isRead,
       metadata: safeParse(a.metadata),
       createdAt: a.createdAt,
     }));
@@ -171,6 +227,9 @@ export class AlertsService {
         siteId: input.siteId,
         code: input.code,
         severity: input.severity,
+        score: input.score,
+        metric: input.metric,
+        metricValue: input.metricValue,
         title: input.title,
         message: input.message,
         metadata: JSON.stringify(input.metadata),
@@ -201,3 +260,22 @@ const safeParse = (value: string) => {
     return {};
   }
 };
+
+/** Shape used by the ranked feed: `rule` is the alert code. */
+const toFeedItem = (a: {
+  id: string;
+  code: string;
+  severity: string;
+  score: number;
+  metric: string | null;
+  metricValue: number | null;
+  message: string;
+}) => ({
+  id: a.id,
+  rule: a.code,
+  severity: a.severity,
+  score: a.score,
+  metric: a.metric,
+  metricValue: a.metricValue,
+  message: a.message,
+});
