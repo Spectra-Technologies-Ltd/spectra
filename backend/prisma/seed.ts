@@ -541,7 +541,9 @@ async function main() {
     await prisma.incident.upsert({
       where: { id: inc.id },
       update: {},
-      create: inc,
+      // Keep these historical samples off today's bucket so a live day starts
+      // empty for the surge/anomaly rules.
+      create: { ...inc, reportedAt: inc.occurrenceTime },
     });
   }
   console.log(`Created ${incidentsData.length} Incidents`);
@@ -734,7 +736,9 @@ async function main() {
   let historicalIncidents = 0;
   let historicalPatrols = 0;
 
-  for (let dayOffset = HISTORY_DAYS - 1; dayOffset >= 0; dayOffset--) {
+  // Days run from yesterday backwards, so "today" starts empty and a live
+  // burst is compared against complete days rather than against itself.
+  for (let dayOffset = HISTORY_DAYS; dayOffset >= 1; dayOffset--) {
     const day = new Date(now);
     day.setDate(day.getDate() - dayOffset);
     day.setHours(0, 0, 0, 0);
