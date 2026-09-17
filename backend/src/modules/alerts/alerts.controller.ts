@@ -1,16 +1,20 @@
 import {
+  Body,
   Controller,
   DefaultValuePipe,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AlertsService } from './alerts.service';
+import { LabelAlertDto } from './dto/label-alert.dto';
 
 @Controller('alerts')
 @UseGuards(JwtAuthGuard)
@@ -44,5 +48,15 @@ export class AlertsController {
   @Patch(':id/read')
   markRead(@CurrentUser() user: any, @Param('id') id: string) {
     return this.alerts.markRead(user.organizationId, id);
+  }
+
+  /**
+   * Label an alert's outcome: was it real? Feeds the Phase 4 training set.
+   * e.g. POST /alerts/<id>/label { "wasReal": true, "note": "Confirmed fire" }
+   */
+  @Post(':id/label')
+  @HttpCode(200)
+  label(@CurrentUser() user: any, @Param('id') id: string, @Body() dto: LabelAlertDto) {
+    return this.alerts.label(user.organizationId, id, dto, user.id);
   }
 }

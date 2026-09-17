@@ -316,11 +316,33 @@ model Alert {
   metric         String?
   metricValue    Float?
   isRead         Boolean      @default(false)
+  // Operator label: true = real incident, false = false alarm, null = unlabeled.
+  wasReal        Boolean?
+  logs           AlertLog[]
   title          String
   message        String
   metadata       String       @default("{}")
   incidentId     String?
   createdAt      DateTime     @default(now())
+}
+
+model AlertLog {
+  id          String   @id @default(uuid())
+  alertId     String
+  alert       Alert    @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  wasReal     Boolean
+  note        String?
+  labeledById String?
+
+  // Snapshot of the alert's signal so the log stands alone as training data.
+  rule        String
+  severity    String
+  score       Int
+  metric      String?
+  metricValue Float?
+  siteId      String?
+
+  createdAt   DateTime @default(now())
 }
 
 model Notification {

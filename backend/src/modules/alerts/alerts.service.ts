@@ -173,6 +173,48 @@ export class AlertsService {
     });
   }
 
+  /**
+   * Label an alert's outcome — the training signal Phase 4 learns from. The
+   * alert keeps the latest verdict while every label appends an AlertLog row,
+   * so a re-labelled alert remains fully auditable.
+   */
+  async label(
+    organizationId: string,
+    alertId: string,
+    dto: { wasReal: boolean; note?: string },
+    userId: string,
+  ) {
+    const alert = await this.prisma.alert.findFirst({
+      where: { id: alertId, organizationId },
+    });
+    if (!alert) throw new NotFoundException(`Alert ${alertId} not found`);
+
+    await this.prisma.$transaction([
+      this.prisma.alert.update({
+        where: { id: alert.id },
+        data: { wasReal: dto.wasReal },
+      }),
+      this.prisma.alertLog.create({
+        data: {
+          alertId: alert.id,
+          wasReal: dto.wasReal,
+          note: dto.note ?? null,
+          labeledById: userId,
+          rule: alert.code,
+          severity: alert.severity,
+          score: alert.score,
+          metric: alert.metric,
+          metricValue: alert.metricValue,
+          siteId: alert.siteId,
+        },
+      }),
+    ]);
+
+    this.logger.log(`[${alert.code}] labelled wasReal=${dto.wasReal}`);
+
+    return { success: true };
+  }
+
   /** Recent alerts for the organization, newest first. */
   async list(organizationId: string, opts: { siteId?: string; limit?: number } = {}) {
     const alerts = await this.prisma.alert.findMany({
