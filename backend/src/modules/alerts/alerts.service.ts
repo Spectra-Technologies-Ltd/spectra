@@ -245,6 +245,78 @@ export class AlertsService {
     }));
   }
 
+  /**
+   * Event-level training rows for Phase 4: one row per incident event that
+   * triggered rules, with every rule it fired, the event's deviation score and
+   * the operator's label (null while unlabeled).
+   */
+  async trainingData(organizationId: string, opts: { siteId?: string; limit?: number } = {}) {
+    const alerts = await this.prisma.alert.findMany({
+      where: {
+        organizationId,
+        ...(opts.siteId ? { siteId: opts.siteId } : {}),
+      },
+      orderBy: { createdAt: 'desc' },
+      include: { site: { select: { name: true } } },
+    });
+
+    // Group by the incident that triggered the rules.
+    const groups = new Map<string, typeof alerts>();
+    for (const alert of alerts) {
+      const eventId = alert.incidentId ?? alert.id;
+      const list = groups.get(eventId) ?? [];
+      list.push(alert);
+      groups.set(eventId, list);
+    }
+
+    const incidents = await this.prisma.incident.findMany({
+      where: { id: { in: [...groups.keys()] } },
+      select: { id: true, incidentType: true, severity: true, reportedAt: true },
+    });
+    const incidentById = new Map(incidents.map((i) => [i.id, i]));
+
+    const rows = [...groups.entries()].map(([eventId, list]) => {
+      const byScore = [...list].sort((a, b) => b.score - a.score);
+      const top = byScore[0];
+      // Rules on one event can be labelled separately; the strongest signal is
+      // the most authoritative verdict for the event as a whole.
+      const labelled = byScore.find((a) => a.wasReal !== null);
+      const incident = incidentById.get(eventId);
+
+      return {
+        event_id: eventId,
+        event_type: 'incident.created',
+        triggered: true,
+        rules_triggered: byScore.map((a) => a.code),
+        was_real: labelled ? labelled.wasReal : null,
+        deviation_score: Math.round(top.score) / 100,
+        context: {
+          siteId: top.siteId,
+          siteName: top.site?.name ?? null,
+          incidentType: incident?.incidentType ?? null,
+          severity: incident?.severity ?? top.severity,
+          reportedAt: incident?.reportedAt ?? null,
+          metric: top.metric,
+          metricValue: top.metricValue,
+          rules: byScore.map((a) => ({
+            rule: a.code,
+            severity: a.severity,
+            score: a.score,
+            message: a.message,
+            wasReal: a.wasReal,
+            createdAt: a.createdAt,
+          })),
+        },
+      };
+    });
+
+    // Highest deviation first — the rows a model should learn from most.
+    rows.sort((a, b) => b.deviation_score - a.deviation_score);
+    const limited = rows.slice(0, Math.min(opts.limit ?? 100, 500));
+
+    return { count: limited.length, rows: limited };
+  }
+
   // ── Internals ─────────────────────────────────────────────────────────────
 
   /**

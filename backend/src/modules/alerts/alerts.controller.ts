@@ -44,6 +44,19 @@ export class AlertsController {
     return this.alerts.list(user.organizationId, { siteId, limit });
   }
 
+  /**
+   * Event-level rows for Phase 4: one per incident that triggered rules, with
+   * its rules, deviation score and label.
+   */
+  @Get('training-data')
+  trainingData(
+    @CurrentUser() user: any,
+    @Query('siteId') siteId?: string,
+    @Query('limit', new DefaultValuePipe(100), ParseIntPipe) limit?: number,
+  ) {
+    return this.alerts.trainingData(user.organizationId, { siteId, limit });
+  }
+
   /** Mark one alert as read so it drops out of the unread feed. */
   @Patch(':id/read')
   markRead(@CurrentUser() user: any, @Param('id') id: string) {
