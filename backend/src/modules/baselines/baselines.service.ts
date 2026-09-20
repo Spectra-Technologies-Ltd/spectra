@@ -109,10 +109,13 @@ export class BaselinesService {
     return d.toISOString().slice(0, 10);
   }
 
-  /** Ordered list of the last `days` day keys, oldest first. */
-  private dayKeys(days: number, now = Date.now()): string[] {
+  /**
+   * Ordered day keys, oldest first. `skip` excludes the most recent day(s) —
+   * a baseline should describe completed days, never the day being measured.
+   */
+  private dayKeys(days: number, now = Date.now(), skip = 0): string[] {
     const keys: string[] = [];
-    for (let i = days - 1; i >= 0; i--) {
+    for (let i = days - 1 + skip; i >= skip; i--) {
       keys.push(this.dayKey(new Date(now - i * DAY_MS)));
     }
     return keys;
@@ -355,7 +358,9 @@ export class BaselinesService {
   private async collectBaseline(organizationId: string, siteId: string, days: number) {
     const now = Date.now();
     const spanStart = this.startOfDay(new Date(now - days * DAY_MS));
-    const dayKeys = this.dayKeys(days, now);
+    // Exclude the in-progress day: comparing a day against a baseline that
+    // contains that same day damps its own anomalies.
+    const dayKeys = this.dayKeys(days, now, 1);
 
     const [attendance, incidents, patrols] = await Promise.all([
       this.prisma.attendance.findMany({

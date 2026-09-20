@@ -53,8 +53,13 @@ export class AlertsController {
     @CurrentUser() user: any,
     @Query('siteId') siteId?: string,
     @Query('limit', new DefaultValuePipe(100), ParseIntPipe) limit?: number,
+    @Query('includeSilent') includeSilent?: string,
   ) {
-    return this.alerts.trainingData(user.organizationId, { siteId, limit });
+    return this.alerts.trainingData(user.organizationId, {
+      siteId,
+      limit,
+      includeSilent: includeSilent === 'true',
+    });
   }
 
   /** Mark one alert as read so it drops out of the unread feed. */

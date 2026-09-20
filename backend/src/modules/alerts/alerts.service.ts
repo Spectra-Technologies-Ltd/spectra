@@ -38,6 +38,17 @@ type RaiseInput = {
   windowStart: Date;
 };
 
+/** One training row per event (triggered) or per quiet event (silent). */
+type TrainingRow = {
+  event_id: string;
+  event_type: string;
+  triggered: boolean;
+  rules_triggered: string[];
+  was_real: boolean | null;
+  deviation_score: number | null;
+  context: Record<string, unknown>;
+};
+
 /**
  * Alerts — anomalies worth an operator's attention, raised from live incident
  * traffic. Each rule is independent: a surge is a burst, a critical incident is
@@ -253,7 +264,10 @@ export class AlertsService {
    * triggered rules, with every rule it fired, the event's deviation score and
    * the operator's label (null while unlabeled).
    */
-  async trainingData(organizationId: string, opts: { siteId?: string; limit?: number } = {}) {
+  async trainingData(
+    organizationId: string,
+    opts: { siteId?: string; limit?: number; includeSilent?: boolean } = {},
+  ) {
     const alerts = await this.prisma.alert.findMany({
       where: {
         organizationId,
@@ -278,7 +292,7 @@ export class AlertsService {
     });
     const incidentById = new Map(incidents.map((i) => [i.id, i]));
 
-    const rows = [...groups.entries()].map(([eventId, list]) => {
+    const rows: TrainingRow[] = [...groups.entries()].map(([eventId, list]) => {
       const byScore = [...list].sort((a, b) => b.score - a.score);
       const top = byScore[0];
       // Rules on one event can be labelled separately; the strongest signal is
@@ -314,10 +328,76 @@ export class AlertsService {
     });
 
     // Highest deviation first — the rows a model should learn from most.
-    rows.sort((a, b) => b.deviation_score - a.deviation_score);
+    rows.sort((a, b) => (b.deviation_score ?? -1) - (a.deviation_score ?? -1));
+
+    // Incidents that triggered nothing are the negative class: real traffic
+    // that correctly stayed quiet. Opt-in because it is a much longer list.
+    if (opts.includeSilent) {
+      const triggeredIds = [...groups.keys()];
+      const silentIncidents = await this.prisma.incident.findMany({
+        where: {
+          site: { organizationId },
+          ...(opts.siteId ? { siteId: opts.siteId } : {}),
+          ...(triggeredIds.length > 0 ? { id: { notIn: triggeredIds } } : {}),
+        },
+        orderBy: { reportedAt: 'desc' },
+        select: {
+          id: true,
+          siteId: true,
+          incidentType: true,
+          severity: true,
+          reportedAt: true,
+          site: { select: { name: true } },
+        },
+      });
+
+      for (const incident of silentIncidents) {
+        rows.push({
+          event_id: incident.id,
+          event_type: 'incident.created',
+          triggered: false,
+          rules_triggered: [],
+          was_real: null,
+          deviation_score: null,
+          context: {
+            siteId: incident.siteId,
+            siteName: incident.site?.name ?? null,
+            incidentType: incident.incidentType,
+            severity: incident.severity,
+            reportedAt: incident.reportedAt,
+            metric: null,
+            metricValue: null,
+            rules: [],
+          },
+        });
+      }
+    }
+
     const limited = rows.slice(0, Math.min(opts.limit ?? 100, 500));
 
-    return { count: limited.length, rows: limited };
+    // One sample per rule: alerts can be labelled individually, so this is the
+    // shape that carries both real and false examples into training.
+    const ruleRows = alerts.map((a) => ({
+      event_id: a.incidentId ?? a.id,
+      event_type: 'incident.created',
+      rule: a.code,
+      severity: a.severity,
+      deviation_score: Math.round(a.score) / 100,
+      metric: a.metric,
+      metricValue: a.metricValue,
+      site_id: a.siteId,
+      was_real: a.wasReal,
+      labelled: a.wasReal !== null,
+      alert_id: a.id,
+      raised_at: a.createdAt,
+    }));
+
+    return {
+      count: limited.length,
+      rows: limited,
+      rule_count: ruleRows.length,
+      rule_rows: ruleRows,
+    };
   }
 
   // ── Internals ─────────────────────────────────────────────────────────────

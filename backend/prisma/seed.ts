@@ -350,14 +350,16 @@ async function main() {
   }
   console.log(`Created ${createdGuards.length} Guards`);
 
-  // 5. Create Attendance Records for the last 7 days (at least 20 records)
+  // 5. Create Attendance Records for the last 7 complete days plus today (at
+  // least 20 records). Baselines skip the in-progress day, so the extra day
+  // keeps a full 7-day baseline available.
   const now = new Date();
   const activeGuards = [createdGuards[0], createdGuards[1], createdGuards[2], createdGuards[3], createdGuards[4], createdGuards[5]];
   const dayGuardIndices = [0, 2, 4]; // ACTIVE DAY guards
   const nightGuardIndices = [1, 3, 5]; // ACTIVE NIGHT guards
 
   let attendanceCount = 0;
-  for (let dayOffset = 6; dayOffset >= 0; dayOffset--) {
+  for (let dayOffset = 7; dayOffset >= 0; dayOffset--) {
     const date = new Date(now);
     date.setDate(date.getDate() - dayOffset);
     date.setHours(0, 0, 0, 0);
