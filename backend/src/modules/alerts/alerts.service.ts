@@ -192,7 +192,9 @@ export class AlertsService {
     await this.prisma.$transaction([
       this.prisma.alert.update({
         where: { id: alert.id },
-        data: { wasReal: dto.wasReal },
+        // Labelling is the operator's verdict, so it also clears the alert from
+        // the unread feed.
+        data: { wasReal: dto.wasReal, isRead: true },
       }),
       this.prisma.alertLog.create({
         data: {
@@ -240,6 +242,7 @@ export class AlertsService {
       siteName: a.site?.name ?? null,
       incidentId: a.incidentId,
       isRead: a.isRead,
+      wasReal: a.wasReal,
       metadata: safeParse(a.metadata),
       createdAt: a.createdAt,
     }));
