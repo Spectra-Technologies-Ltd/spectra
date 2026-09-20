@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { generateHistory } from './seed-history';
 
 const prisma = new PrismaClient();
 
@@ -353,6 +354,8 @@ async function main() {
   // 5. Create Attendance Records for the last 7 complete days plus today (at
   // least 20 records). Baselines skip the in-progress day, so the extra day
   // keeps a full 7-day baseline available.
+  // Rows are recreated each run so their dates always track the run date.
+  await prisma.attendance.deleteMany({ where: { id: { startsWith: 'seed-att-' } } });
   const now = new Date();
   const activeGuards = [createdGuards[0], createdGuards[1], createdGuards[2], createdGuards[3], createdGuards[4], createdGuards[5]];
   const dayGuardIndices = [0, 2, 4]; // ACTIVE DAY guards
@@ -661,6 +664,8 @@ async function main() {
   console.log(`Created ${checkpointsData.length} Checkpoints`);
 
   // 9. Create Patrol Records (2-3 with completion data)
+  // Recreated each run so their dates track the run date.
+  await prisma.patrolRecord.deleteMany({ where: { id: { startsWith: 'seed-patrol' } } });
   const yesterday = new Date(now);
   yesterday.setDate(yesterday.getDate() - 1);
   yesterday.setHours(0, 0, 0, 0);
@@ -714,105 +719,29 @@ async function main() {
   console.log(`Created ${patrolRecordsData.length} Patrol Records`);
 
   // 10. Historical activity — 30 days of incidents and patrols so Napoleon's
-  // baselines have real spread. Timestamps refresh on every run, so the data
-  // always covers the most recent 30 days relative to when the seed is run.
-  const mulberry32 = (seed: number) => () => {
-    seed |= 0;
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  const rand = mulberry32(20260914); // fixed seed → reproducible history
-  const pick = <T>(xs: T[]): T => xs[Math.floor(rand() * xs.length)];
-
-  const INCIDENT_TYPES = ['THEFT', 'TRESPASS', 'ASSAULT', 'FIRE', 'MEDICAL', 'ASSET_DAMAGE', 'OTHER'];
-  const SEVERITIES = ['LOW', 'MEDIUM', 'MEDIUM', 'HIGH', 'HIGH', 'CRITICAL']; // weighted
-  const HISTORY_DAYS = 30;
-
-  const siteConfigs = [
-    { site: site1, route: patrolRoute1, guards: [createdGuards[0], createdGuards[1]] },
-    { site: site2, route: patrolRoute2, guards: [createdGuards[2], createdGuards[3]] },
-  ];
-
-  let historicalIncidents = 0;
-  let historicalPatrols = 0;
-
-  // Days run from yesterday backwards, so "today" starts empty and a live
-  // burst is compared against complete days rather than against itself.
-  for (let dayOffset = HISTORY_DAYS; dayOffset >= 1; dayOffset--) {
-    const day = new Date(now);
-    day.setDate(day.getDate() - dayOffset);
-    day.setHours(0, 0, 0, 0);
-
-    for (let s = 0; s < siteConfigs.length; s++) {
-      const cfg = siteConfigs[s];
-
-      // Incidents: 1-4 per site per day, with the occasional quiet day.
-      const incidentsToday = rand() < 0.15 ? 0 : 1 + Math.floor(rand() * 4);
-      for (let n = 0; n < incidentsToday; n++) {
-        const occurredAt = new Date(day);
-        occurredAt.setHours(6 + Math.floor(rand() * 17), Math.floor(rand() * 60), 0, 0);
-        const type = pick(INCIDENT_TYPES);
-        const severity = pick(SEVERITIES);
-        const isOpen = rand() < 0.2;
-        const id = `seed-incident-h-${s}-${dayOffset}-${n}`;
-        await prisma.incident.upsert({
-          where: { id },
-          update: { reportedAt: occurredAt, occurrenceTime: occurredAt },
-          create: {
-            id,
-            title: `${type} reported at ${cfg.site.name}`,
-            incidentType: type,
-            occurrenceTime: occurredAt,
-            reportedAt: occurredAt,
-            status: isOpen ? 'OPEN' : 'CLOSED',
-            siteId: cfg.site.id,
-            reporterId: adminUser.id,
-            guardsInvolved: JSON.stringify([cfg.guards[0]]),
-            description: `Routine log entry for ${cfg.site.name}. The guard on duty recorded the event and followed the standard escalation path.`,
-            severity,
-            photos: '[]',
-            videos: '[]',
-            voiceNotes: '[]',
-            witnesses: '[]',
-            actionsTaken: isOpen
-              ? 'Escalated to the operations supervisor for follow-up.'
-              : 'Resolved on site; no further action required.',
-            investigationStatus: isOpen ? 'OPEN' : 'CLOSED',
-          },
-        });
-        historicalIncidents++;
-      }
-
-      // Patrols: 2-3 completed per day, each lasting 22-48 minutes.
-      const patrolsToday = 2 + Math.floor(rand() * 2);
-      for (let n = 0; n < patrolsToday; n++) {
-        const startedAt = new Date(day);
-        startedAt.setHours(7 + n * 6 + Math.floor(rand() * 2), Math.floor(rand() * 60), 0, 0);
-        const durationMs = Math.round((22 + rand() * 26) * 60 * 1000);
-        const endedAt = new Date(startedAt.getTime() + durationMs);
-        const id = `seed-patrol-h-${s}-${dayOffset}-${n}`;
-        await prisma.patrolRecord.upsert({
-          where: { id },
-          update: { startTime: startedAt, endTime: endedAt },
-          create: {
-            id,
-            routeId: cfg.route.id,
-            guardId: cfg.guards[n % cfg.guards.length],
-            startTime: startedAt,
-            endTime: endedAt,
-            status: 'COMPLETED',
-            scannedCheckpoints: JSON.stringify([]),
-            missedCheckpoints: '[]',
-            completionPercentage: 70 + Math.floor(rand() * 31),
-            generalNotes: 'Historical patrol record (seeded for baseline modelling).',
-          },
-        });
-        historicalPatrols++;
-      }
-    }
-  }
+  // baselines have real spread. Generated by the shared module below, so
+  // `npm run seed:alerts` can refresh the same history on its own.
+  const { incidents: historicalIncidents, patrols: historicalPatrols } = await generateHistory(
+    prisma,
+    {
+      reporterId: adminUser.id,
+      sites: [
+        {
+          siteId: site1.id,
+          siteName: site1.name,
+          routeId: patrolRoute1.id,
+          guardIds: [createdGuards[0], createdGuards[1]],
+        },
+        {
+          siteId: site2.id,
+          siteName: site2.name,
+          routeId: patrolRoute2.id,
+          guardIds: [createdGuards[2], createdGuards[3]],
+        },
+      ],
+      now,
+    },
+  );
 
   console.log(`Created ${historicalIncidents} Historical Incidents`);
   console.log(`Created ${historicalPatrols} Historical Patrol Records`);
