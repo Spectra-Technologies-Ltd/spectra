@@ -6,11 +6,23 @@ import { RealtimeService } from '../realtime/realtime.service';
 export const ALERT_CODES = ['INCIDENT_SURGE', 'CRITICAL_INCIDENT', 'ANOMALY'] as const;
 export type AlertCode = (typeof ALERT_CODES)[number];
 
-/** A surge is this many incidents inside the window below. */
-export const SURGE_THRESHOLD = 5;
-export const SURGE_WINDOW_MINUTES = 10;
-/** Surprise score at or above which an observation counts as an anomaly. */
-export const ANOMALY_THRESHOLD = 0.9;
+/**
+ * Tuning knobs are read lazily: module imports are evaluated before dotenv
+ * runs in main.ts, so reading process.env at import time would ignore .env.
+ */
+const envNumber = (key: string, fallback: number) => {
+  const raw = process.env[key];
+  const value = raw === undefined ? Number.NaN : Number(raw);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+};
+
+export const alertConfig = () => ({
+  /** A surge is this many incidents inside the window below. */
+  surgeThreshold: envNumber('ALERTS_SURGE_THRESHOLD', 5),
+  surgeWindowMinutes: envNumber('ALERTS_SURGE_WINDOW_MINUTES', 10),
+  /** Surprise score at or above which an observation counts as an anomaly. */
+  anomalyThreshold: envNumber('ALERTS_ANOMALY_THRESHOLD', 0.9),
+});
 
 /** Ranked-feed priorities. Anomalies score their surprise out of 100. */
 export const CRITICAL_SCORE = 100;
@@ -74,14 +86,15 @@ export class AlertsService {
     incident: IncidentForAlert,
     siteName: string,
   ) {
-    const windowStart = new Date(Date.now() - SURGE_WINDOW_MINUTES * 60_000);
+    const { surgeThreshold, surgeWindowMinutes, anomalyThreshold } = alertConfig();
+    const windowStart = new Date(Date.now() - surgeWindowMinutes * 60_000);
     const recentCount = await this.prisma.incident.count({
       where: { siteId: incident.siteId, reportedAt: { gte: windowStart } },
     });
 
     const created = [];
 
-    if (recentCount >= SURGE_THRESHOLD) {
+    if (recentCount >= surgeThreshold) {
       const alert = await this.raiseOnce({
         organizationId,
         siteId: incident.siteId,
@@ -94,8 +107,8 @@ export class AlertsService {
         message: `${recentCount}+ incidents reported today`,
         metadata: {
           count: recentCount,
-          threshold: SURGE_THRESHOLD,
-          windowMinutes: SURGE_WINDOW_MINUTES,
+          threshold: surgeThreshold,
+          windowMinutes: surgeWindowMinutes,
         },
         incidentId: incident.id,
         windowStart,
@@ -125,7 +138,7 @@ export class AlertsService {
       'INCIDENT_COUNT',
       recentCount,
     );
-    if (surprise.surprise >= ANOMALY_THRESHOLD) {
+    if (surprise.surprise >= anomalyThreshold) {
       const alert = await this.raiseOnce({
         organizationId,
         siteId: incident.siteId,
@@ -136,7 +149,7 @@ export class AlertsService {
         metricValue: recentCount,
         title: `Anomalous incident volume at ${siteName}`,
         message: `Unusual INCIDENT_COUNT: ${recentCount} (baseline: ${surprise.baselineMean})`,
-        metadata: { ...surprise, value: recentCount, threshold: ANOMALY_THRESHOLD },
+        metadata: { ...surprise, value: recentCount, threshold: anomalyThreshold },
         incidentId: incident.id,
         windowStart,
       });
