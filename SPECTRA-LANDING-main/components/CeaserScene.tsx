@@ -32,7 +32,7 @@ export default function CeaserScene() {
     } catch {
       return
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2))
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -272,7 +272,7 @@ export default function CeaserScene() {
     }
 
     /* ---------- dust ---------- */
-    const dustN = 280
+    const dustN = isMobile ? 110 : 280
     const dpos = new Float32Array(dustN * 3)
     for (let i = 0; i < dustN; i++) {
       dpos[i * 3] = (Math.random() - 0.5) * 10
@@ -297,7 +297,11 @@ export default function CeaserScene() {
     /* ---------- post ---------- */
     composer = new EffectComposer(renderer)
     composer.addPass(new RenderPass(scene, camera))
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.62, 0.7, 0.14))
+    // Bloom is by far the most expensive pass. Phones keep the scene but drop
+    // the bloom, which is the difference between smooth and stuttering.
+    if (!isMobile) {
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.62, 0.7, 0.14))
+    }
 
     /* ---------- screen UI drawing ---------- */
     const W = 1024
@@ -439,7 +443,8 @@ export default function CeaserScene() {
           const rad = r + Math.sin(a * 3 + r * 0.05) * 10 + Math.cos(a * 2) * 8
           const px = cx + Math.cos(a) * rad * 1.15
           const py = cy + Math.sin(a) * rad * 0.8
-          a === 0 ? g.moveTo(px, py) : g.lineTo(px, py)
+          if (a === 0) g.moveTo(px, py)
+          else g.lineTo(px, py)
         }
         g.closePath()
         g.stroke()
@@ -789,7 +794,8 @@ export default function CeaserScene() {
       poly.forEach((p, i) => {
         const px = ix + iw * p[0]
         const py = iy + ih * p[1]
-        i ? g.lineTo(px, py) : g.moveTo(px, py)
+        if (i) g.lineTo(px, py)
+        else g.moveTo(px, py)
       })
       g.closePath()
       g.stroke()
@@ -873,7 +879,7 @@ export default function CeaserScene() {
 
       holo.rotation.y += 0.004
       wire.rotation.y -= 0.002
-      sats.forEach((s, i) => {
+      sats.forEach((s) => {
         const a = t * s.spd + s.off
         const x = Math.cos(a) * s.r
         const z = Math.sin(a) * s.r
@@ -929,6 +935,10 @@ export default function CeaserScene() {
       cancelAnimationFrame(rafId)
       window.removeEventListener('resize', onResize)
       renderer?.dispose()
+      // Release the WebGL context on unmount. Without this, navigating between
+      // pages a few times exhausts the browser's context limit and the scene
+      // renders blank until a full refresh.
+      renderer?.forceContextLoss()
     }
   }, [])
 

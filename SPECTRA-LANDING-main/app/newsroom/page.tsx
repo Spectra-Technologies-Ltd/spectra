@@ -1,66 +1,60 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { ArrowUpRight } from '@/components/icon'
 import SiteHeader from '@/components/site-header'
 import SiteFooter from '@/components/site-footer'
 import { PageHero } from '@/components/page-hero'
 import { Reveal } from '@/components/reveal'
+import { getArticles } from '@/lib/articles'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'News — Spectra Technologies',
-  description:
-    'News from Spectra Technologies — BastionOS, Napoleon and the Spectra Workplace.',
-}
+export const metadata: Metadata = pageMetadata({
+  title: 'Newsroom — Spectra Technologies',
+  description: 'News from Spectra Technologies.',
+  path: '/newsroom',
+})
 
-const headlines = [
-  ['PRODUCT UPDATE', 'The Spectra Workplace is now live.', 'Operators can now manage their entire security operation from the BastionOS command center — guards, patrols, attendance, incidents and reporting in one real-time view.', '05.22.26'],
-  ['ANNOUNCEMENT', 'BastionOS 2.0: unified patrols and incident tracking.', 'Patrol verification, incident escalation and reporting now share one workflow — with Napoleon-powered insights layered on top.', '04.14.26'],
-  ['ANNOUNCEMENT', 'Napoleon enters preview for enterprise operations.', 'The strategic intelligence engine is now available in preview for select enterprise operations — learning from operational data to surface patterns and predictions.', '03.18.26'],
-  ['PRODUCT UPDATE', 'Multi-site visibility, one command center.', 'BastionOS now unifies every site under a single operational picture — coverage, attendance and risk in one view.', '02.09.26'],
-  ['ANNOUNCEMENT', 'The Spectra partners program opens.', 'Technology integrations, channel partnerships and co-development — teams building on the Spectra architecture can now apply.', '01.20.26', '/partners'],
-] as const
+const headlines = getArticles('newsroom')
 
-export default function NewsPage() {
+export default function NewsroomPage() {
   return (
-    <main className="spectra-shell">
+    <main id="main" className="spectra-shell">
       <SiteHeader />
 
-      <PageHero kicker="NEWS / SPECTRA" title="What&apos;s<br />new." tag="SPECTRA / NEWS">
-        <p>
-          News from Spectra Technologies — BastionOS, Napoleon and the Spectra Workplace.
-        </p>
-      </PageHero>
+      <PageHero
+        kicker="NEWSROOM"
+        title={<>What&apos;s<br />new?</>}
+        tag="NEWSROOM"
+      />
 
-      {/* All headlines */}
       <section className="page-section page-section-alt">
         <div className="page-section-head">
-          <Reveal><p className="eyebrow">ALL STORIES</p><h3>The archive.</h3></Reveal>
+          <Reveal>
+            <p className="eyebrow">ALL STORIES</p>
+            <h2 className="section-heading">The archive.</h2>
+          </Reveal>
         </div>
         <div className="article-list">
-          {headlines.map(([source, title, excerpt, date, href], i) => (
-            <Reveal key={title} delay={i * 60}>
+          {headlines.map((entry, i) => (
+            <Reveal key={entry.slug} delay={i * 60}>
               <article>
-                <span className="article-date">{date}</span>
+                <span className="article-date">{entry.date}</span>
                 <div>
-                  <p className="eyebrow">{source}</p>
-                  <h4>{title}</h4>
-                  <p>{excerpt}</p>
+                  <p className="eyebrow">{entry.source}</p>
+                  <h3 className="article-title">
+                    <Link href={`/newsroom/${entry.slug}`}>{entry.title}</Link>
+                  </h3>
+                  <p>{entry.excerpt}</p>
                 </div>
-                {href ? (
-                  <Link className="text-button" href={href} aria-label={title}>
-                    Read <ArrowUpRight size={15} />
-                  </Link>
-                ) : (
-                  <Link className="text-button" href="/journal" aria-label={title}>
-                    Details <ArrowUpRight size={15} />
-                  </Link>
-                )}
+                <Link className="text-button" href={`/newsroom/${entry.slug}`} aria-label={`Read: ${entry.title}`}>
+                  Read <ArrowUpRight size={15} aria-hidden="true" />
+                </Link>
               </article>
             </Reveal>
           ))}
         </div>
       </section>
 
-      {/* Statement CTA */}
       <section className="statement-section">
         <div className="statement-rule" />
         <Reveal>
@@ -68,7 +62,7 @@ export default function NewsPage() {
           <h2>Keep<br /><em>building.</em></h2>
         </Reveal>
         <div className="statement-foot">
-          <Link className="text-button" href="/research">Research &amp; Insights <ArrowUpRight size={17} /></Link>
+          <Link className="text-button" href="/research">Research &amp; Insights <ArrowUpRight size={17} aria-hidden="true" /></Link>
         </div>
       </section>
 

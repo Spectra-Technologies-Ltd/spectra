@@ -223,7 +223,7 @@ function Chip({
           </div>
         )}
 
-        <span className="mt-auto font-mono text-[7px] uppercase tracking-[0.18em] text-neutral-600">{label}</span>
+        <span className="iso-chip-caption mt-auto font-mono text-[7px] uppercase tracking-[0.18em] text-neutral-600">{label}</span>
       </div>
     </div>
   )
@@ -259,21 +259,21 @@ export function IsometricPlatform() {
   const foundationTop = zFoundation + T / 2
 
   return (
-    <div className="iso-scene relative mx-auto h-[560px] w-full max-w-[760px] select-none sm:h-[660px]">
-      <div className="iso-stage absolute left-1/2 top-[52%]">
+    <div className="iso-scene" aria-hidden="true">
+      <div className="iso-stage">
         {/* -------- connectors + floating chips above BastionOS -------- */}
         <Connector x={-110} y={-60} from={bastionTop} to={bastionTop + 96} delay={0} />
-        <Connector x={70} y={-95} from={bastionTop} to={bastionTop + 130} delay={0.4} />
+        <Connector x={70} y={-95} from={bastionTop} to={bastionTop + 106} delay={0.4} />
         <Connector x={115} y={35} from={bastionTop} to={bastionTop + 82} delay={0.8} />
         <Connector x={-70} y={95} from={bastionTop} to={bastionTop + 112} delay={1.2} />
-        <Connector x={25} y={125} from={bastionTop} to={bastionTop + 150} delay={0.6} />
+        <Connector x={25} y={125} from={bastionTop} to={bastionTop + 120} delay={0.6} />
         <Connector x={-140} y={30} from={bastionTop} to={bastionTop + 60} delay={1} />
 
         <Chip x={-110} y={-60} z={bastionTop + 96} label="Automation" variant="lines" lines={3} delay={0} />
-        <Chip x={70} y={-95} z={bastionTop + 130} label="Agent" variant="node" delay={0.9} />
+        <Chip x={70} y={-95} z={bastionTop + 106} label="Agent" variant="node" delay={0.9} />
         <Chip x={115} y={35} z={bastionTop + 82} label="Telemetry" variant="chart" delay={0.5} />
         <Chip x={-70} y={95} z={bastionTop + 112} label="Workflow" variant="grid" delay={1.4} />
-        <Chip x={25} y={125} z={bastionTop + 150} label="Model" variant="node" delay={0.7} />
+        <Chip x={25} y={125} z={bastionTop + 120} label="Model" variant="node" delay={0.7} />
         <Chip x={-140} y={30} z={bastionTop + 60} label="Signal" variant="lines" lines={2} delay={1.1} />
 
         {/* ============ BastionOS : application layer ============ */}
@@ -418,7 +418,7 @@ function LayerTag({ name, role, tone }: { name: string; role: string; tone: "lig
   const dot =
     tone === "mid" ? "bg-neutral-400" : tone === "dark" ? "bg-neutral-600" : "bg-white border border-neutral-400"
   return (
-    <div className="flex items-center gap-2 whitespace-nowrap rounded-full border border-neutral-300 bg-white/95 py-1.5 pl-2.5 pr-3.5 shadow-[0_10px_24px_-14px_rgba(0,0,0,0.5)] backdrop-blur">
+    <div className="iso-layer-tag flex items-center gap-2 whitespace-nowrap rounded-full border border-neutral-300 bg-white/95 py-1.5 pl-2.5 pr-3.5 shadow-[0_10px_24px_-14px_rgba(0,0,0,0.5)] backdrop-blur">
       <span className={`h-2.5 w-2.5 rounded-full ${dot}`} />
       <span className="flex flex-col leading-none">
         <span className="text-[13px] font-semibold text-neutral-800">{name}</span>

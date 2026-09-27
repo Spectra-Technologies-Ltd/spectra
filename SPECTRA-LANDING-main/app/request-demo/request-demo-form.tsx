@@ -25,6 +25,8 @@ type FormValues = {
   message: string
 }
 
+type FormErrors = Partial<Record<keyof FormValues, string>>
+
 const initialValues: FormValues = {
   firstName: '',
   lastName: '',
@@ -42,7 +44,7 @@ export default function RequestDemoForm() {
   const [error, setError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [values, setValues] = useState<FormValues>(initialValues)
-  const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({})
+  const [errors, setErrors] = useState<FormErrors>({})
 
   const set = (key: keyof FormValues) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -51,8 +53,8 @@ export default function RequestDemoForm() {
     if (errors[key]) setErrors((er) => ({ ...er, [key]: undefined }))
   }
 
-  const validate = () => {
-    const er: Partial<Record<keyof FormValues, string>> = {}
+  const validate = (): FormErrors => {
+    const er: FormErrors = {}
     if (!values.firstName.trim()) er.firstName = 'First name is required'
     if (!values.lastName.trim()) er.lastName = 'Last name is required'
     if (!values.email.trim()) er.email = 'Work email is required'
@@ -73,14 +75,26 @@ export default function RequestDemoForm() {
       return
     }
     setError(null)
+    setErrors({})
     setIsSubmitting(true)
     try {
-      // Lead-capture stub — wire this to a backend endpoint when one is available.
-      console.log('LEAD SUBMISSION', values)
-      await new Promise((r) => setTimeout(r, 900))
+      const res = await fetch('/api/demo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        if (data?.errors && typeof data.errors === 'object') setErrors(data.errors as FormErrors)
+        throw new Error(typeof data?.error === 'string' ? data.error : 'Submission failed')
+      }
       setSubmitted(true)
-    } catch {
-      setError('Something went wrong submitting your request. Please try again.')
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Something went wrong submitting your request. Please try again.',
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -97,10 +111,14 @@ export default function RequestDemoForm() {
   /* ── Success state — swapped in place, no page navigation ── */
   if (submitted) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-white px-4 py-12">
+      <main
+        id="main"
+        role="status"
+        className="flex min-h-dvh items-center justify-center bg-white px-4 py-12"
+      >
         <div className="w-full max-w-[460px] text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
-            <CheckCircle2 className="h-7 w-7 text-emerald-600" />
+            <CheckCircle2 className="h-7 w-7 text-emerald-600" aria-hidden="true" />
           </div>
           <h1 className="mt-6 text-2xl font-black tracking-tight text-zinc-950">
             Thanks — we&apos;ll be in touch shortly.
@@ -113,10 +131,10 @@ export default function RequestDemoForm() {
             href="/"
             className="mt-8 inline-flex items-center gap-2 rounded-md bg-[#57d7d4] px-5 py-3 text-sm font-bold text-[#061a20] shadow-lg shadow-[#57d7d4]/30 transition-all hover:bg-[#4cc9c6]"
           >
-            <ArrowLeft className="h-4 w-4" /> Back to Homepage
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to Homepage
           </Link>
         </div>
-      </div>
+      </main>
     )
   }
 
@@ -126,7 +144,7 @@ export default function RequestDemoForm() {
       <header className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-8">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#57d7d4] text-[#061a20] shadow-md shadow-[#57d7d4]/30">
-            <Shield className="h-4 w-4" />
+            <Shield className="h-4 w-4" aria-hidden="true" />
           </div>
           <span className="font-mono text-sm font-bold tracking-[0.25em] text-zinc-900">
             SPECTRA
@@ -140,7 +158,7 @@ export default function RequestDemoForm() {
         </Link>
       </header>
 
-      <main className="flex flex-1 justify-center px-4 py-12 sm:px-8">
+      <main id="main" className="flex flex-1 justify-center px-4 py-12 sm:px-8">
         <div className="w-full max-w-[560px]">
           <p className="font-mono text-[11px] font-bold tracking-[0.28em] text-[#57d7d4]">
             CONTACT · DEMO REQUEST · PARTNERSHIP INQUIRIES
@@ -154,8 +172,11 @@ export default function RequestDemoForm() {
           </p>
 
           {error && (
-            <div className="mt-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div
+              role="alert"
+              className="mt-6 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            >
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               <div>
                 <p className="font-bold">Submission failed</p>
                 <p className="mt-0.5 text-red-600">{error}</p>
@@ -174,10 +195,12 @@ export default function RequestDemoForm() {
                   placeholder="Alex"
                   value={values.firstName}
                   onChange={set('firstName')}
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? 'firstName-error' : undefined}
                   className={`mt-1.5 ${inputClass(!!errors.firstName)}`}
                 />
                 {errors.firstName && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">{errors.firstName}</p>
+                  <p id="firstName-error" className="mt-1.5 text-xs font-medium text-red-600">{errors.firstName}</p>
                 )}
               </div>
               <div>
@@ -189,10 +212,12 @@ export default function RequestDemoForm() {
                   placeholder="Mercer"
                   value={values.lastName}
                   onChange={set('lastName')}
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? 'lastName-error' : undefined}
                   className={`mt-1.5 ${inputClass(!!errors.lastName)}`}
                 />
                 {errors.lastName && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">{errors.lastName}</p>
+                  <p id="lastName-error" className="mt-1.5 text-xs font-medium text-red-600">{errors.lastName}</p>
                 )}
               </div>
             </div>
@@ -207,10 +232,12 @@ export default function RequestDemoForm() {
                   placeholder="you@company.com"
                   value={values.email}
                   onChange={set('email')}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
                   className={`mt-1.5 ${inputClass(!!errors.email)}`}
                 />
                 {errors.email && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">{errors.email}</p>
+                  <p id="email-error" className="mt-1.5 text-xs font-medium text-red-600">{errors.email}</p>
                 )}
               </div>
               <div>
@@ -222,10 +249,12 @@ export default function RequestDemoForm() {
                   placeholder="+1 (555) 000-0000"
                   value={values.phone}
                   onChange={set('phone')}
+                  aria-invalid={!!errors.phone}
+                  aria-describedby={errors.phone ? 'phone-error' : undefined}
                   className={`mt-1.5 ${inputClass(!!errors.phone)}`}
                 />
                 {errors.phone && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">{errors.phone}</p>
+                  <p id="phone-error" className="mt-1.5 text-xs font-medium text-red-600">{errors.phone}</p>
                 )}
               </div>
             </div>
@@ -240,10 +269,12 @@ export default function RequestDemoForm() {
                   placeholder="Director of Operations"
                   value={values.jobTitle}
                   onChange={set('jobTitle')}
+                  aria-invalid={!!errors.jobTitle}
+                  aria-describedby={errors.jobTitle ? 'jobTitle-error' : undefined}
                   className={`mt-1.5 ${inputClass(!!errors.jobTitle)}`}
                 />
                 {errors.jobTitle && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">{errors.jobTitle}</p>
+                  <p id="jobTitle-error" className="mt-1.5 text-xs font-medium text-red-600">{errors.jobTitle}</p>
                 )}
               </div>
               <div>
@@ -255,10 +286,12 @@ export default function RequestDemoForm() {
                   placeholder="Acme Industries"
                   value={values.organizationName}
                   onChange={set('organizationName')}
+                  aria-invalid={!!errors.organizationName}
+                  aria-describedby={errors.organizationName ? 'organizationName-error' : undefined}
                   className={`mt-1.5 ${inputClass(!!errors.organizationName)}`}
                 />
                 {errors.organizationName && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">{errors.organizationName}</p>
+                  <p id="organizationName-error" className="mt-1.5 text-xs font-medium text-red-600">{errors.organizationName}</p>
                 )}
               </div>
             </div>
@@ -267,11 +300,13 @@ export default function RequestDemoForm() {
               <div>
                 <label htmlFor="country" className={labelClass}>Country</label>
                 <div className="relative mt-1.5">
-                  <Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+                  <Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden="true" />
                   <select
                     id="country"
                     value={values.country}
                     onChange={set('country')}
+                    aria-invalid={!!errors.country}
+                    aria-describedby={errors.country ? 'country-error' : undefined}
                     className={`${inputClass(!!errors.country)} appearance-none pl-9 pr-8`}
                   >
                     <option value="" disabled>Select a country</option>
@@ -281,7 +316,7 @@ export default function RequestDemoForm() {
                   </select>
                 </div>
                 {errors.country && (
-                  <p className="mt-1.5 text-xs font-medium text-red-600">{errors.country}</p>
+                  <p id="country-error" className="mt-1.5 text-xs font-medium text-red-600">{errors.country}</p>
                 )}
               </div>
               <div>
@@ -307,10 +342,12 @@ export default function RequestDemoForm() {
                 placeholder="Describe the problem you're trying to solve — what you're building, operating or improving."
                 value={values.message}
                 onChange={set('message')}
+                aria-invalid={!!errors.message}
+                aria-describedby={errors.message ? 'message-error' : undefined}
                 className={`mt-1.5 ${inputClass(!!errors.message)} resize-none`}
               />
               {errors.message && (
-                <p className="mt-1.5 text-xs font-medium text-red-600">{errors.message}</p>
+                <p id="message-error" className="mt-1.5 text-xs font-medium text-red-600">{errors.message}</p>
               )}
             </div>
 
@@ -321,7 +358,7 @@ export default function RequestDemoForm() {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> Submitting...
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Submitting...
                 </>
               ) : (
                 'Submit'

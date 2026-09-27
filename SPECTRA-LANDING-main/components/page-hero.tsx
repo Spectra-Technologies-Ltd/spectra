@@ -5,22 +5,24 @@ export function PageHero({
   em,
   tag = 'SPECTRA / SYSTEM',
   hideBottom = false,
+  compact = false,
   children,
 }: {
   kicker: React.ReactNode
-  title: string
-  em?: string
+  title: React.ReactNode
+  em?: React.ReactNode
   tag?: React.ReactNode
   hideBottom?: boolean
+  /** Smaller headline scale, for long editorial titles. */
+  compact?: boolean
   children?: React.ReactNode
 }) {
   return (
-    <section className="page-hero">
+    <section className={`page-hero${compact ? ' page-hero-compact' : ''}`}>
       <div className="section-kicker">
-        <span>SPECTRA TECHNOLOGIES</span>
         <span>{kicker}</span>
       </div>
-      <h2>
+      <h1>
         {title}
         {em && (
           <>
@@ -28,7 +30,7 @@ export function PageHero({
             <em>{em}</em>
           </>
         )}
-      </h2>
+      </h1>
       {children && <div className="page-hero-meta">{children}</div>}
       {!hideBottom && (
         <div className="hero-bottom page-hero-bottom">

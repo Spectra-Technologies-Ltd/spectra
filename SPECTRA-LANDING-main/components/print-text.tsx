@@ -1,13 +1,18 @@
 'use client'
 
-import { Fragment, useEffect, useRef, useState, type ElementType } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ElementType } from 'react'
 
 export type PrintLine = { text: string; style?: 'em' | 'brand' }
 
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
+
 /**
  * Types text out character by character on a fixed timer once it scrolls into
- * view. The typed text grows in place (classic typewriter), so it always reads
- * as typing and always runs to completion.
+ * view.
+ *
+ * The full text is rendered on the server (and for anyone without JavaScript),
+ * so headings are never empty to crawlers or assistive tech. On the client we
+ * reset to zero *before the first paint* and animate from there.
  */
 export function PrintText({
   tag: Tag = 'span',
@@ -31,17 +36,21 @@ export function PrintText({
 
   const ref = useRef<HTMLElement | null>(null)
   const [started, setStarted] = useState(false)
-  const [chars, setChars] = useState(0)
+  // Start complete: this is what the server renders and what a no-JS visitor sees.
+  const [chars, setChars] = useState(totalChars)
 
-  // Start typing when the text scrolls into view.
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const el = ref.current
     if (!el) return
-    // Respect users who prefer reduced motion: show everything immediately.
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+
+    // Respect users who prefer reduced motion: leave the text fully rendered.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setChars(totalChars)
       return
     }
+
+    // Reset before paint so there is no flash of the finished text.
+    setChars(0)
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
@@ -49,7 +58,7 @@ export function PrintText({
           io.disconnect()
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.15 },
     )
     io.observe(el)
     return () => io.disconnect()
@@ -62,11 +71,13 @@ export function PrintText({
     return () => clearTimeout(t)
   }, [started, chars, totalChars, speed])
 
-  // Slice each line to the currently typed character count.
-  let remaining = chars
+  // Slice each line to the currently typed character count. Line offsets are
+  // computed up-front so nothing is reassigned during render.
+  const lineOffsets = segments.map((_, li) =>
+    segments.slice(0, li).reduce((total, seg) => total + seg.text.length, 0),
+  )
   const body = segments.map((seg, li) => {
-    const take = Math.min(remaining, seg.text.length)
-    remaining -= take
+    const take = Math.min(Math.max(chars - lineOffsets[li], 0), seg.text.length)
     const Wrapper: ElementType = seg.style === 'em' ? 'em' : 'span'
     const cls = seg.style === 'brand' ? 'brand-name' : undefined
     return (
