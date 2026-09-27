@@ -22,11 +22,8 @@ export function LayersOverview() {
       <section id="bastion" className="sp-overview" aria-labelledby="bastion-heading">
         <ScrollReveal>
           <div className="sp-overview-inner">
-            <div className="sp-kicker-row">
-              <span className="sp-eyebrow">BastionOS</span>
-            </div>
             <h2 className="sp-display" id="bastion-heading">
-              BastionOS /<br />
+              BastionOS<br />
               Our Flagship <em>Product</em>
             </h2>
             <Link href="/bastionos" className="sp-textlink">
@@ -45,13 +42,8 @@ export function LayersOverview() {
       >
         <ScrollReveal>
           <div className="sp-overview-inner">
-            <div className="sp-kicker-row">
-              <span className="sp-eyebrow">Napoleon</span>
-              <span className="sp-kicker-sep" aria-hidden="true" />
-              <span className="sp-eyebrow sp-kicker-alt">The Intelligence Layer</span>
-            </div>
             <h2 className="sp-display" id="napoleon-heading">
-              Napoleon / Compute What <em>Comes Next</em>
+              Napoleon<br />Compute What <em>Comes Next</em>
             </h2>
             <Link href="/napoleon" className="sp-textlink">
               Explore Napoleon

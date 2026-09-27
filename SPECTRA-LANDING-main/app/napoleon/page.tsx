@@ -20,12 +20,6 @@ const capabilities = [
   ['04', 'Coordinate', 'Powers every Intelligence Operating System built on the Spectra platform, coordinating the layers beneath it.'],
 ] as const
 
-const layers = [
-  ['Napoleon', 'Thinks, learns, predicts.'],
-  ['BastionOS', 'Organizes workflows, presents insights, enables users to act.'],
-  ['Spectra', 'The company and ecosystem that develops both.'],
-] as const
-
 const specs = [
   ['Type', 'Domain-agnostic intelligence engine'],
   ['Input', 'Structured + unstructured organizational data'],
@@ -118,24 +112,11 @@ export default function NapoleonPage() {
         </div>
       </section>
 
-      {/* Relationship + domain-agnostic */}
+      {/* Domain-agnostic */}
       <section id="industries" className="page-section page-section-alt">
-        <div className="page-section-head">
-          <Reveal>
-            <p className="eyebrow">05 / THE RELATIONSHIP</p>
-          </Reveal>
-          <Reveal><p className="body-copy">Napoleon powers the Intelligence Operating Systems built on the Spectra platform.</p></Reveal>
-        </div>
-        <Reveal>
-          <div className="spec-grid">
-            {layers.map(([label, value]) => (
-              <div key={label}><span>{label}</span><strong>{value}</strong></div>
-            ))}
-          </div>
-        </Reveal>
         <div className="page-section-head" style={{ marginTop: 70 }}>
           <Reveal>
-            <p className="eyebrow">06 / DOMAIN-AGNOSTIC</p>
+            <p className="eyebrow">05 / DOMAIN-AGNOSTIC</p>
             <h2 className="section-heading">One engine,<br />every industry.</h2>
           </Reveal>
         </div>

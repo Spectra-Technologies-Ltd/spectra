@@ -32,7 +32,7 @@ export default function Page() {
         <HeroScene />
         <div className="hero-scrim" />
         <div className="hero-copy">
-          <p className="hero-kicker">Spectra Technologies</p>
+          <p className="hero-kicker">Spectra Technologies builds</p>
           <h1>Intelligence.<br /><em>Engineered.</em></h1>
           <p className="hero-description">Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems.</p>
           <a className="outline-button" href="/request-demo">Get Started <MoveRight size={17} aria-hidden="true" /></a>
