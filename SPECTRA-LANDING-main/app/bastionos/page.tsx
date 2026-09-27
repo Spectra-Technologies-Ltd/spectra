@@ -125,7 +125,6 @@ export default function BastionOSPage() {
       <section className="statement-section">
         <div className="statement-rule" />
         <Reveal>
-          <p>BUILT TO OPERATE.<br />BUILT TO IMPROVE.</p>
           <h2>Explore the intelligence<br /><em>layer behind it.</em></h2>
         </Reveal>
         <div className="statement-foot">

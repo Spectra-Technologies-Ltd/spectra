@@ -152,7 +152,6 @@ export default function NapoleonPage() {
       <section className="statement-section">
         <div className="statement-rule" />
         <Reveal>
-          <p><span className="brand-name">Napoleon</span> = THINKS, LEARNS, PREDICTS.<br /><span className="brand-name">BastionOS</span> = ORGANIZES, PRESENTS, ACTS.</p>
           <h2>Make data your<br /><em>strategic asset.</em></h2>
         </Reveal>
       </section>
