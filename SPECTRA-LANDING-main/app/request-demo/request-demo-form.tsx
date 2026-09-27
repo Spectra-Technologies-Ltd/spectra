@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Shield, Loader2, AlertCircle, CheckCircle2, ArrowLeft, Globe } from 'lucide-react'
+import Image from 'next/image'
+import { Loader2, AlertCircle, CheckCircle2, ArrowLeft, Globe } from 'lucide-react'
 
 const COUNTRIES = [
   'United States', 'United Kingdom', 'Nigeria', 'Canada', 'Australia', 'South Africa',
@@ -142,13 +143,17 @@ export default function RequestDemoForm() {
     <div className="flex min-h-dvh flex-col bg-white">
       {/* Simple top bar */}
       <header className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-8">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#57d7d4] text-[#061a20] shadow-md shadow-[#57d7d4]/30">
-            <Shield className="h-4 w-4" aria-hidden="true" />
-          </div>
-          <span className="font-mono text-sm font-bold tracking-[0.25em] text-zinc-900">
-            SPECTRA
-          </span>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md bg-[#061a20] shadow-md shadow-[#57d7d4]/30">
+              <Image
+                src="/spectra-logo-mark-white.png"
+                alt="Spectra"
+                width={72}
+                height={32}
+                className="h-8 w-8 object-cover object-center"
+                priority
+              />
+            </div>
         </div>
         <Link
           href="/"
