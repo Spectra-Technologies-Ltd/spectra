@@ -22,7 +22,6 @@ export const SITE_ROUTES = [
   '/about',
   '/bastionos',
   '/napoleon',
-  '/workspace',
   '/newsroom',
   '/journal',
   '/research',

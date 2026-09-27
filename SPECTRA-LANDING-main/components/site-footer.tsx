@@ -24,7 +24,6 @@ export default function SiteFooter({ light = false }: { light?: boolean }) {
           <span>EXPLORE</span>
           <Link href="/bastionos">BastionOS</Link>
           <Link href="/napoleon">Napoleon</Link>
-          <Link href="/workspace">Spectra Workplace</Link>
           <Link href="/journal">The Spectra Journal</Link>
         </div>
         <div>

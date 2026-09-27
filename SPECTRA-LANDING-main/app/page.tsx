@@ -32,9 +32,8 @@ export default function Page() {
         <HeroScene />
         <div className="hero-scrim" />
         <div className="hero-copy">
-          <p className="hero-kicker">Spectra Technologies builds</p>
           <h1>Intelligence.<br /><em>Engineered.</em></h1>
-          <p className="hero-description">Spectra builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems.</p>
+          <p className="hero-description">Spectra Technologies builds intelligent operating systems and machine intelligence that power critical infrastructure, enterprise operations, security, and complex real-world systems.</p>
           <a className="outline-button" href="/request-demo">Get Started <MoveRight size={17} aria-hidden="true" /></a>
         </div>
       </section>
@@ -81,16 +80,6 @@ export default function Page() {
         <Reveal>
           <h2>We build<br /><em>for what&apos;s next.</em></h2>
         </Reveal>
-      </section>
-
-      {/* The Spectra Workplace */}
-      <section id="company-team" className="team-section bastion-centered">
-        <div className="section-kicker"><span>SPECTRA WORKSPACE</span></div>
-        <div className="bastion-hero-center">
-          <PrintText tag="h2" lines={[{ text: 'Design' }, { text: 'Your Intelligence', style: 'em' }]} />
-          <p className="body-copy">The Spectra Workspace — a tool for conceptualizing intelligence systems. Design ontologies, create Napoleon-powered agents, connect data, and deploy prototypes.</p>
-          <Link className="text-button" href="/workspace">Enter the Workspace <ArrowUpRight size={17} aria-hidden="true" /></Link>
-        </div>
       </section>
 
       <section className="press-section">
