@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -154,16 +155,8 @@ export default function RegisterPage() {
           <div className="absolute inset-0 bg-gradient-to-b from-sidebar/75 via-sidebar/85 to-sidebar" />
 
           <div className="relative flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-black/30">
-              <Shield className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="font-mono text-sm font-bold tracking-[0.3em] text-sidebar-foreground">
-                BASTION<span className="text-primary">OS</span>
-              </p>
-              <p className="font-mono text-[10px] tracking-[0.24em] text-muted-foreground">
-                SPECTRA TECHNOLOGY
-              </p>
+            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-md bg-[#061a20] shadow-lg shadow-black/30">
+              <Image src="/spectra-logo-mark-white.png" alt="Spectra" width={88} height={44} className="h-11 w-11 object-cover object-center" priority />
             </div>
           </div>
 
@@ -231,12 +224,9 @@ export default function RegisterPage() {
         <div className="p-8 sm:p-10">
           {/* Mobile brand */}
           <div className="mb-8 flex flex-col items-center gap-3 lg:hidden">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg">
-              <Shield className="h-6 w-6" />
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-md bg-[#061a20] shadow-lg">
+              <Image src="/spectra-logo-mark-white.png" alt="Spectra" width={96} height={48} className="h-12 w-12 object-cover object-center" priority />
             </div>
-            <p className="font-mono text-sm font-bold tracking-[0.3em] text-foreground">
-              BASTION<span className="text-primary">OS</span>
-            </p>
           </div>
 
           <AuthModeSwitch mode="register" />

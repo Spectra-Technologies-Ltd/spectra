@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
-  Shield,
   Loader2,
   AlertCircle,
   CheckCircle2,
@@ -118,12 +118,9 @@ export default function RequestDemoForm() {
       {/* Simple top bar */}
       <header className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-8">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#57d7d4] text-[#061a20] shadow-md shadow-[#57d7d4]/30">
-            <Shield className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md bg-[#061a20] shadow-md shadow-[#57d7d4]/30">
+            <Image src="/spectra-logo-mark-white.png" alt="Spectra" width={72} height={32} className="h-8 w-8 object-cover object-center" priority />
           </div>
-          <span className="font-mono text-sm font-bold tracking-[0.25em] text-zinc-900">
-            SPECTRA
-          </span>
         </div>
         <Link
           href="/"

@@ -2,6 +2,7 @@
 
 import React, { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -118,12 +119,9 @@ function LoginForm() {
         <div className="w-full max-w-[400px]">
           {/* Mobile brand */}
           <div className="animate-rise mb-10 flex flex-col items-center gap-3 lg:hidden">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg">
-              <Shield className="h-6 w-6" />
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-md bg-[#061a20] shadow-lg">
+              <Image src="/spectra-logo-mark-white.png" alt="Spectra" width={96} height={48} className="h-12 w-12 object-cover object-center" priority />
             </div>
-            <p className="font-mono text-sm font-bold tracking-[0.3em] text-foreground">
-              BASTION<span className="text-primary">OS</span>
-            </p>
           </div>
 
           {tfaToken ? (
