@@ -1,7 +1,7 @@
 export const SITE_NAME = 'Spectra Technologies'
 
 /** Canonical origin for the landing site. Override with NEXT_PUBLIC_SITE_URL. */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://spectra-landing-six.vercel.app').replace(/\/$/, '')
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://spectratech.cc').replace(/\/$/, '')
 
 export const SITE_TAGLINE = 'Intelligence. Engineered.'
 
