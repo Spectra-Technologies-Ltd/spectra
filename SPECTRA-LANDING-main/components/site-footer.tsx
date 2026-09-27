@@ -1,42 +1,62 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import Image from 'next/image'
 import { NewsletterForm } from './newsletter-form'
-import { scrollToSection } from './site-header'
+
+/** Optional social profiles — configured at build time, hidden when unset. */
+const SOCIALS = [
+  { label: 'LinkedIn', href: process.env.NEXT_PUBLIC_LINKEDIN_URL },
+  { label: 'X', href: process.env.NEXT_PUBLIC_X_URL },
+  { label: 'Instagram', href: process.env.NEXT_PUBLIC_INSTAGRAM_URL },
+].filter((social): social is { label: string; href: string } => Boolean(social.href))
 
 export default function SiteFooter({ light = false }: { light?: boolean }) {
-  const pathname = usePathname()
-  const router = useRouter()
-
-  const go = (target: string) => {
-    if (target.startsWith('http')) {
-      window.open(target, '_blank', 'noopener,noreferrer')
-      return
-    }
-    const [path, hash] = target.split('#')
-    if (hash && (path === '' || path === '/' || path === pathname)) {
-      scrollToSection(hash)
-      return
-    }
-    if (hash) {
-      router.push(`${path || '/'}#${hash}`)
-      setTimeout(() => scrollToSection(hash), 600)
-      return
-    }
-    router.push(path || '/')
-  }
-
   return (
     <footer className={light ? 'footer-light' : ''}>
-      <div className="footer-top"><span className="wordmark">SPECTRA<span>.</span></span></div>
+      <div className="footer-top">
+        <Link className="wordmark" href="/" aria-label="Spectra home">
+          <Image className="brand-logo" src="/spectra-logo-mark-white.png" alt="Spectra" width={104} height={44} />
+        </Link>
+      </div>
       <div className="footer-links">
-        <div><span>EXPLORE</span><button onClick={() => go('/bastionos')}>BastionOS</button><button onClick={() => go('/napoleon')}>Napoleon</button><button onClick={() => go('/journal')}>The Spectra Journal</button></div>
-        <div><span>CONNECT</span><button onClick={() => go('https://www.linkedin.com')}>LinkedIn</button><button onClick={() => go('https://www.instagram.com')}>Instagram</button><button onClick={() => go('/contact')}>Contact</button></div>
-        <div><span>COMPANY</span><button onClick={() => go('/partners')}>Partners</button><button onClick={() => go('/contact')}>Work with us</button></div>
-        <div><span>MEDIA</span><button onClick={() => go('/newsroom')}>News</button><button onClick={() => go('/research')}>Research &amp; Insights</button><button onClick={() => go('/journal')}>The Journal</button></div>
+        <div>
+          <span>EXPLORE</span>
+          <Link href="/bastionos">BastionOS</Link>
+          <Link href="/napoleon">Napoleon</Link>
+          <Link href="/workspace">Spectra Workplace</Link>
+          <Link href="/journal">The Spectra Journal</Link>
+        </div>
+        <div>
+          <span>CONNECT</span>
+          <Link href="/contact">Contact</Link>
+          {SOCIALS.map((social) => (
+            <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer">
+              {social.label}
+            </a>
+          ))}
+        </div>
+        <div>
+          <span>COMPANY</span>
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
+        </div>
+        <div>
+          <span>MEDIA</span>
+          <Link href="/newsroom">News</Link>
+          <Link href="/research">Research &amp; Insights</Link>
+          <Link href="/journal">The Journal</Link>
+        </div>
       </div>
       <div className="footer-newsletter"><span>NEWSLETTER / MONTHLY</span><NewsletterForm /></div>
-      <div className="footer-bottom"><span>© 2026 SPECTRA TECHNOLOGIES</span><span>PRIVACY / TERMS</span></div>
+      <div className="footer-bottom">
+        <span>© 2026 SPECTRA TECHNOLOGIES</span>
+        <span className="footer-legal">
+          <Link href="/privacy">Privacy</Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/terms">Terms</Link>
+        </span>
+      </div>
     </footer>
   )
 }
