@@ -4,7 +4,10 @@ import { ReportsService } from './reports.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthenticatedUser,
+} from '../auth/decorators/current-user.decorator';
 
 @Controller('reports')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -30,22 +33,31 @@ export class ReportsController {
 
   @Get('site/:siteId/weekly/pdf')
   @Roles('ADMIN')
-  async getWeeklySiteReport(@Param('siteId') siteId: string, @Res() res: Response) {
+  async getWeeklySiteReport(
+    @Param('siteId') siteId: string,
+    @Res() res: Response,
+  ) {
     const pdf = await this.reportsService.generateWeeklySiteReport(siteId);
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=weekly-report-${siteId}.pdf`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=weekly-report-${siteId}.pdf`,
+    );
     res.send(pdf);
   }
 
   @Post('generate-all')
   @Roles('ADMIN')
-  async generateAllDailyReports(@CurrentUser() user: any) {
+  async generateAllDailyReports(@CurrentUser() user: AuthenticatedUser) {
     return this.reportsService.generateAllDailyReports(user.organizationId);
   }
 
   @Get('guard/:guardId/daily')
   @Roles('ADMIN')
-  async getGuardDailyReport(@Param('guardId') guardId: string, @Res() res: Response) {
+  async getGuardDailyReport(
+    @Param('guardId') guardId: string,
+    @Res() res: Response,
+  ) {
     const pdf = await this.reportsService.generateGuardDailyReport(guardId);
     res.set({
       'Content-Type': 'application/pdf',
@@ -56,7 +68,10 @@ export class ReportsController {
 
   @Get('client/:clientId/pdf')
   @Roles('ADMIN')
-  async getClientSummary(@Param('clientId') clientId: string, @Res() res: Response) {
+  async getClientSummary(
+    @Param('clientId') clientId: string,
+    @Res() res: Response,
+  ) {
     const pdf = await this.reportsService.generateClientSummary(clientId);
     res.set({
       'Content-Type': 'application/pdf',

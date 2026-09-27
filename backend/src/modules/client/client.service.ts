@@ -180,16 +180,18 @@ export class ClientService {
     });
 
     // Write audit log (fire-and-forget)
-    this.prisma.auditLog.create({
-      data: {
-        userId: userId || '',
-        action: 'CLIENT_DELETED',
-        entity: 'Client',
-        entityId: id,
-        ipAddress: '',
-        userAgent: '',
-      },
-    }).catch(() => {});
+    this.prisma.auditLog
+      .create({
+        data: {
+          userId: userId || '',
+          action: 'CLIENT_DELETED',
+          entity: 'Client',
+          entityId: id,
+          ipAddress: '',
+          userAgent: '',
+        },
+      })
+      .catch(() => {});
 
     return result;
   }

@@ -1,0 +1,303 @@
+### src\common\mail\mailer.service.ts
+  89:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  89:17  @typescript-eslint/no-require-imports  A `require()` style import is forbidden.
+  90:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  90:17  @typescript-eslint/no-require-imports  A `require()` style import is forbidden.
+  93:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  94:9  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  94:13  @typescript-eslint/no-unsafe-member-access  Unsafe member access .connect on an `any` value.
+  95:9  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  95:13  @typescript-eslint/no-unsafe-member-access  Unsafe member access .connect on an `any` value.
+  114:19  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  114:31  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  114:35  @typescript-eslint/no-unsafe-member-access  Unsafe member access .connect on an `any` value.
+  118:13  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  118:23  @typescript-eslint/no-unsafe-member-access  Unsafe member access .once on an `any` value.
+  118:59  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `TLSSocket | PromiseLike<TLSSocket>`.
+  119:13  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  119:23  @typescript-eslint/no-unsafe-member-access  Unsafe member access .once on an `any` value.
+  146:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  146:21  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  146:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .command on an `any` value.
+  147:10  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  147:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .startsWith on an `any` value.
+  150:13  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  150:23  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  150:31  @typescript-eslint/no-unsafe-member-access  Unsafe member access .command on an `any` value.
+  151:12  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  151:14  @typescript-eslint/no-unsafe-member-access  Unsafe member access .startsWith on an `any` value.
+  154:11  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  154:19  @typescript-eslint/no-unsafe-member-access  Unsafe member access .command on an `any` value.
+  155:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  155:21  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  155:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .command on an `any` value.
+  156:10  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  156:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .startsWith on an `any` value.
+  172:11  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  172:19  @typescript-eslint/no-unsafe-member-access  Unsafe member access .command on an `any` value.
+  174:13  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  174:26  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  174:34  @typescript-eslint/no-unsafe-member-access  Unsafe member access .command on an `any` value.
+  175:12  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  175:17  @typescript-eslint/no-unsafe-member-access  Unsafe member access .startsWith on an `any` value.
+  177:11  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  177:19  @typescript-eslint/no-unsafe-member-access  Unsafe member access .command on an `any` value.
+  195:3  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  195:11  @typescript-eslint/no-unsafe-member-access  Unsafe member access .socket on an `any` value.
+
+### src\main.ts
+  39:59  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>`.
+  39:64  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `Response<any, Record<string, any>>`.
+  39:69  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `NextFunction`.
+  46:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  46:26  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  46:30  @typescript-eslint/no-unsafe-member-access  Unsafe member access .json on an `any` value.
+  50:9  @typescript-eslint/no-unsafe-member-access  Unsafe member access .json on an `any` value.
+  51:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  52:7  @typescript-eslint/no-unsafe-return  Unsafe return of a value of type `any`.
+  52:14  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  55:5  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  55:9  @typescript-eslint/no-unsafe-member-access  Unsafe member access .on on an `any` value.
+  56:13  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  65:18  @typescript-eslint/no-unsafe-member-access  Unsafe member access .method on an `any` value.
+  65:32  @typescript-eslint/no-unsafe-member-access  Unsafe member access .originalUrl on an `any` value.
+  66:45  @typescript-eslint/no-unsafe-member-access  Unsafe member access .stack on an `any` value.
+  70:18  @typescript-eslint/no-unsafe-member-access  Unsafe member access .method on an `any` value.
+  70:32  @typescript-eslint/no-unsafe-member-access  Unsafe member access .originalUrl on an `any` value.
+  74:18  @typescript-eslint/no-unsafe-member-access  Unsafe member access .method on an `any` value.
+  74:32  @typescript-eslint/no-unsafe-member-access  Unsafe member access .originalUrl on an `any` value.
+  78:5  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  102:1  @typescript-eslint/no-floating-promises  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+
+### src\modules\attendance\attendance.service.ts
+  333:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .siteId on an `any` value.
+  334:30  @typescript-eslint/no-unsafe-member-access  Unsafe member access .guardId on an `any` value.
+  340:13  @typescript-eslint/no-unsafe-member-access  Unsafe member access .createdAt on an `any` value.
+  345:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  354:38  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  370:28  @typescript-eslint/no-unsafe-member-access  Unsafe member access .siteId on an `any` value.
+  376:13  @typescript-eslint/no-unsafe-member-access  Unsafe member access .createdAt on an `any` value.
+  380:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  400:24  @typescript-eslint/no-base-to-string  'v ?? ''' will use Object's default stringification format ('[object Object]') when stringified.
+
+### src\modules\attendance\dto\attendance.dto.ts
+  1:20  @typescript-eslint/no-unused-vars  'IsNotEmpty' is defined but never used.
+
+### src\modules\audit\audit.interceptor.ts
+  20:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  21:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  21:25  @typescript-eslint/no-unsafe-member-access  Unsafe member access .method on an `any` value.
+  22:65  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `string`.
+  26:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  26:24  @typescript-eslint/no-unsafe-member-access  Unsafe member access .route on an `any` value.
+  26:44  @typescript-eslint/no-unsafe-member-access  Unsafe member access .url on an `any` value.
+  27:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  28:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .params on an `any` value.
+  29:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .params on an `any` value.
+  30:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .params on an `any` value.
+  31:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .params on an `any` value.
+  32:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .params on an `any` value.
+  37:15  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  38:21  @typescript-eslint/no-unsafe-member-access  Unsafe member access .id on an `any` value.
+  39:21  @typescript-eslint/no-unsafe-member-access  Unsafe member access .data on an `any` value.
+  40:51  @typescript-eslint/no-unsafe-member-access  Unsafe member access .id on an `any` value.
+  41:9  @typescript-eslint/no-floating-promises  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.
+  42:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  42:24  @typescript-eslint/no-unsafe-member-access  Unsafe member access .user on an `any` value.
+  43:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  44:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  45:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  46:24  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  46:35  @typescript-eslint/no-unsafe-member-access  Unsafe member access .body on an `any` value.
+  47:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  47:27  @typescript-eslint/no-unsafe-member-access  Unsafe member access .ip on an `any` value.
+  48:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  48:22  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  48:27  @typescript-eslint/no-unsafe-member-access  Unsafe member access .get on an `any` value.
+
+### src\modules\auth\auth.controller.ts
+  151:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  152:51  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `string`.
+  176:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  177:44  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `string | undefined`.
+
+### src\modules\auth\auth.service.ts
+  156:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  162:19  @typescript-eslint/no-unsafe-member-access  Unsafe member access .tfa on an `any` value.
+  167:16  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  167:28  @typescript-eslint/no-unsafe-member-access  Unsafe member access .sub on an `any` value.
+  288:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .firstName on an `any` value.
+  289:28  @typescript-eslint/no-unsafe-member-access  Unsafe member access .lastName on an `any` value.
+  290:25  @typescript-eslint/no-unsafe-member-access  Unsafe member access .phone on an `any` value.
+  291:42  @typescript-eslint/no-unsafe-member-access  Unsafe member access .photoUrl on an `any` value.
+  299:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .email on an `any` value.
+  304:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+
+### src\modules\auth\guards\jwt-auth.guard.ts
+  14:38  @typescript-eslint/no-unused-vars  'info' is defined but never used.
+  21:5  @typescript-eslint/no-unsafe-return  Unsafe return of a value of type `any`.
+
+### src\modules\auth\guards\roles.guard.ts
+  14:40  @typescript-eslint/no-redundant-type-constituents  "ADMIN" is overridden by string in this union type.
+  14:50  @typescript-eslint/no-redundant-type-constituents  "EMPLOYEE" is overridden by string in this union type.
+  34:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  35:24  @typescript-eslint/no-unsafe-member-access  Unsafe member access .role on an `any` value.
+  40:51  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `string`.
+  40:56  @typescript-eslint/no-unsafe-member-access  Unsafe member access .role on an `any` value.
+
+### src\modules\auth\jwt.strategy.ts
+  13:27  @typescript-eslint/no-unsafe-return  Unsafe return of a value of type `any`.
+
+### src\modules\auth\tfa.service.ts
+  134:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+
+### src\modules\client\client.service.ts
+  21:36  @typescript-eslint/no-unsafe-member-access  Unsafe member access .billingStatus on an `any` value.
+  23:13  @typescript-eslint/no-unsafe-member-access  Unsafe member access .OR on an `any` value.
+  32:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  38:34  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  49:31  @typescript-eslint/no-unsafe-member-access  Unsafe member access .organizationId on an `any` value.
+  51:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  138:31  @typescript-eslint/no-unsafe-member-access  Unsafe member access .contractEnd on an `any` value.
+  139:55  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+
+### src\modules\dashboard\dashboard.service.ts
+  382:11  @typescript-eslint/no-unused-vars  'siteMap' is assigned a value but never used.
+
+### src\modules\guard\dto\guard.dto.ts
+  8:3  @typescript-eslint/no-unused-vars  'IsUUID' is defined but never used.
+
+### src\modules\guard\guard.controller.ts
+  107:3  @typescript-eslint/require-await  Async method 'importTemplate' has no 'await' expression.
+
+### src\modules\guard\guard.service.ts
+  112:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .status on an `any` value.
+  113:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .assignedSiteId on an `any` value.
+  115:13  @typescript-eslint/no-unsafe-member-access  Unsafe member access .OR on an `any` value.
+  124:15  @typescript-eslint/no-unsafe-member-access  Unsafe member access [query.sortBy] on an `any` value.
+  126:15  @typescript-eslint/no-unsafe-member-access  Unsafe member access .createdAt on an `any` value.
+  131:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  134:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  137:33  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  217:31  @typescript-eslint/no-unsafe-member-access  Unsafe member access .organizationId on an `any` value.
+  219:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  264:54  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  338:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  346:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  349:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  349:46  @typescript-eslint/no-unsafe-member-access  Unsafe member access .verifiedBy on an `any` value.
+  471:13  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  602:31  @typescript-eslint/no-unused-vars  'organizationId' is defined but never used.
+
+### src\modules\incident\incident.service.spec.ts
+  107:31  @typescript-eslint/no-unsafe-member-access  Unsafe member access .reportedAt on an `any` value.
+  141:21  @typescript-eslint/no-unsafe-member-access  Unsafe member access .where on an `any` value.
+  142:21  @typescript-eslint/no-unsafe-member-access  Unsafe member access .where on an `any` value.
+  147:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+
+### src\modules\incident\incident.service.ts
+  69:68  @typescript-eslint/no-unsafe-member-access  Unsafe member access .message on an `any` value.
+  96:65  @typescript-eslint/no-unsafe-member-access  Unsafe member access .message on an `any` value.
+  128:25  @typescript-eslint/no-unsafe-member-access  Unsafe member access .title on an `any` value.
+  129:31  @typescript-eslint/no-unsafe-member-access  Unsafe member access .description on an `any` value.
+  130:24  @typescript-eslint/no-unsafe-member-access  Unsafe member access .incidentType on an `any` value.
+  131:28  @typescript-eslint/no-unsafe-member-access  Unsafe member access .severity on an `any` value.
+  132:26  @typescript-eslint/no-unsafe-member-access  Unsafe member access .siteId on an `any` value.
+  134:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .status on an `any` value.
+  135:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .investigationStatus on an `any` value.
+  138:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .resolutionNotes on an `any` value.
+  139:46  @typescript-eslint/no-unsafe-member-access  Unsafe member access .actionsTaken on an `any` value.
+  140:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .photos on an `any` value.
+  142:12  @typescript-eslint/no-unsafe-member-access  Unsafe member access .guardsInvolved on an `any` value.
+  144:57  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  328:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .siteId on an `any` value.
+  329:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .status on an `any` value.
+  330:27  @typescript-eslint/no-unsafe-member-access  Unsafe member access .incidentType on an `any` value.
+  332:13  @typescript-eslint/no-unsafe-member-access  Unsafe member access .OR on an `any` value.
+  341:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  356:36  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+
+### src\modules\napoleon\napoleon.service.ts
+  172:13  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  173:19  @typescript-eslint/no-unsafe-return  Unsafe return of a value of type `any`.
+  173:40  @typescript-eslint/no-unsafe-member-access  Computed name [i.severity] resolves to an `any` value.
+  173:42  @typescript-eslint/no-unsafe-member-access  Unsafe member access .severity on an `any` value.
+  179:38  @typescript-eslint/no-unsafe-member-access  Unsafe member access .isLate on an `any` value.
+  179:50  @typescript-eslint/no-unsafe-member-access  Unsafe member access .status on an `any` value.
+  188:18  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `number`.
+  201:53  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`.
+  201:55  @typescript-eslint/no-unsafe-member-access  Unsafe member access .reportedAt on an `any` value.
+  202:13  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  203:26  @typescript-eslint/no-unsafe-return  Unsafe return of a value of type `any`.
+  203:42  @typescript-eslint/no-unsafe-member-access  Computed name [best] resolves to an `any` value.
+  213:51  @typescript-eslint/no-unsafe-member-access  Unsafe member access .status on an `any` value.
+  216:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  216:39  @typescript-eslint/no-unsafe-member-access  Computed name [peakHour] resolves to an `any` value.
+  324:3  @typescript-eslint/require-await  Async method 'buildInsights' has no 'await' expression.
+  339:48  @typescript-eslint/no-unsafe-member-access  Unsafe member access .status on an `any` value.
+  379:26  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`.
+  379:28  @typescript-eslint/no-unsafe-member-access  Unsafe member access .reportedAt on an `any` value.
+  399:17  @typescript-eslint/no-unsafe-member-access  Unsafe member access .performanceScore on an `any` value.
+
+### src\modules\notifications\notifications.service.ts
+  91:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  92:26  @typescript-eslint/no-unsafe-member-access  Unsafe member access .organizationId on an `any` value.
+  92:57  @typescript-eslint/no-unsafe-member-access  Unsafe member access .site on an `any` value.
+  103:37  @typescript-eslint/no-unsafe-member-access  Unsafe member access .title on an `any` value.
+  103:59  @typescript-eslint/no-unsafe-member-access  Unsafe member access .type on an `any` value.
+  104:27  @typescript-eslint/no-unsafe-member-access  Unsafe member access .severity on an `any` value.
+  104:58  @typescript-eslint/no-unsafe-member-access  Unsafe member access .type on an `any` value.
+  104:93  @typescript-eslint/no-unsafe-member-access  Unsafe member access .siteName on an `any` value.
+  104:127  @typescript-eslint/no-unsafe-member-access  Unsafe member access .description on an `any` value.
+  104:167  @typescript-eslint/no-unsafe-member-access  Unsafe member access .description on an `any` value.
+  106:24  @typescript-eslint/no-unsafe-member-access  Unsafe member access .incidentId on an `any` value.
+  107:42  @typescript-eslint/no-unsafe-member-access  Unsafe member access .incidentId on an `any` value.
+  110:65  @typescript-eslint/no-unsafe-member-access  Unsafe member access .message on an `any` value.
+
+### src\modules\patrol\patrol.service.ts
+  239:30  @typescript-eslint/no-unsafe-member-access  Unsafe member access .guardId on an `any` value.
+  240:23  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  240:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .route on an `any` value.
+  240:48  @typescript-eslint/no-unsafe-member-access  Unsafe member access .route on an `any` value.
+  244:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  259:40  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+
+### src\modules\push\push.service.ts
+  70:15  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  71:20  @typescript-eslint/no-unsafe-member-access  Unsafe member access .publicKey on an `any` value.
+  71:40  @typescript-eslint/no-unsafe-member-access  Unsafe member access .privateKey on an `any` value.
+  71:52  @typescript-eslint/no-unsafe-return  Unsafe return of a value of type `any`.
+
+### src\modules\realtime\realtime.controller.ts
+  29:3  @typescript-eslint/require-await  Async method 'stream' has no 'await' expression.
+  36:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  56:7  @typescript-eslint/no-unsafe-argument  Unsafe argument of type `any` assigned to a parameter of type `string`.
+  56:15  @typescript-eslint/no-unsafe-member-access  Unsafe member access .organizationId on an `any` value.
+  58:28  @typescript-eslint/restrict-template-expressions  Invalid type "unknown" of template literal expression.
+  68:58  @typescript-eslint/no-unsafe-member-access  Unsafe member access .organizationId on an `any` value.
+
+### src\modules\reports\reports.service.ts
+  25:7  @typescript-eslint/no-unused-vars  'todayIncidents' is assigned a value but never used.
+  243:11  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  243:22  @typescript-eslint/no-unsafe-member-access  Unsafe member access .message on an `any` value.
+
+### src\modules\site\site.service.ts
+  22:32  @typescript-eslint/no-unsafe-member-access  Unsafe member access .riskLevel on an `any` value.
+  23:31  @typescript-eslint/no-unsafe-member-access  Unsafe member access .clientId on an `any` value.
+  25:13  @typescript-eslint/no-unsafe-member-access  Unsafe member access .OR on an `any` value.
+  33:9  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  42:32  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  53:31  @typescript-eslint/no-unsafe-member-access  Unsafe member access .organizationId on an `any` value.
+  55:7  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  94:53  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+
+### src\modules\uploads\cloudinary.service.ts
+  51:29  @typescript-eslint/prefer-promise-reject-errors  Expected the Promise rejection reason to be an Error.
+  56:13  @typescript-eslint/no-unsafe-assignment  Unsafe assignment of an `any` value.
+  56:28  @typescript-eslint/no-require-imports  A `require()` style import is forbidden.
+  57:7  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  57:7  @typescript-eslint/no-unsafe-call  Unsafe call of an `any` typed value.
+  57:16  @typescript-eslint/no-unsafe-member-access  Unsafe member access .from on an `any` value.
+  57:29  @typescript-eslint/no-unsafe-member-access  Unsafe member access .pipe on an `any` value.
+  67:14  @typescript-eslint/no-unused-vars  'error' is defined but never used.
+

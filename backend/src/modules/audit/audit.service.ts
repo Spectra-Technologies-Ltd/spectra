@@ -60,7 +60,9 @@ export class AuditService {
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
-        include: { user: { select: { firstName: true, lastName: true, email: true } } },
+        include: {
+          user: { select: { firstName: true, lastName: true, email: true } },
+        },
       }),
     ]);
 

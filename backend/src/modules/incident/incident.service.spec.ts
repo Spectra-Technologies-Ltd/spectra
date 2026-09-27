@@ -6,6 +6,7 @@ import {
 import { IncidentService } from './incident.service';
 import { PrismaService } from '../../database/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { RealtimeService } from '../realtime/realtime.service';
 
 function dateKey(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -51,6 +52,12 @@ describe('IncidentService', () => {
             sendAttendanceReport: jest.fn(),
           },
         },
+        // IncidentService publishes to the realtime stream as well as creating
+        // notifications; the spec predated that dependency.
+        {
+          provide: RealtimeService,
+          useValue: { publish: jest.fn(), subscribe: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -86,7 +93,9 @@ describe('IncidentService', () => {
       expect(result.dailyBreakdown).toHaveLength(7);
       expect(result.dailyBreakdown[6].date).toBe(todayKey());
       for (let i = 1; i < result.dailyBreakdown.length; i++) {
-        expect(result.dailyBreakdown[i].date > result.dailyBreakdown[i - 1].date).toBe(true);
+        expect(
+          result.dailyBreakdown[i].date > result.dailyBreakdown[i - 1].date,
+        ).toBe(true);
       }
     });
 
@@ -107,7 +116,9 @@ describe('IncidentService', () => {
       expect(result.dailyBreakdown).toHaveLength(3);
       expect(result.dailyBreakdown[0].date).toBe(dateKey(startDate));
       expect(result.dailyBreakdown[2].date).toBe(dateKey(endDate));
-      expect(result.dailyBreakdown.every((d: { count: number }) => d.count === 1)).toBe(true);
+      expect(
+        result.dailyBreakdown.every((d: { count: number }) => d.count === 1),
+      ).toBe(true);
     });
 
     it('caps the daily time-series at 31 days', async () => {
@@ -164,9 +175,7 @@ describe('IncidentService', () => {
     });
 
     it('wraps database failures in an InternalServerErrorException', async () => {
-      prismaMock.incident.count.mockRejectedValue(
-        new Error('db unavailable'),
-      );
+      prismaMock.incident.count.mockRejectedValue(new Error('db unavailable'));
 
       await expect(service.getMetrics({ organizationId })).rejects.toThrow(
         InternalServerErrorException,

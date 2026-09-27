@@ -3,6 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
+import { MailModule } from './common/mail/mail.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { GuardModule } from './modules/guard/guard.module';
 import { ClientModule } from './modules/client/client.module';
@@ -35,6 +36,7 @@ import { PushModule } from './modules/push/push.module';
       },
     }),
     DatabaseModule,
+    MailModule,
     AuthModule,
     GuardModule,
     ClientModule,

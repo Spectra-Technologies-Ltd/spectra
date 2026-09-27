@@ -52,7 +52,8 @@ function derToRawSignature(der: Buffer, size = 32): Buffer {
 export class PushService implements OnModuleInit {
   private readonly logger = new Logger(PushService.name);
   private vapid!: VapidKeys;
-  private readonly subject = process.env.VAPID_SUBJECT || 'mailto:ops@spectra.technology';
+  private readonly subject =
+    process.env.VAPID_SUBJECT || 'mailto:ops@spectra.technology';
 
   onModuleInit() {
     this.vapid = this.loadOrCreateKeys();
@@ -88,7 +89,9 @@ export class PushService implements OnModuleInit {
     try {
       writeFileSync(VAPID_KEYS_FILE, JSON.stringify(keys));
     } catch (err) {
-      this.logger.warn(`Could not persist VAPID keys: ${(err as Error).message}`);
+      this.logger.warn(
+        `Could not persist VAPID keys: ${(err as Error).message}`,
+      );
     }
     this.logger.log('Generated new VAPID keypair');
     return keys;
@@ -100,9 +103,15 @@ export class PushService implements OnModuleInit {
     const audience = `${url.protocol}//${url.host}`;
     const now = Math.floor(Date.now() / 1000);
 
-    const header = Buffer.from(JSON.stringify({ typ: 'JWT', alg: 'ES256' })).toString('base64url');
+    const header = Buffer.from(
+      JSON.stringify({ typ: 'JWT', alg: 'ES256' }),
+    ).toString('base64url');
     const claims = Buffer.from(
-      JSON.stringify({ aud: audience, exp: now + 12 * 3600, sub: this.subject }),
+      JSON.stringify({
+        aud: audience,
+        exp: now + 12 * 3600,
+        sub: this.subject,
+      }),
     ).toString('base64url');
 
     const sign = createSign('sha256');
@@ -135,10 +144,15 @@ export class PushService implements OnModuleInit {
   ): { body: Buffer; headers: Record<string, string> } {
     const uaPublic = Buffer.from(this.b64urlToB64(sub.p256dh), 'base64');
     const authSecret = Buffer.from(this.b64urlToB64(sub.auth), 'base64');
-    const asPublic = Buffer.from(this.b64urlToB64(this.vapid.publicKey), 'base64');
+    const asPublic = Buffer.from(
+      this.b64urlToB64(this.vapid.publicKey),
+      'base64',
+    );
 
     const ecdh = createECDH('prime256v1');
-    ecdh.setPrivateKey(Buffer.from(this.b64urlToB64(this.vapid.privateKey), 'base64'));
+    ecdh.setPrivateKey(
+      Buffer.from(this.b64urlToB64(this.vapid.privateKey), 'base64'),
+    );
     const sharedSecret = ecdh.computeSecret(uaPublic); // 32 bytes
 
     // HKDF (RFC 5869) with sha256 via hkdfSync
@@ -148,7 +162,9 @@ export class PushService implements OnModuleInit {
       uaPublic,
       asPublic,
     ]);
-    const ikm = Buffer.from(hkdfSync('sha256', sharedSecret, authSecret, authInfo, 32));
+    const ikm = Buffer.from(
+      hkdfSync('sha256', sharedSecret, authSecret, authInfo, 32),
+    );
 
     const keyInfo = Buffer.concat([
       Buffer.from('Content-Encoding: aes128gcm', 'utf8'),
@@ -156,7 +172,9 @@ export class PushService implements OnModuleInit {
       uaPublic,
       asPublic,
     ]);
-    const cek = Buffer.from(hkdfSync('sha256', ikm, Buffer.alloc(0), keyInfo, 16));
+    const cek = Buffer.from(
+      hkdfSync('sha256', ikm, Buffer.alloc(0), keyInfo, 16),
+    );
 
     const nonceInfo = Buffer.concat([
       Buffer.from('Content-Encoding: nonce', 'utf8'),
@@ -164,7 +182,9 @@ export class PushService implements OnModuleInit {
       uaPublic,
       asPublic,
     ]);
-    const nonce = Buffer.from(hkdfSync('sha256', ikm, Buffer.alloc(0), nonceInfo, 12));
+    const nonce = Buffer.from(
+      hkdfSync('sha256', ikm, Buffer.alloc(0), nonceInfo, 12),
+    );
 
     // aes128gcm record: first 2 bytes = padding length (BE), then that many
     // bytes of padding, then the plaintext. 16 bytes of padding minimum.
@@ -181,7 +201,12 @@ export class PushService implements OnModuleInit {
     const rs = 4096;
     const body = Buffer.concat([
       salt,
-      Buffer.from([(rs >>> 24) & 0xff, (rs >>> 16) & 0xff, (rs >>> 8) & 0xff, rs & 0xff]),
+      Buffer.from([
+        (rs >>> 24) & 0xff,
+        (rs >>> 16) & 0xff,
+        (rs >>> 8) & 0xff,
+        rs & 0xff,
+      ]),
       Buffer.from([asPublic.length]),
       asPublic,
       ciphertext,
@@ -203,9 +228,16 @@ export class PushService implements OnModuleInit {
    * Send a push notification to a single subscription. Returns the HTTP status
    * (0 on local error). A 404/410 means the subscription is dead.
    */
-  async send(sub: PushSubscriptionRow, title: string, body: string, url?: string): Promise<number> {
+  async send(
+    sub: PushSubscriptionRow,
+    title: string,
+    body: string,
+    url?: string,
+  ): Promise<number> {
     try {
-      const payload = Buffer.from(JSON.stringify({ title, body, url: url ?? '/', ts: Date.now() }));
+      const payload = Buffer.from(
+        JSON.stringify({ title, body, url: url ?? '/', ts: Date.now() }),
+      );
       const { body: encrypted, headers } = this.encryptPayload(sub, payload);
 
       const res = await fetch(sub.endpoint, {
@@ -223,7 +255,9 @@ export class PushService implements OnModuleInit {
       }
       if (res.status >= 400) {
         const text = await res.text().catch(() => '');
-        this.logger.warn(`Push send failed (${res.status}): ${text.slice(0, 200)}`);
+        this.logger.warn(
+          `Push send failed (${res.status}): ${text.slice(0, 200)}`,
+        );
       }
       return res.status;
     } catch (err) {

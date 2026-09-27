@@ -16,7 +16,10 @@ import { TfaService } from './tfa.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { CurrentUser } from './decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthenticatedUser,
+} from './decorators/current-user.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { PrismaService } from '../../database/prisma.service';
@@ -46,7 +49,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)
-  async createEmployee(@Body() dto: RegisterDto, @CurrentUser() user: any) {
+  async createEmployee(
+    @Body() dto: RegisterDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.authService.createEmployee(dto, user);
   }
 
@@ -83,7 +89,10 @@ export class AuthController {
     @Body() dto: { tfaToken: string; code: string },
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.authService.completeTfaLogin(dto.tfaToken, dto.code);
+    const result = await this.authService.completeTfaLogin(
+      dto.tfaToken,
+      dto.code,
+    );
 
     res.cookie('access_token', result.accessToken, {
       ...COOKIE_OPTIONS,
@@ -101,7 +110,7 @@ export class AuthController {
 
   @Get('tfa/status')
   @UseGuards(JwtAuthGuard)
-  async tfaStatus(@CurrentUser() user: any) {
+  async tfaStatus(@CurrentUser() user: AuthenticatedUser) {
     const record = await this.prisma.user.findUnique({
       where: { id: user.id },
       select: { twoFactorEnabled: true },
@@ -111,14 +120,14 @@ export class AuthController {
 
   @Post('tfa/enable')
   @UseGuards(JwtAuthGuard)
-  async tfaEnable(@CurrentUser() user: any) {
+  async tfaEnable(@CurrentUser() user: AuthenticatedUser) {
     return this.tfa.startEnrollment(user.id, user.email);
   }
 
   @Post('tfa/confirm')
   @UseGuards(JwtAuthGuard)
   async tfaConfirm(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Body() dto: { code: string },
   ) {
     return this.tfa.confirmEnrollment(user.id, dto.code);
@@ -127,7 +136,7 @@ export class AuthController {
   @Post('tfa/disable')
   @UseGuards(JwtAuthGuard)
   async tfaDisable(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Body() dto: { code: string },
   ) {
     return this.tfa.disable(user.id, dto.code);
@@ -160,7 +169,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async logout(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -179,15 +188,22 @@ export class AuthController {
   @Patch('me')
   @UseGuards(JwtAuthGuard)
   async updateProfile(
-    @CurrentUser() user: any,
-    @Body() dto: { firstName?: string; lastName?: string; phone?: string; email?: string; photoUrl?: string },
+    @CurrentUser() user: AuthenticatedUser,
+    @Body()
+    dto: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      email?: string;
+      photoUrl?: string;
+    },
   ) {
     return this.authService.updateProfile(user.id, dto);
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getMe(@CurrentUser() user: any) {
+  async getMe(@CurrentUser() user: AuthenticatedUser) {
     return this.authService.getMe(user.id);
   }
 }

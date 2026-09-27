@@ -1,13 +1,9 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthenticatedUser,
+} from '../auth/decorators/current-user.decorator';
 import { PrismaService } from '../../database/prisma.service';
 import { PushService } from './push.service';
 
@@ -26,16 +22,24 @@ export class PushController {
 
   @Post('subscribe')
   async subscribe(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Body()
     body: { endpoint: string; p256dh: string; auth: string },
   ) {
     if (!body?.endpoint || !body?.p256dh || !body?.auth) {
-      return { success: false, message: 'endpoint, p256dh and auth are required' };
+      return {
+        success: false,
+        message: 'endpoint, p256dh and auth are required',
+      };
     }
     const subscription = await this.prisma.pushSubscription.upsert({
       where: { endpoint: body.endpoint },
-      update: { p256dh: body.p256dh, auth: body.auth, userId: user.id, userAgent: body.endpoint.split('/')[2] },
+      update: {
+        p256dh: body.p256dh,
+        auth: body.auth,
+        userId: user.id,
+        userAgent: body.endpoint.split('/')[2],
+      },
       create: {
         userId: user.id,
         endpoint: body.endpoint,
@@ -49,12 +53,14 @@ export class PushController {
 
   @Delete('subscribe')
   async unsubscribe(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Body() body: { endpoint?: string },
   ) {
     if (!body?.endpoint) {
       // Remove all of the user's subscriptions
-      await this.prisma.pushSubscription.deleteMany({ where: { userId: user.id } });
+      await this.prisma.pushSubscription.deleteMany({
+        where: { userId: user.id },
+      });
       return { success: true };
     }
     await this.prisma.pushSubscription.deleteMany({

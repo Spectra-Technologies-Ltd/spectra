@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsInt, IsIn } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsInt,
+  IsIn,
+} from 'class-validator';
 
 export class CreateSiteDto {
   @IsString() @IsNotEmpty() name: string;
@@ -16,7 +23,10 @@ export class UpdateSiteDto {
   @IsString() @IsOptional() address?: string;
   @IsNumber() @IsOptional() latitude?: number;
   @IsNumber() @IsOptional() longitude?: number;
-  @IsString() @IsOptional() @IsIn(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']) riskLevel?: string;
+  @IsString()
+  @IsOptional()
+  @IsIn(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'])
+  riskLevel?: string;
   @IsInt() @IsOptional() targetGuards?: number;
   @IsString() @IsOptional() supervisorId?: string;
 }

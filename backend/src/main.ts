@@ -12,6 +12,18 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { mkdirSync, existsSync } from 'fs';
 import { SecurityMiddleware } from './common/security.middleware';
+import type { Request, Response, NextFunction } from 'express';
+
+/**
+ * Read a `.stack` string off a JSON error body without assuming its shape.
+ */
+function errorStack(body: unknown): string | undefined {
+  if (typeof body === 'object' && body !== null && 'stack' in body) {
+    const stack: unknown = body.stack;
+    return typeof stack === 'string' ? stack : undefined;
+  }
+  return undefined;
+}
 
 async function bootstrap() {
   // Ensure uploads directory exists
@@ -27,22 +39,29 @@ async function bootstrap() {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
 
+  // Behind a platform proxy (Render, Vercel, nginx) the socket address is the
+  // proxy. Trust the first hop so req.ip — used for rate limiting and lead
+  // attribution — is the real client address.
+  app.set('trust proxy', 1);
+
   app.use(cookieParser());
 
   // Security hardening: headers + auth rate limiting
   const security = new SecurityMiddleware();
-  app.use((req: any, res: any, next: any) => security.use(req, res, next));
+  app.use((req: Request, res: Response, next: NextFunction) =>
+    security.use(req, res, next),
+  );
   setInterval(() => security.prune(), 60 * 1000).unref();
 
   // Log all requests with full error details
   const httpLogger = new Logger('HTTP');
-  app.use((req: any, res: any, next: any) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     const start = Date.now();
     const originalJson = res.json.bind(res);
-    let responseBody: any = null;
+    let responseBody: unknown = null;
 
     // Intercept JSON responses to capture error details
-    res.json = (body: any) => {
+    res.json = (body: unknown) => {
       responseBody = body;
       return originalJson(body);
     };
@@ -50,16 +69,24 @@ async function bootstrap() {
     res.on('finish', () => {
       const { statusCode } = res;
       const ms = Date.now() - start;
-      const details = statusCode >= 400 && responseBody
-        ? ` | ${JSON.stringify(responseBody).substring(0, 200)}`
-        : '';
+      const details =
+        statusCode >= 400 && responseBody
+          ? ` | ${JSON.stringify(responseBody).substring(0, 200)}`
+          : '';
 
       if (statusCode >= 500) {
-        httpLogger.error(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)${details}`, statusCode >= 500 ? (responseBody as any)?.stack : undefined);
+        httpLogger.error(
+          `${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)${details}`,
+          statusCode >= 500 ? errorStack(responseBody) : undefined,
+        );
       } else if (statusCode >= 400) {
-        httpLogger.warn(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)${details}`);
+        httpLogger.warn(
+          `${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)${details}`,
+        );
       } else {
-        httpLogger.log(`${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)`);
+        httpLogger.log(
+          `${req.method} ${req.originalUrl} → ${statusCode} (${ms}ms)`,
+        );
       }
     });
     next();
@@ -86,4 +113,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3001);
 }
-bootstrap();
+void bootstrap();

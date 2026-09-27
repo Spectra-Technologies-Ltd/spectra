@@ -1,4 +1,9 @@
-import { Injectable, ConflictException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -18,7 +23,9 @@ export class AuthService {
   async register(dto: RegisterDto) {
     const userCount = await this.prisma.user.count();
     if (userCount > 0) {
-      throw new ForbiddenException('Public registration is disabled. Ask an admin to create your employee account.');
+      throw new ForbiddenException(
+        'Public registration is disabled. Ask an admin to create your employee account.',
+      );
     }
 
     const existing = await this.prisma.user.findUnique({
@@ -100,9 +107,7 @@ export class AuthService {
     return crypto.createHash('sha256').update(token).digest('hex');
   }
 
-  async login(
-    dto: LoginDto,
-  ): Promise<
+  async login(dto: LoginDto): Promise<
     | { requiresTwoFactor: true; tfaToken: string }
     | {
         requiresTwoFactor: false;
@@ -150,13 +155,17 @@ export class AuthService {
     try {
       payload = this.jwtService.verify(tfaToken);
     } catch {
-      throw new UnauthorizedException('2FA session expired — please sign in again');
+      throw new UnauthorizedException(
+        '2FA session expired — please sign in again',
+      );
     }
     if (!payload?.tfa) {
       throw new UnauthorizedException('Invalid 2FA token');
     }
 
-    const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+    });
     if (!user || !user.isActive) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -173,7 +182,12 @@ export class AuthService {
     firstName: string;
     lastName: string;
   }) {
-    const payload = { sub: user.id, email: user.email, role: user.role, organizationId: user.organizationId };
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      organizationId: user.organizationId,
+    };
     const accessToken = this.jwtService.sign(payload);
 
     // Generate and store refresh token
@@ -257,7 +271,16 @@ export class AuthService {
     }
   }
 
-  async updateProfile(userId: string, dto: { firstName?: string; lastName?: string; phone?: string; email?: string; photoUrl?: string }) {
+  async updateProfile(
+    userId: string,
+    dto: {
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+      email?: string;
+      photoUrl?: string;
+    },
+  ) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new UnauthorizedException('User not found');
 
@@ -267,7 +290,9 @@ export class AuthService {
     if (dto.phone) data.phone = dto.phone;
     if (dto.photoUrl !== undefined) data.photoUrl = dto.photoUrl;
     if (dto.email) {
-      const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
+      const existing = await this.prisma.user.findUnique({
+        where: { email: dto.email },
+      });
       if (existing && existing.id !== userId) {
         throw new ConflictException('Email already in use');
       }
@@ -278,7 +303,12 @@ export class AuthService {
       where: { id: userId },
       data,
       select: {
-        id: true, email: true, firstName: true, lastName: true, phone: true, role: true,
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        role: true,
       },
     });
   }
@@ -308,7 +338,9 @@ export class AuthService {
       },
     });
     if (!user) {
-      throw new UnauthorizedException('User session details could not be found');
+      throw new UnauthorizedException(
+        'User session details could not be found',
+      );
     }
     return user;
   }

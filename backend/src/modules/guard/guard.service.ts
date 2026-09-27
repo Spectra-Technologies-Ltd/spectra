@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../database/prisma.service';
 import {
@@ -16,7 +20,7 @@ const FIELD_ALIASES: Record<string, string> = {
   'national id': 'nin',
   phone: 'phone',
   'phone number': 'phone',
-  'mobile': 'phone',
+  mobile: 'phone',
   address: 'address',
   'emergency contact': 'emergencyContact',
   'next of kin': 'emergencyContact',
@@ -172,10 +176,8 @@ export class GuardService {
       const avgCompletion =
         g.patrolRecords.length > 0
           ? Math.round(
-              g.patrolRecords.reduce(
-                (s, p) => s + p.completionPercentage,
-                0,
-              ) / g.patrolRecords.length,
+              g.patrolRecords.reduce((s, p) => s + p.completionPercentage, 0) /
+                g.patrolRecords.length,
             )
           : 100;
       const score = Math.max(
@@ -250,7 +252,8 @@ export class GuardService {
         assignedSupervisorId: dto.assignedSupervisorId,
         trainingRecords: dto.trainingRecords || '[]',
         certificates: dto.certificates || '[]',
-        backgroundVerification: dto.backgroundVerification || '{"status":"PENDING"}',
+        backgroundVerification:
+          dto.backgroundVerification || '{"status":"PENDING"}',
         disciplinaryHistory: dto.disciplinaryHistory || '[]',
       },
     });
@@ -291,21 +294,26 @@ export class GuardService {
     });
 
     // Write audit log (fire-and-forget)
-    this.prisma.auditLog.create({
-      data: {
-        userId: userId || '',
-        action: 'GUARD_DELETED',
-        entity: 'Guard',
-        entityId: id,
-        ipAddress: '',
-        userAgent: '',
-      },
-    }).catch(() => {});
+    this.prisma.auditLog
+      .create({
+        data: {
+          userId: userId || '',
+          action: 'GUARD_DELETED',
+          entity: 'Guard',
+          entityId: id,
+          ipAddress: '',
+          userAgent: '',
+        },
+      })
+      .catch(() => {});
 
     return result;
   }
 
-  async bulkAssign(dto: { siteId: string; guardIds: string[] }, organizationId: string) {
+  async bulkAssign(
+    dto: { siteId: string; guardIds: string[] },
+    organizationId: string,
+  ) {
     const site = await this.prisma.site.findFirst({
       where: { id: dto.siteId, organizationId },
     });
@@ -316,12 +324,25 @@ export class GuardService {
       data: { assignedSiteId: dto.siteId },
     });
 
-    return { message: `${dto.guardIds.length} guards assigned to ${site.name}` };
+    return {
+      message: `${dto.guardIds.length} guards assigned to ${site.name}`,
+    };
   }
 
-  async updateVerification(id: string, dto: { status: string; verifiedBy?: string; date?: string }, organizationId: string) {
+  async updateVerification(
+    id: string,
+    dto: { status: string; verifiedBy?: string; date?: string },
+    organizationId: string,
+  ) {
     await this.findOne(id, organizationId);
-    const existing = JSON.parse((await this.prisma.guard.findUnique({ where: { id }, select: { backgroundVerification: true } }))?.backgroundVerification || '{}');
+    const existing = JSON.parse(
+      (
+        await this.prisma.guard.findUnique({
+          where: { id },
+          select: { backgroundVerification: true },
+        })
+      )?.backgroundVerification || '{}',
+    );
     const updated = {
       ...existing,
       status: dto.status,
@@ -359,7 +380,7 @@ export class GuardService {
       },
     });
 
-    return guards.map(g => ({
+    return guards.map((g) => ({
       id: g.id,
       fullName: g.fullName,
       status: g.status,
@@ -420,7 +441,9 @@ export class GuardService {
       where: { organizationId },
       select: { id: true, name: true },
     });
-    const siteByName = new Map(sites.map((s) => [s.name.toLowerCase().trim(), s.id]));
+    const siteByName = new Map(
+      sites.map((s) => [s.name.toLowerCase().trim(), s.id]),
+    );
 
     const pushError = (row: number, reason: string) => {
       if (errors.length < maxErrors) errors.push({ row, reason });
@@ -434,7 +457,9 @@ export class GuardService {
         const fullName = String(raw.fullName ?? '').trim();
         const nin = String(raw.nin ?? '').trim();
         const phone = String(raw.phone ?? '').trim();
-        const email = String(raw.email ?? '').trim().toLowerCase();
+        const email = String(raw.email ?? '')
+          .trim()
+          .toLowerCase();
 
         if (!fullName || !nin || !phone) {
           pushError(rowNo, 'fullName, nin and phone are required');
@@ -465,10 +490,14 @@ export class GuardService {
           }
         }
 
-        const status = ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'ON_LEAVE'].includes(String(raw.status ?? '').toUpperCase())
+        const status = ['ACTIVE', 'INACTIVE', 'SUSPENDED', 'ON_LEAVE'].includes(
+          String(raw.status ?? '').toUpperCase(),
+        )
           ? String(raw.status).toUpperCase()
           : 'ACTIVE';
-        const shift = ['DAY', 'NIGHT', 'OFF'].includes(String(raw.currentShift ?? '').toUpperCase())
+        const shift = ['DAY', 'NIGHT', 'OFF'].includes(
+          String(raw.currentShift ?? '').toUpperCase(),
+        )
           ? String(raw.currentShift).toUpperCase()
           : 'DAY';
         const employmentDate = raw.employmentDate
@@ -484,10 +513,12 @@ export class GuardService {
           fullName,
           phone,
           address: String(raw.address ?? '').trim() || 'Not provided',
-          emergencyContact: String(raw.emergencyContact ?? '').trim() || 'Not provided',
+          emergencyContact:
+            String(raw.emergencyContact ?? '').trim() || 'Not provided',
           nin,
           bvn: String(raw.bvn ?? '').trim() || undefined,
-          guarantorDetails: String(raw.guarantorDetails ?? '').trim() || 'Not provided',
+          guarantorDetails:
+            String(raw.guarantorDetails ?? '').trim() || 'Not provided',
           employmentDate,
           status,
           currentShift: shift,
@@ -525,9 +556,11 @@ export class GuardService {
           if (used) {
             pushError(rowNo, `Email ${email} already in use — account skipped`);
           } else {
-            const password = String(raw.password ?? '').trim() || `Bastion@${nin.slice(-4)}`;
+            const password =
+              String(raw.password ?? '').trim() || `Bastion@${nin.slice(-4)}`;
             const firstName = fullName.split(' ')[0] || 'Guard';
-            const lastName = fullName.split(' ').slice(1).join(' ') || 'Personnel';
+            const lastName =
+              fullName.split(' ').slice(1).join(' ') || 'Personnel';
             const passwordHash = await bcrypt.hash(password, 10);
             const user = await this.prisma.user.create({
               data: {
@@ -569,10 +602,16 @@ export class GuardService {
   importFromCsv(text: string, organizationId: string) {
     const table = parseCsv(text);
     if (table.length < 2) {
-      throw new BadRequestException('CSV must contain a header row and at least one data row');
+      throw new BadRequestException(
+        'CSV must contain a header row and at least one data row',
+      );
     }
     const headers = mapHeaders(table[0]);
-    if (!headers.includes('fullName') || !headers.includes('nin') || !headers.includes('phone')) {
+    if (
+      !headers.includes('fullName') ||
+      !headers.includes('nin') ||
+      !headers.includes('phone')
+    ) {
       throw new BadRequestException(
         'CSV must include "Full Name", "NIN" and "Phone" columns (see the template)',
       );
@@ -620,7 +659,10 @@ export class GuardService {
       'john.okafor@example.com',
       'Bastion@0001',
     ];
-    const escape = (v: string) => (/[,"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
-    return [header.map(escape).join(','), example.map(escape).join(',')].join('\r\n');
+    const escape = (v: string) =>
+      /[,"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    return [header.map(escape).join(','), example.map(escape).join(',')].join(
+      '\r\n',
+    );
   }
 }

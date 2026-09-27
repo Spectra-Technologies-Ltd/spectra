@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Queue, Job } from 'bullmq';
 import { PrismaService } from '../../database/prisma.service';
-import { MailerService } from './mailer.service';
+import { MailerService } from '../../common/mail/mailer.service';
 import { NotificationsService } from '../notifications/notifications.service';
 
 /**
@@ -36,9 +36,13 @@ export class ReportScheduler implements OnModuleInit {
         { pattern: '0 7 * * 1' },
         { name: 'weekly-digest', data: {}, opts: { removeOnComplete: 100 } },
       );
-      this.logger.log('Report schedulers registered (daily 06:00, weekly Mon 07:00)');
+      this.logger.log(
+        'Report schedulers registered (daily 06:00, weekly Mon 07:00)',
+      );
     } catch (err) {
-      this.logger.warn(`Could not register report schedulers: ${(err as Error).message}`);
+      this.logger.warn(
+        `Could not register report schedulers: ${(err as Error).message}`,
+      );
     }
   }
 }
@@ -78,29 +82,51 @@ export class ReportsProcessor extends WorkerHost {
 
     for (const org of organizations) {
       try {
-        const [incidents, attendance, guards, patrolRecords] = await Promise.all([
-          this.prisma.incident.findMany({
-            where: { site: { organizationId: org.id }, reportedAt: { gte: since } },
-            select: { title: true, severity: true, status: true, site: { select: { name: true } }, reportedAt: true },
-            orderBy: { reportedAt: 'desc' },
-          }),
-          this.prisma.attendance.findMany({
-            where: { guard: { organizationId: org.id }, createdAt: { gte: since } },
-            select: { isLate: true, isAbsent: true, status: true },
-          }),
-          this.prisma.guard.findMany({
-            where: { organizationId: org.id, status: 'ACTIVE' },
-            select: { fullName: true, performanceScore: true },
-          }),
-          this.prisma.patrolRecord.findMany({
-            where: { guard: { organizationId: org.id }, createdAt: { gte: since } },
-            select: { completionPercentage: true },
-          }),
-        ]);
+        const [incidents, attendance, guards, patrolRecords] =
+          await Promise.all([
+            this.prisma.incident.findMany({
+              where: {
+                site: { organizationId: org.id },
+                reportedAt: { gte: since },
+              },
+              select: {
+                title: true,
+                severity: true,
+                status: true,
+                site: { select: { name: true } },
+                reportedAt: true,
+              },
+              orderBy: { reportedAt: 'desc' },
+            }),
+            this.prisma.attendance.findMany({
+              where: {
+                guard: { organizationId: org.id },
+                createdAt: { gte: since },
+              },
+              select: { isLate: true, isAbsent: true, status: true },
+            }),
+            this.prisma.guard.findMany({
+              where: { organizationId: org.id, status: 'ACTIVE' },
+              select: { fullName: true, performanceScore: true },
+            }),
+            this.prisma.patrolRecord.findMany({
+              where: {
+                guard: { organizationId: org.id },
+                createdAt: { gte: since },
+              },
+              select: { completionPercentage: true },
+            }),
+          ]);
 
-        const lateCount = attendance.filter((a) => a.isLate || a.status === 'FLAGGED').length;
-        const absentCount = attendance.filter((a) => a.isAbsent || a.status === 'ABSENT').length;
-        const openIncidents = incidents.filter((i) => i.status === 'OPEN').length;
+        const lateCount = attendance.filter(
+          (a) => a.isLate || a.status === 'FLAGGED',
+        ).length;
+        const absentCount = attendance.filter(
+          (a) => a.isAbsent || a.status === 'ABSENT',
+        ).length;
+        const openIncidents = incidents.filter(
+          (i) => i.status === 'OPEN',
+        ).length;
         const avgPatrol =
           patrolRecords.length === 0
             ? 100
@@ -150,7 +176,11 @@ export class ReportsProcessor extends WorkerHost {
 
         // Always mirror a summary into in-app notifications for staff
         const staff = await this.prisma.user.findMany({
-          where: { organizationId: org.id, role: { in: ['CEO', 'OPERATIONS_MANAGER', 'HR'] }, isActive: true },
+          where: {
+            organizationId: org.id,
+            role: { in: ['CEO', 'OPERATIONS_MANAGER', 'HR'] },
+            isActive: true,
+          },
           select: { id: true },
         });
         for (const user of staff) {
@@ -168,7 +198,9 @@ export class ReportsProcessor extends WorkerHost {
 
         this.logger.log(`Digest generated for ${org.name}`);
       } catch (err) {
-        this.logger.error(`Digest failed for ${org.id}: ${(err as Error).message}`);
+        this.logger.error(
+          `Digest failed for ${org.id}: ${(err as Error).message}`,
+        );
       }
     }
   }

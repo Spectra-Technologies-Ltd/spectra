@@ -16,7 +16,10 @@ import { CreateClientDto, UpdateClientDto } from './dto/client.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthenticatedUser,
+} from '../auth/decorators/current-user.decorator';
 
 @Controller('clients')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -26,7 +29,7 @@ export class ClientController {
   @Get()
   @Roles('ADMIN')
   async findAll(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('search') search?: string,
@@ -43,20 +46,29 @@ export class ClientController {
 
   @Get(':id')
   @Roles('ADMIN', 'EMPLOYEE')
-  async findOne(@Param('id') id: string, @CurrentUser() user: any) {
+  async findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.clientService.findOne(id, user.organizationId);
   }
 
   @Get(':id/export')
   @Roles('ADMIN')
-  async exportData(@Param('id') id: string, @CurrentUser() user: any) {
+  async exportData(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.clientService.exportData(id, user.organizationId);
   }
 
   @Post()
   @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() dto: CreateClientDto, @CurrentUser() user: any) {
+  async create(
+    @Body() dto: CreateClientDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.clientService.create(dto, user.organizationId);
   }
 
@@ -65,14 +77,17 @@ export class ClientController {
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateClientDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.clientService.update(id, dto, user.organizationId);
   }
 
   @Delete(':id')
   @Roles('ADMIN')
-  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.clientService.remove(id, user.organizationId, user.id);
   }
 }

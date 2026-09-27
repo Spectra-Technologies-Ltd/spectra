@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { createHmac, randomBytes, createHash } from 'crypto';
 import { PrismaService } from '../../database/prisma.service';
 
@@ -14,7 +18,11 @@ function base32Encode(buffer: Buffer): string {
     out += BASE32_ALPHABET[parseInt(bits.slice(i, i + 5), 2)];
   }
   const rem = bits.length % 5;
-  if (rem > 0) out += BASE32_ALPHABET[parseInt(bits.slice(bits.length - rem).padEnd(5, '0'), 2)];
+  if (rem > 0)
+    out +=
+      BASE32_ALPHABET[
+        parseInt(bits.slice(bits.length - rem).padEnd(5, '0'), 2)
+      ];
   return out.replace(/=+$/, '');
 }
 
@@ -38,7 +46,9 @@ export function generateTOTP(secret: string, time = Date.now()): string {
   const counter = Math.floor(time / 1000 / STEP_SECONDS);
   const counterBuf = Buffer.alloc(8);
   counterBuf.writeBigUInt64BE(BigInt(counter));
-  const hmac = createHmac('sha1', base32Decode(secret)).update(counterBuf).digest();
+  const hmac = createHmac('sha1', base32Decode(secret))
+    .update(counterBuf)
+    .digest();
   const offset = hmac[hmac.length - 1] & 0x0f;
   const code =
     ((hmac[offset] & 0x7f) << 24) |
@@ -79,7 +89,9 @@ export class TfaService {
     if (!code || !/^\d{6}$/.test(code)) return false;
     const now = Date.now();
     for (let i = -WINDOW; i <= WINDOW; i++) {
-      if (codesEqual(generateTOTP(secret, now + i * STEP_SECONDS * 1000), code)) {
+      if (
+        codesEqual(generateTOTP(secret, now + i * STEP_SECONDS * 1000), code)
+      ) {
         return true;
       }
     }
@@ -89,11 +101,14 @@ export class TfaService {
   /** Confirm enrollment — turns the pending secret into an active one. */
   async confirmEnrollment(userId: string, code: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user?.twoFactorSecret) throw new BadRequestException('No pending 2FA enrollment');
+    if (!user?.twoFactorSecret)
+      throw new BadRequestException('No pending 2FA enrollment');
     if (!this.verifyCode(user.twoFactorSecret, code)) {
       throw new BadRequestException('Invalid verification code');
     }
-    const backupCodes = Array.from({ length: 8 }, () => randomBytes(4).toString('hex').toUpperCase());
+    const backupCodes = Array.from({ length: 8 }, () =>
+      randomBytes(4).toString('hex').toUpperCase(),
+    );
 
     await this.prisma.user.update({
       where: { id: userId },
@@ -110,11 +125,16 @@ export class TfaService {
   }
 
   /** Verify a backup code and consume it if valid. */
-  private async consumeBackupCode(userId: string, code: string): Promise<boolean> {
+  private async consumeBackupCode(
+    userId: string,
+    code: string,
+  ): Promise<boolean> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user?.twoFactorBackupCodes) return false;
     const hashes: string[] = JSON.parse(user.twoFactorBackupCodes);
-    const candidate = createHash('sha256').update(code.trim().toUpperCase()).digest('hex');
+    const candidate = createHash('sha256')
+      .update(code.trim().toUpperCase())
+      .digest('hex');
     const idx = hashes.indexOf(candidate);
     if (idx === -1) return false;
     hashes.splice(idx, 1);
@@ -132,15 +152,23 @@ export class TfaService {
   async verifyForLogin(userId: string, code: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user?.twoFactorEnabled) return true; // 2FA not enabled — nothing to verify
-    if (user.twoFactorSecret && this.verifyCode(user.twoFactorSecret, code.trim())) return true;
+    if (
+      user.twoFactorSecret &&
+      this.verifyCode(user.twoFactorSecret, code.trim())
+    )
+      return true;
     if (await this.consumeBackupCode(userId, code.trim())) return true;
     throw new UnauthorizedException('Invalid two-factor authentication code');
   }
 
   async disable(userId: string, code: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user?.twoFactorEnabled) throw new BadRequestException('2FA is not enabled');
-    if (user.twoFactorSecret && this.verifyCode(user.twoFactorSecret, code.trim())) {
+    if (!user?.twoFactorEnabled)
+      throw new BadRequestException('2FA is not enabled');
+    if (
+      user.twoFactorSecret &&
+      this.verifyCode(user.twoFactorSecret, code.trim())
+    ) {
       await this.prisma.user.update({
         where: { id: userId },
         data: {

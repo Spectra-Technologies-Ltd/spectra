@@ -1,6 +1,9 @@
 import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthenticatedUser,
+} from '../auth/decorators/current-user.decorator';
 import { PrismaService } from '../../database/prisma.service';
 
 @Controller('notifications')
@@ -9,7 +12,7 @@ export class NotificationsController {
   constructor(private prisma: PrismaService) {}
 
   @Get('unread-count')
-  async getUnreadCount(@CurrentUser() user: any) {
+  async getUnreadCount(@CurrentUser() user: AuthenticatedUser) {
     const count = await this.prisma.notification.count({
       where: { userId: user.id, status: 'UNREAD' },
     });
@@ -17,17 +20,27 @@ export class NotificationsController {
   }
 
   @Get()
-  async getRecent(@CurrentUser() user: any) {
+  async getRecent(@CurrentUser() user: AuthenticatedUser) {
     return this.prisma.notification.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
       take: 20,
-      select: { id: true, title: true, message: true, type: true, status: true, createdAt: true },
+      select: {
+        id: true,
+        title: true,
+        message: true,
+        type: true,
+        status: true,
+        createdAt: true,
+      },
     });
   }
 
   @Post(':id/read')
-  async markAsRead(@CurrentUser() user: any, @Param('id') id: string) {
+  async markAsRead(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+  ) {
     await this.prisma.notification.updateMany({
       where: { id, userId: user.id },
       data: { status: 'READ' },

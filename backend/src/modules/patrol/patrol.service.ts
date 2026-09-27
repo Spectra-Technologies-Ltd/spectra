@@ -68,17 +68,19 @@ export class PatrolService {
     });
 
     // Write audit log (fire-and-forget)
-    this.prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'PATROL_STARTED',
-        entity: 'PatrolRecord',
-        entityId: record.id,
-        newValues: JSON.stringify({ routeId: dto.routeId, guardId }),
-        ipAddress: '',
-        userAgent: '',
-      },
-    }).catch(() => {});
+    this.prisma.auditLog
+      .create({
+        data: {
+          userId: user.id,
+          action: 'PATROL_STARTED',
+          entity: 'PatrolRecord',
+          entityId: record.id,
+          newValues: JSON.stringify({ routeId: dto.routeId, guardId }),
+          ipAddress: '',
+          userAgent: '',
+        },
+      })
+      .catch(() => {});
 
     return record;
   }
@@ -188,7 +190,7 @@ export class PatrolService {
         // Use configurable weights from PERFORMANCE_WEIGHTS
         const newScore = Math.round(
           guard.performanceScore * PERFORMANCE_WEIGHTS.ATTENDANCE +
-          patrolRate * PERFORMANCE_WEIGHTS.PATROL,
+            patrolRate * PERFORMANCE_WEIGHTS.PATROL,
         );
         await this.prisma.guard.update({
           where: { id: record.guardId },
@@ -198,22 +200,24 @@ export class PatrolService {
     }
 
     // Write audit log (fire-and-forget)
-    this.prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'PATROL_COMPLETED',
-        entity: 'PatrolRecord',
-        entityId: record.id,
-        newValues: JSON.stringify({
-          completionPercentage,
-          totalCheckpoints: expectedCheckpoints.length,
-          scannedCheckpoints: scannedIds.length,
-          missedCheckpoints: missedCheckpoints.length,
-        }),
-        ipAddress: '',
-        userAgent: '',
-      },
-    }).catch(() => {});
+    this.prisma.auditLog
+      .create({
+        data: {
+          userId: user.id,
+          action: 'PATROL_COMPLETED',
+          entity: 'PatrolRecord',
+          entityId: record.id,
+          newValues: JSON.stringify({
+            completionPercentage,
+            totalCheckpoints: expectedCheckpoints.length,
+            scannedCheckpoints: scannedIds.length,
+            missedCheckpoints: missedCheckpoints.length,
+          }),
+          ipAddress: '',
+          userAgent: '',
+        },
+      })
+      .catch(() => {});
 
     return record;
   }

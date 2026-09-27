@@ -26,7 +26,10 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthenticatedUser,
+} from '../auth/decorators/current-user.decorator';
 
 @Controller('guards')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -36,7 +39,7 @@ export class GuardController {
   @Get()
   @Roles('ADMIN')
   async findAll(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('status') status?: string,
@@ -59,31 +62,40 @@ export class GuardController {
 
   @Get('stats')
   @Roles('ADMIN')
-  async getStats(@CurrentUser() user: any) {
+  async getStats(@CurrentUser() user: AuthenticatedUser) {
     return this.guardService.getStats(user.organizationId);
   }
 
   @Get('performance')
   @Roles('ADMIN')
-  async getPerformance(@CurrentUser() user: any) {
+  async getPerformance(@CurrentUser() user: AuthenticatedUser) {
     return this.guardService.getPerformance(user.organizationId);
   }
 
   @Get('unassigned')
   @Roles('ADMIN')
-  async findUnassigned(@CurrentUser() user: any) {
+  async findUnassigned(@CurrentUser() user: AuthenticatedUser) {
     return this.guardService.findUnassigned(user.organizationId);
   }
 
   @Get('attendance-stats')
   @Roles('ADMIN')
-  async findWithAttendanceStats(@CurrentUser() user: any, @Query('date') date?: string) {
-    return this.guardService.findWithAttendanceStats(date || new Date().toISOString().split('T')[0], user.organizationId);
+  async findWithAttendanceStats(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query('date') date?: string,
+  ) {
+    return this.guardService.findWithAttendanceStats(
+      date || new Date().toISOString().split('T')[0],
+      user.organizationId,
+    );
   }
 
   @Post('bulk-assign')
   @Roles('ADMIN')
-  async bulkAssign(@Body() dto: { siteId: string; guardIds: string[] }, @CurrentUser() user: any) {
+  async bulkAssign(
+    @Body() dto: { siteId: string; guardIds: string[] },
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.guardService.bulkAssign(dto, user.organizationId);
   }
 
@@ -110,7 +122,7 @@ export class GuardController {
       createAccounts?: boolean;
       mode?: 'create' | 'upsert';
     },
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     if (!body?.rows?.length) {
       return {
@@ -139,7 +151,7 @@ export class GuardController {
   async importCsv(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: { createAccounts?: string; mode?: string },
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     if (!file) {
       return { error: 'Upload a CSV file with the field named "file"' };
@@ -156,14 +168,20 @@ export class GuardController {
 
   @Get(':id')
   @Roles('ADMIN', 'EMPLOYEE')
-  async findOne(@Param('id') id: string, @CurrentUser() user: any) {
+  async findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.guardService.findOne(id, user.organizationId);
   }
 
   @Post()
   @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() dto: CreateGuardDto, @CurrentUser() user: any) {
+  async create(
+    @Body() dto: CreateGuardDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.guardService.create(dto, user.organizationId);
   }
 
@@ -172,7 +190,7 @@ export class GuardController {
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateGuardDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.guardService.update(id, dto, user.organizationId);
   }
@@ -182,7 +200,7 @@ export class GuardController {
   async transfer(
     @Param('id') id: string,
     @Body() dto: TransferGuardDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.guardService.transfer(id, dto, user.organizationId);
   }
@@ -192,7 +210,7 @@ export class GuardController {
   async updateVerification(
     @Param('id') id: string,
     @Body() dto: { status: string; verifiedBy?: string; date?: string },
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.guardService.updateVerification(id, dto, user.organizationId);
   }
@@ -200,7 +218,10 @@ export class GuardController {
   @Delete(':id')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     await this.guardService.remove(id, user.organizationId, user.id);
   }
 }

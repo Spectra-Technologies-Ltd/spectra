@@ -14,7 +14,10 @@ import { StartPatrolDto, SubmitPatrolLogDto } from './dto/patrol.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthenticatedUser,
+} from '../auth/decorators/current-user.decorator';
 
 @Controller('patrols')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -23,28 +26,37 @@ export class PatrolController {
 
   @Get('routes/:siteId')
   @Roles('ADMIN', 'EMPLOYEE')
-  async getRoutes(@Param('siteId') siteId: string, @CurrentUser() user: any) {
+  async getRoutes(
+    @Param('siteId') siteId: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.patrolService.getRoutes(siteId, user.organizationId);
   }
 
   @Post('start')
   @Roles('EMPLOYEE')
   @HttpCode(HttpStatus.CREATED)
-  async startPatrol(@Body() dto: StartPatrolDto, @CurrentUser() user: any) {
+  async startPatrol(
+    @Body() dto: StartPatrolDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.patrolService.startPatrol(dto, user);
   }
 
   @Post('submit')
   @Roles('EMPLOYEE')
   @HttpCode(HttpStatus.OK)
-  async submitLog(@Body() dto: SubmitPatrolLogDto, @CurrentUser() user: any) {
+  async submitLog(
+    @Body() dto: SubmitPatrolLogDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     return this.patrolService.submitLog(dto, user);
   }
 
   @Get('history')
   @Roles('ADMIN', 'EMPLOYEE')
   async getHistory(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('siteId') siteId?: string,

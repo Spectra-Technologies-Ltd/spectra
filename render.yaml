@@ -5,11 +5,18 @@ services:
     rootDir: backend
     plan: free
     region: oregon
+    healthCheckPath: /api/v1/health
     buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npx prisma db push --accept-data-loss && npx prisma db seed && node dist/src/main
+    # `db push` without --accept-data-loss: it still creates new tables (e.g. the
+    # Lead table), but refuses to run when a change would drop a column, instead
+    # of silently destroying production data on every deploy.
+    # The seed is idempotent (upsert with `update: {}`), so it only fills gaps.
+    startCommand: npx prisma db push && npx prisma db seed && node dist/src/main
     envVars:
       - key: NODE_VERSION
         value: 22.12.0
+      - key: NODE_ENV
+        value: production
       - key: JWT_SECRET
         sync: false
       - key: DATABASE_URL
@@ -20,6 +27,8 @@ services:
         sync: false
       - key: REDIS_PORT
         value: 6379
+      # Browser origins allowed to call the API with credentials. The landing
+      # site posts server-to-server, so it does not need to be listed here.
       - key: CORS_ORIGIN
         value: https://spectra-lime.vercel.app
       - key: CLOUDINARY_CLOUD_NAME
@@ -30,6 +39,36 @@ services:
         sync: false
       - key: API_URL
         value: https://spectra-api-wq5x.onrender.com
+      # ── Outbound email (optional). Without SMTP_HOST, notification email is
+      #    recorded as FAILED instead of silently not sending.
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      # ── Ops digest recipients (comma separated, optional)
+      - key: DIGEST_EMAILS
+        sync: false
+      # ── Outbound SMS (optional). SMS_PROVIDER is "termii" or "twilio".
+      - key: SMS_PROVIDER
+        sync: false
+      - key: TERMII_API_KEY
+        sync: false
+      - key: TERMII_SENDER_ID
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM_NUMBER
+        sync: false
 
 databases:
   - name: spectra-db

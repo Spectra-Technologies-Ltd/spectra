@@ -38,6 +38,7 @@ model User {
   notifications       Notification[]
   refreshTokens       RefreshToken[]
   pushSubscriptions   PushSubscription[]
+  handledLeads        Lead[]         @relation("LeadHandler")
 }
 
 model PushSubscription {
@@ -317,4 +318,43 @@ model RefreshToken {
   tokenHash String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+/// Inbound marketing/site submissions. These do not belong to an Organization —
+/// they are the leads that may become one. Populated by the public site's form
+/// handlers, which post to POST /api/v1/leads server-to-server.
+model Lead {
+  id           String   @id @default(uuid())
+  /// "CONTACT" | "DEMO" | "NEWSLETTER"
+  kind         String
+  email        String
+  firstName    String?
+  lastName     String?
+  phone        String?
+  organization String?
+  jobTitle     String?
+  country      String?
+  subject      String?
+  context      String?
+  message      String?
+  /// The raw submitted payload, verbatim, so nothing a visitor typed is lost
+  /// when the form grows a field before the schema does.
+  payload      String
+  /// Where it came from, e.g. "landing:contact"
+  source       String
+  ipAddress    String?
+  userAgent    String?
+  /// "NEW" | "CONTACTED" | "QUALIFIED" | "WON" | "CLOSED" | "SPAM"
+  status       String   @default("NEW")
+  notes        String?
+  handledById  String?
+  handledBy    User?    @relation("LeadHandler", fields: [handledById], references: [id])
+  handledAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([kind, createdAt])
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
 }

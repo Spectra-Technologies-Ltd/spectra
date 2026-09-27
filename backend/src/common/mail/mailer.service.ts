@@ -1,6 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { Socket } from 'net';
-import type { TLSSocket } from 'tls';
+import * as net from 'node:net';
+import * as tls from 'node:tls';
+import type { Socket } from 'node:net';
+import type { TLSSocket } from 'node:tls';
+
+/** Buffered SMTP conversation over a swappable socket (plain or TLS). */
+interface SmtpSession {
+  socket: Socket | TLSSocket;
+  command: (cmd: string) => Promise<string>;
+  waitForGreeting: () => Promise<void>;
+  destroy: () => void;
+}
 
 /**
  * Minimal SMTP client (zero dependencies).
@@ -34,7 +44,7 @@ export class MailerService {
    * resolves each awaited command when a complete SMTP response arrives
    * (line 3 is a space). Swappable socket so STARTTLS upgrades are trivial.
    */
-  private createSession(socket: Socket | TLSSocket) {
+  private createSession(socket: Socket | TLSSocket): SmtpSession {
     let buffer = '';
     const waiters: Array<(resp: string) => void> = [];
 
@@ -80,12 +90,12 @@ export class MailerService {
     html?: string;
   }): Promise<void> {
     if (!this.isConfigured) {
-      this.logger.warn(`SMTP not configured — skipping email "${opts.subject}"`);
+      this.logger.warn(
+        `SMTP not configured — skipping email "${opts.subject}"`,
+      );
       return;
     }
 
-    const net = require('net');
-    const tls = require('tls');
     const { host, port, secure, user, pass, from } = this.config;
 
     let socket: Socket | TLSSocket = secure
@@ -109,7 +119,10 @@ export class MailerService {
         const resp = await session.command('STARTTLS');
         if (resp.startsWith('220')) {
           const upgraded: TLSSocket = await new Promise((resolve, reject) => {
-            const tlsSocket = tls.connect({ socket, rejectUnauthorized: false });
+            const tlsSocket = tls.connect({
+              socket,
+              rejectUnauthorized: false,
+            });
             tlsSocket.once('secureConnect', () => resolve(tlsSocket));
             tlsSocket.once('error', reject);
           });
@@ -137,7 +150,7 @@ export class MailerService {
     }
   }
 
-  private async auth(session: any, user: string, pass: string) {
+  private async auth(session: SmtpSession, user: string, pass: string) {
     const a = await session.command('AUTH LOGIN');
     if (!a.startsWith('334')) {
       // Try PLAIN as a fallback
@@ -152,8 +165,14 @@ export class MailerService {
   }
 
   private async sendMail(
-    session: any,
-    opts: { from: string; to: string | string[]; subject: string; text: string; html?: string },
+    session: SmtpSession,
+    opts: {
+      from: string;
+      to: string | string[];
+      subject: string;
+      text: string;
+      html?: string;
+    },
   ) {
     const recipients = Array.isArray(opts.to) ? opts.to : [opts.to];
     const fromAddr = opts.from.replace(/^.*<|>$/g, '').trim();
@@ -180,6 +199,6 @@ export class MailerService {
   }
 }
 
-function socketWrite(session: any, data: string) {
+function socketWrite(session: SmtpSession, data: string) {
   session.socket.write(data);
 }

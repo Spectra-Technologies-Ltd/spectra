@@ -89,9 +89,7 @@ export class DashboardService {
     // Attendance rate: (non-absent active guards) / total active guards
     const attendanceRate =
       activeGuards > 0
-        ? Math.round(
-            ((activeGuards - todayAbsent) / activeGuards) * 1000,
-          ) / 10
+        ? Math.round(((activeGuards - todayAbsent) / activeGuards) * 1000) / 10
         : 100;
 
     return {
@@ -179,42 +177,43 @@ export class DashboardService {
   }
 
   async getRecentActivities(organizationId: string) {
-    const [recentIncidents, recentAttendance, recentPatrols] = await Promise.all([
-      this.prisma.incident.findMany({
-        where: { site: { organizationId } },
-        take: 5,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          incidentType: true,
-          severity: true,
-          site: { select: { name: true } },
-          createdAt: true,
-        },
-      }),
-      this.prisma.attendance.findMany({
-        where: { guard: { organizationId } },
-        take: 5,
-        orderBy: { checkInTime: 'desc' },
-        select: {
-          guard: { select: { fullName: true } },
-          site: { select: { name: true } },
-          checkInTime: true,
-          isLate: true,
-        },
-      }),
-      this.prisma.patrolRecord.findMany({
-        where: { route: { site: { organizationId } } },
-        take: 5,
-        orderBy: { startTime: 'desc' },
-        select: {
-          guard: { select: { fullName: true } },
-          route: { select: { name: true, site: { select: { name: true } } } },
-          status: true,
-          startTime: true,
-          completionPercentage: true,
-        },
-      }),
-    ]);
+    const [recentIncidents, recentAttendance, recentPatrols] =
+      await Promise.all([
+        this.prisma.incident.findMany({
+          where: { site: { organizationId } },
+          take: 5,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            incidentType: true,
+            severity: true,
+            site: { select: { name: true } },
+            createdAt: true,
+          },
+        }),
+        this.prisma.attendance.findMany({
+          where: { guard: { organizationId } },
+          take: 5,
+          orderBy: { checkInTime: 'desc' },
+          select: {
+            guard: { select: { fullName: true } },
+            site: { select: { name: true } },
+            checkInTime: true,
+            isLate: true,
+          },
+        }),
+        this.prisma.patrolRecord.findMany({
+          where: { route: { site: { organizationId } } },
+          take: 5,
+          orderBy: { startTime: 'desc' },
+          select: {
+            guard: { select: { fullName: true } },
+            route: { select: { name: true, site: { select: { name: true } } } },
+            status: true,
+            startTime: true,
+            completionPercentage: true,
+          },
+        }),
+      ]);
 
     const activities: { type: string; text: string; time: Date }[] = [];
 
@@ -234,7 +233,8 @@ export class DashboardService {
     }
     for (const patrol of recentPatrols) {
       activities.push({
-        type: patrol.status === 'COMPLETED' ? 'patrol_completed' : 'patrol_started',
+        type:
+          patrol.status === 'COMPLETED' ? 'patrol_completed' : 'patrol_started',
         text: `Guard ${patrol.guard.fullName} ${patrol.status === 'COMPLETED' ? 'completed' : 'started'} patrol "${patrol.route.name}" at ${patrol.route.site.name} (${patrol.completionPercentage}%)`,
         time: patrol.startTime,
       });
@@ -263,7 +263,7 @@ export class DashboardService {
       },
     });
 
-    return guards.map(g => ({
+    return guards.map((g) => ({
       id: g.id,
       name: g.fullName,
       status: g.status,
@@ -279,12 +279,14 @@ export class DashboardService {
     const sites = await this.prisma.site.findMany({
       where: { organizationId },
       include: {
-        _count: { select: { guards: true, incidents: true, attendances: true } },
+        _count: {
+          select: { guards: true, incidents: true, attendances: true },
+        },
         client: { select: { companyName: true } },
       },
     });
 
-    return sites.map(s => ({
+    return sites.map((s) => ({
       id: s.id,
       name: s.name,
       client: s.client.companyName,
@@ -293,7 +295,10 @@ export class DashboardService {
       assignedGuards: s._count.guards,
       totalIncidents: s._count.incidents,
       totalAttendances: s._count.attendances,
-      guardFillRate: s.targetGuards > 0 ? Math.round((s._count.guards / s.targetGuards) * 100) : 0,
+      guardFillRate:
+        s.targetGuards > 0
+          ? Math.round((s._count.guards / s.targetGuards) * 100)
+          : 0,
     }));
   }
 
@@ -320,7 +325,9 @@ export class DashboardService {
           client: { select: { companyName: true } },
           _count: { select: { guards: true, incidents: true } },
           incidents: {
-            where: { investigationStatus: { in: ['OPEN', 'UNDER_INVESTIGATION'] } },
+            where: {
+              investigationStatus: { in: ['OPEN', 'UNDER_INVESTIGATION'] },
+            },
             select: { id: true },
           },
         },
@@ -333,7 +340,9 @@ export class DashboardService {
           fullName: true,
           currentShift: true,
           assignedSiteId: true,
-          assignedSite: { select: { id: true, name: true, latitude: true, longitude: true } },
+          assignedSite: {
+            select: { id: true, name: true, latitude: true, longitude: true },
+          },
           attendances: {
             orderBy: { checkInTime: 'desc' },
             take: 1,
@@ -390,8 +399,8 @@ export class DashboardService {
         status: latest?.status ?? null,
         lastSeen: latest?.checkInTime?.toISOString() ?? null,
         // Prefer real GPS from the last check-in; fall back to the site location
-        latitude: hasGps ? latest!.checkInLatitude : (site?.latitude ?? null),
-        longitude: hasGps ? latest!.checkInLongitude : (site?.longitude ?? null),
+        latitude: hasGps ? latest.checkInLatitude : (site?.latitude ?? null),
+        longitude: hasGps ? latest.checkInLongitude : (site?.longitude ?? null),
         siteId: site?.id ?? g.assignedSiteId ?? null,
         siteName: site?.name ?? null,
       };

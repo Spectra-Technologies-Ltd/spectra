@@ -1,4 +1,12 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsDateString, IsIn, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsDateString,
+  IsIn,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateGuardDto {
   @IsString() @IsNotEmpty() fullName: string;
@@ -10,7 +18,9 @@ export class CreateGuardDto {
   @IsString() @IsOptional() bvn?: string;
   @IsString() @IsNotEmpty() guarantorDetails: string;
   @IsDateString() employmentDate: string;
-  @IsString() @IsIn(['ACTIVE', 'INACTIVE', 'SUSPENDED', 'ON_LEAVE']) status: string;
+  @IsString()
+  @IsIn(['ACTIVE', 'INACTIVE', 'SUSPENDED', 'ON_LEAVE'])
+  status: string;
   @IsString() @IsIn(['DAY', 'NIGHT', 'OFF']) currentShift: string;
   @IsString() @IsOptional() assignedSiteId?: string;
   @IsString() @IsOptional() assignedSupervisorId?: string;
@@ -27,8 +37,14 @@ export class UpdateGuardDto {
   @IsString() @IsOptional() address?: string;
   @IsString() @IsOptional() emergencyContact?: string;
   @IsString() @IsOptional() guarantorDetails?: string;
-  @IsString() @IsOptional() @IsIn(['ACTIVE', 'INACTIVE', 'SUSPENDED', 'ON_LEAVE']) status?: string;
-  @IsString() @IsOptional() @IsIn(['DAY', 'NIGHT', 'OFF']) currentShift?: string;
+  @IsString()
+  @IsOptional()
+  @IsIn(['ACTIVE', 'INACTIVE', 'SUSPENDED', 'ON_LEAVE'])
+  status?: string;
+  @IsString()
+  @IsOptional()
+  @IsIn(['DAY', 'NIGHT', 'OFF'])
+  currentShift?: string;
   @IsString() @IsOptional() assignedSiteId?: string;
   @IsString() @IsOptional() assignedSupervisorId?: string;
   @IsNumber() @IsOptional() performanceScore?: number;

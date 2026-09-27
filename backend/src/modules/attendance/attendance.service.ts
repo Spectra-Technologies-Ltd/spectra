@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { CheckInDto, CheckOutDto } from './dto/attendance.dto';
@@ -11,16 +16,21 @@ export class AttendanceService {
   ) {}
 
   // Distance calculation using Haversine formula
-  private getDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  private getDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
     const R = 6371e3; // metres
     const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
     const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c; // in metres
@@ -30,11 +40,16 @@ export class AttendanceService {
     dto: { guardId?: string; siteId?: string },
     user: { id: string; role: string; organizationId: string },
   ) {
-    const guardId = dto.guardId ?? (await this.prisma.guard.findUnique({
-      where: { userId: user.id },
-      select: { id: true },
-    }))?.id;
-    if (!guardId) throw new NotFoundException('Guard profile not found for this employee');
+    const guardId =
+      dto.guardId ??
+      (
+        await this.prisma.guard.findUnique({
+          where: { userId: user.id },
+          select: { id: true },
+        })
+      )?.id;
+    if (!guardId)
+      throw new NotFoundException('Guard profile not found for this employee');
 
     const guard = await this.prisma.guard.findFirst({
       where: { id: guardId, organizationId: user.organizationId },
@@ -42,7 +57,8 @@ export class AttendanceService {
     if (!guard) throw new NotFoundException('Guard not found');
 
     const siteId = dto.siteId ?? guard.assignedSiteId;
-    if (!siteId) throw new BadRequestException('Guard is not assigned to a site');
+    if (!siteId)
+      throw new BadRequestException('Guard is not assigned to a site');
 
     const site = await this.prisma.site.findFirst({
       where: { id: siteId, organizationId: user.organizationId },
@@ -56,7 +72,10 @@ export class AttendanceService {
     return { guard, site };
   }
 
-  async checkIn(dto: CheckInDto, user: { id: string; role: string; organizationId: string }) {
+  async checkIn(
+    dto: CheckInDto,
+    user: { id: string; role: string; organizationId: string },
+  ) {
     // 1. Verify site and guard exist
     const { guard, site } = await this.resolveGuardAndSite(dto, user);
 
@@ -90,7 +109,12 @@ export class AttendanceService {
     }
 
     // 4. Geofence Check (must be within 200 meters of the site)
-    const distance = this.getDistance(site.latitude, site.longitude, dto.latitude, dto.longitude);
+    const distance = this.getDistance(
+      site.latitude,
+      site.longitude,
+      dto.latitude,
+      dto.longitude,
+    );
     const isWithinGeofence = distance <= 200; // 200m radius
 
     // 5. Determine status
@@ -109,7 +133,10 @@ export class AttendanceService {
         checkInTime: now,
         checkInLatitude: dto.latitude,
         checkInLongitude: dto.longitude,
-        checkInLocation: JSON.stringify({ lat: dto.latitude, lng: dto.longitude }),
+        checkInLocation: JSON.stringify({
+          lat: dto.latitude,
+          lng: dto.longitude,
+        }),
         checkInMethod: 'GPS',
         status,
         photoUrl: dto.photoUrl ?? '',
@@ -135,28 +162,33 @@ export class AttendanceService {
     });
 
     // 8. Write audit log (fire-and-forget)
-    this.prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'ATTENDANCE_CHECK_IN',
-        entity: 'Attendance',
-        entityId: record.id,
-        newValues: JSON.stringify({
-          guardId: guard.id,
-          siteId: site.id,
-          status,
-          isLate,
-          withinGeofence: isWithinGeofence,
-        }),
-        ipAddress: '',
-        userAgent: '',
-      },
-    }).catch(() => {});
+    this.prisma.auditLog
+      .create({
+        data: {
+          userId: user.id,
+          action: 'ATTENDANCE_CHECK_IN',
+          entity: 'Attendance',
+          entityId: record.id,
+          newValues: JSON.stringify({
+            guardId: guard.id,
+            siteId: site.id,
+            status,
+            isLate,
+            withinGeofence: isWithinGeofence,
+          }),
+          ipAddress: '',
+          userAgent: '',
+        },
+      })
+      .catch(() => {});
 
     return record;
   }
 
-  async checkOut(dto: CheckOutDto, user: { id: string; role: string; organizationId: string }) {
+  async checkOut(
+    dto: CheckOutDto,
+    user: { id: string; role: string; organizationId: string },
+  ) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -175,7 +207,12 @@ export class AttendanceService {
     }
 
     // Geofence check on checkout too (must be within 200m)
-    const distance = this.getDistance(site.latitude, site.longitude, dto.latitude, dto.longitude);
+    const distance = this.getDistance(
+      site.latitude,
+      site.longitude,
+      dto.latitude,
+      dto.longitude,
+    );
     const isWithinGeofence = distance <= 200;
 
     return this.prisma.attendance.update({
@@ -184,7 +221,10 @@ export class AttendanceService {
         checkOutTime: new Date(),
         checkOutLatitude: dto.latitude,
         checkOutLongitude: dto.longitude,
-        checkOutLocation: JSON.stringify({ lat: dto.latitude, lng: dto.longitude }),
+        checkOutLocation: JSON.stringify({
+          lat: dto.latitude,
+          lng: dto.longitude,
+        }),
         checkOutMethod: isWithinGeofence ? 'GPS' : 'SUPERVISOR_APPROVAL',
         verifiedStatus: record.verifiedStatus && isWithinGeofence,
       },
@@ -212,7 +252,10 @@ export class AttendanceService {
     const onTimeCount = totalRecords - lateCount;
     const baseRate = (onTimeCount / totalRecords) * 100;
     const penalty = flaggedCount * 2; // -2 points per geofence violation
-    const finalScore = Math.max(0, Math.min(100, Math.round(baseRate - penalty)));
+    const finalScore = Math.max(
+      0,
+      Math.min(100, Math.round(baseRate - penalty)),
+    );
 
     await this.prisma.guard.update({
       where: { id: guardId },
@@ -224,7 +267,10 @@ export class AttendanceService {
    * Detect and mark guards as absent for a given date.
    * A guard is absent if they have no check-in record for the date and are ACTIVE.
    */
-  async markAbsentGuards(organizationId: string, date?: string): Promise<number> {
+  async markAbsentGuards(
+    organizationId: string,
+    date?: string,
+  ): Promise<number> {
     const targetDate = date ? new Date(date) : new Date();
     const startOfDay = new Date(targetDate);
     startOfDay.setHours(0, 0, 0, 0);
@@ -271,7 +317,14 @@ export class AttendanceService {
     return absentCount;
   }
 
-  async getAttendanceHistory(query: { page?: number; limit?: number; siteId?: string; date?: string; guardId?: string; organizationId: string }) {
+  async getAttendanceHistory(query: {
+    page?: number;
+    limit?: number;
+    siteId?: string;
+    date?: string;
+    guardId?: string;
+    organizationId: string;
+  }) {
     const page = query.page || 1;
     const limit = query.limit || 20;
     const skip = (page - 1) * limit;
@@ -289,7 +342,10 @@ export class AttendanceService {
 
     const [data, total] = await Promise.all([
       this.prisma.attendance.findMany({
-        where, skip, take: limit, orderBy: { createdAt: 'desc' },
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
         include: {
           guard: { select: { id: true, fullName: true, currentShift: true } },
           site: { select: { id: true, name: true } },
@@ -298,11 +354,18 @@ export class AttendanceService {
       this.prisma.attendance.count({ where }),
     ]);
 
-    return { data, meta: { total, page, limit, pages: Math.ceil(total / limit) } };
+    return {
+      data,
+      meta: { total, page, limit, pages: Math.ceil(total / limit) },
+    };
   }
 
   /** Export attendance records as CSV for payroll / compliance. */
-  async exportCsv(opts: { organizationId: string; date?: string; siteId?: string }) {
+  async exportCsv(opts: {
+    organizationId: string;
+    date?: string;
+    siteId?: string;
+  }) {
     const where: any = { guard: { organizationId: opts.organizationId } };
     if (opts.siteId) where.siteId = opts.siteId;
     if (opts.date) {

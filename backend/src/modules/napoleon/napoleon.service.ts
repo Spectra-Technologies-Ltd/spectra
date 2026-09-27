@@ -48,7 +48,12 @@ export class NapoleonService {
       }),
       this.prisma.incident.findMany({
         where: { site: { organizationId }, reportedAt: { gte: since30 } },
-        select: { severity: true, status: true, siteId: true, reportedAt: true },
+        select: {
+          severity: true,
+          status: true,
+          siteId: true,
+          reportedAt: true,
+        },
       }),
       this.prisma.attendance.findMany({
         where: { guard: { organizationId }, createdAt: { gte: since14 } },
@@ -64,7 +69,8 @@ export class NapoleonService {
     const avgPerformance =
       guards.length === 0
         ? 0
-        : guards.reduce((s, g) => s + (g.performanceScore ?? 0), 0) / guards.length;
+        : guards.reduce((s, g) => s + (g.performanceScore ?? 0), 0) /
+          guards.length;
     const lateRate =
       attendance.length === 0
         ? 0
@@ -74,7 +80,8 @@ export class NapoleonService {
     const patrolCompletion =
       patrols.length === 0
         ? 0
-        : patrols.reduce((s, p) => s + p.completionPercentage, 0) / patrols.length;
+        : patrols.reduce((s, p) => s + p.completionPercentage, 0) /
+          patrols.length;
 
     const healthScore = clamp(
       avgPerformance * 0.4 +
@@ -101,7 +108,8 @@ export class NapoleonService {
       avgGuardPerformance: Math.round(avgPerformance),
       lateCheckInRate: Math.round(lateRate * 10) / 10,
       patrolCompletionRate: Math.round(patrolCompletion * 10) / 10,
-      atRiskGuardCount: guards.filter((g) => (g.performanceScore ?? 0) < 60).length,
+      atRiskGuardCount: guards.filter((g) => (g.performanceScore ?? 0) < 60)
+        .length,
       siteCount: sites.length,
       insights,
     };
@@ -117,7 +125,12 @@ export class NapoleonService {
     const [incidents, attendance] = await Promise.all([
       this.prisma.incident.findMany({
         where: { site: { organizationId }, reportedAt: { gte: since } },
-        select: { severity: true, siteId: true, reportedAt: true, status: true },
+        select: {
+          severity: true,
+          siteId: true,
+          reportedAt: true,
+          status: true,
+        },
       }),
       this.prisma.attendance.findMany({
         where: { guard: { organizationId }, createdAt: { gte: since } },
@@ -149,16 +162,23 @@ export class NapoleonService {
     for (const a of attendance) bySite.get(a.siteId)?.attendance.push(a);
 
     const result = sites.map((site) => {
-      const { incidents: siteInc, attendance: siteAtt } = bySite.get(site.id) ?? {
+      const { incidents: siteInc, attendance: siteAtt } = bySite.get(
+        site.id,
+      ) ?? {
         incidents: [],
         attendance: [],
       };
       const sitePatrols = patrolBySite.get(site.id) ?? [];
-      const incidentScore = siteInc.reduce((s, i) => s + (SEVERITY_WEIGHT[i.severity] ?? 5), 0);
+      const incidentScore = siteInc.reduce(
+        (s, i) => s + (SEVERITY_WEIGHT[i.severity] ?? 5),
+        0,
+      );
       const lateRate =
         siteAtt.length === 0
           ? 0
-          : (siteAtt.filter((a) => a.isLate || a.status === 'FLAGGED').length / siteAtt.length) * 100;
+          : (siteAtt.filter((a) => a.isLate || a.status === 'FLAGGED').length /
+              siteAtt.length) *
+            100;
       const patrolCompletion =
         sitePatrols.length === 0
           ? 100
@@ -179,7 +199,10 @@ export class NapoleonService {
 
       const hourBuckets = new Array(24).fill(0);
       for (const i of siteInc) hourBuckets[new Date(i.reportedAt).getHours()]++;
-      const peakHour = hourBuckets.reduce((best, c, h) => (c > hourBuckets[best] ? h : best), 0);
+      const peakHour = hourBuckets.reduce(
+        (best, c, h) => (c > hourBuckets[best] ? h : best),
+        0,
+      );
 
       return {
         siteId: site.id,
@@ -213,7 +236,13 @@ export class NapoleonService {
       }),
       this.prisma.attendance.findMany({
         where: { guard: { organizationId }, createdAt: { gte: since } },
-        select: { guardId: true, isLate: true, isAbsent: true, status: true, createdAt: true },
+        select: {
+          guardId: true,
+          isLate: true,
+          isAbsent: true,
+          status: true,
+          createdAt: true,
+        },
       }),
     ]);
 
@@ -221,7 +250,8 @@ export class NapoleonService {
       string,
       { late: number; flagged: number; absent: number; days: Set<string> }
     >();
-    for (const g of guards) byGuard.set(g.id, { late: 0, flagged: 0, absent: 0, days: new Set() });
+    for (const g of guards)
+      byGuard.set(g.id, { late: 0, flagged: 0, absent: 0, days: new Set() });
     for (const a of attendance) {
       const row = byGuard.get(a.guardId);
       if (!row) continue;
@@ -233,7 +263,12 @@ export class NapoleonService {
 
     return guards
       .map((g) => {
-        const stats = byGuard.get(g.id) ?? { late: 0, flagged: 0, absent: 0, days: new Set() };
+        const stats = byGuard.get(g.id) ?? {
+          late: 0,
+          flagged: 0,
+          absent: 0,
+          days: new Set(),
+        };
         const workedDays = stats.days.size;
         const reliability =
           workedDays === 0
@@ -241,7 +276,9 @@ export class NapoleonService {
             : Math.max(
                 0,
                 Math.round(
-                  ((workedDays - stats.late - stats.absent) / Math.max(workedDays, 1)) * 100,
+                  ((workedDays - stats.late - stats.absent) /
+                    Math.max(workedDays, 1)) *
+                    100,
                 ),
               );
 
@@ -306,7 +343,8 @@ export class NapoleonService {
         category: 'INCIDENTS',
         title: `${open} open incidents need attention`,
         detail: `Response has not closed ${open} incident(s) in the last 30 days. Unresolved incidents compound liability and client risk.`,
-        recommendation: 'Assign owners to open incidents and escalate anything over 48 hours old.',
+        recommendation:
+          'Assign owners to open incidents and escalate anything over 48 hours old.',
         metric: `${open} open`,
       });
     }
@@ -316,8 +354,10 @@ export class NapoleonService {
         severity: 'MEDIUM',
         category: 'ATTENDANCE',
         title: `Late check-ins running at ${Math.round(ctx.lateRate)}%`,
-        detail: 'More than 1 in 5 check-ins over the last 14 days was late or flagged outside the geofence.',
-        recommendation: 'Review shift start times and consider SMS reminders 30 minutes before shift.',
+        detail:
+          'More than 1 in 5 check-ins over the last 14 days was late or flagged outside the geofence.',
+        recommendation:
+          'Review shift start times and consider SMS reminders 30 minutes before shift.',
         metric: `${Math.round(ctx.lateRate)}%`,
       });
     }
@@ -327,8 +367,10 @@ export class NapoleonService {
         severity: 'MEDIUM',
         category: 'PATROLS',
         title: `Patrol completion at ${Math.round(ctx.patrolCompletion)}%`,
-        detail: 'Patrol routes are being completed below the 80% target, leaving coverage gaps.',
-        recommendation: 'Reassign under-completed routes to guards on overlapping shifts.',
+        detail:
+          'Patrol routes are being completed below the 80% target, leaving coverage gaps.',
+        recommendation:
+          'Reassign under-completed routes to guards on overlapping shifts.',
         metric: `${Math.round(ctx.patrolCompletion)}%`,
       });
     }
@@ -337,25 +379,34 @@ export class NapoleonService {
       const h = new Date(i.reportedAt).getHours();
       return h >= 18 || h < 6;
     }).length;
-    if (nightIncidents > 0 && nightIncidents / Math.max(ctx.incidents.length, 1) > 0.5) {
+    if (
+      nightIncidents > 0 &&
+      nightIncidents / Math.max(ctx.incidents.length, 1) > 0.5
+    ) {
       insights.push({
         severity: 'MEDIUM',
         category: 'PATTERNS',
         title: `Most incidents occur at night (${Math.round((nightIncidents / ctx.incidents.length) * 100)}%)`,
-        detail: 'Night hours carry the majority of incident load — a sign coverage thins when visibility drops.',
-        recommendation: 'Add a dedicated night supervisor and increase patrol frequency after 20:00.',
+        detail:
+          'Night hours carry the majority of incident load — a sign coverage thins when visibility drops.',
+        recommendation:
+          'Add a dedicated night supervisor and increase patrol frequency after 20:00.',
         metric: `${nightIncidents}/${ctx.incidents.length}`,
       });
     }
 
-    const lowPerformers = ctx.guards.filter((g) => (g.performanceScore ?? 0) < 60).length;
+    const lowPerformers = ctx.guards.filter(
+      (g) => (g.performanceScore ?? 0) < 60,
+    ).length;
     if (lowPerformers > 0) {
       insights.push({
         severity: lowPerformers > 3 ? 'HIGH' : 'MEDIUM',
         category: 'PERSONNEL',
         title: `${lowPerformers} guard(s) scoring below 60`,
-        detail: 'Performance scores indicate attendance and reliability problems that can become attrition risk.',
-        recommendation: 'Schedule check-ins with the at-risk guards and review their site assignments.',
+        detail:
+          'Performance scores indicate attendance and reliability problems that can become attrition risk.',
+        recommendation:
+          'Schedule check-ins with the at-risk guards and review their site assignments.',
         metric: `${lowPerformers} guards`,
       });
     }
@@ -365,8 +416,10 @@ export class NapoleonService {
         severity: 'INFO',
         category: 'HEALTH',
         title: 'Operations are stable',
-        detail: 'No anomalies detected across attendance, incidents, or patrols in the review window.',
-        recommendation: 'Continue monitoring — Napoleon will alert you the moment a pattern shifts.',
+        detail:
+          'No anomalies detected across attendance, incidents, or patrols in the review window.',
+        recommendation:
+          'Continue monitoring — Napoleon will alert you the moment a pattern shifts.',
         metric: 'All clear',
       });
     }

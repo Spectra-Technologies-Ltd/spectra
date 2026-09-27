@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsDateString, IsEmail, IsIn, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsDateString,
+  IsEmail,
+  IsIn,
+  IsInt,
+} from 'class-validator';
 
 export class CreateClientDto {
   @IsString() @IsNotEmpty() companyName: string;
@@ -24,7 +33,10 @@ export class UpdateClientDto {
   @IsDateString() @IsOptional() contractEnd?: string;
   @IsNumber() @IsOptional() monthlyFee?: number;
   @IsInt() @IsOptional() numberOfGuardsAllocated?: number;
-  @IsString() @IsOptional() @IsIn(['PAID', 'UNPAID', 'OVERDUE']) billingStatus?: string;
+  @IsString()
+  @IsOptional()
+  @IsIn(['PAID', 'UNPAID', 'OVERDUE'])
+  billingStatus?: string;
   @IsNumber() @IsOptional() outstandingBalance?: number;
   @IsString() @IsOptional() notes?: string;
 }

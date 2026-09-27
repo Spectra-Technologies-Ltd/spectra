@@ -131,16 +131,18 @@ export class SiteService {
     });
 
     // Write audit log (fire-and-forget)
-    this.prisma.auditLog.create({
-      data: {
-        userId: userId || '',
-        action: 'SITE_DELETED',
-        entity: 'Site',
-        entityId: id,
-        ipAddress: '',
-        userAgent: '',
-      },
-    }).catch(() => {});
+    this.prisma.auditLog
+      .create({
+        data: {
+          userId: userId || '',
+          action: 'SITE_DELETED',
+          entity: 'Site',
+          entityId: id,
+          ipAddress: '',
+          userAgent: '',
+        },
+      })
+      .catch(() => {});
 
     return result;
   }

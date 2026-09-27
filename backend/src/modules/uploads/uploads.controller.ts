@@ -60,9 +60,7 @@ export class UploadsController {
       where: { id, organizationId: user.organizationId },
     });
     if (!guard) {
-      throw new BadRequestException(
-        'Guard not found in your organization',
-      );
+      throw new BadRequestException('Guard not found in your organization');
     }
 
     const url = await this.uploadAndPersist(file, 'guards');
@@ -139,7 +137,8 @@ export class UploadsController {
     const client = await this.prisma.client.findFirst({
       where: { id, organizationId: user.organizationId },
     });
-    if (!client) throw new BadRequestException('Client not found in your organization');
+    if (!client)
+      throw new BadRequestException('Client not found in your organization');
 
     const url = await this.uploadAndPersist(file, 'clients');
 
@@ -176,10 +175,13 @@ export class UploadsController {
     const incident = await this.prisma.incident.findFirst({
       where: { id, site: { organizationId: user.organizationId } },
     });
-    if (!incident) throw new BadRequestException('Incident not found in your organization');
+    if (!incident)
+      throw new BadRequestException('Incident not found in your organization');
 
     const url = await this.uploadAndPersist(file, 'incidents');
-    const existing = incident.photos ? incident.photos.split(',').filter(Boolean) : [];
+    const existing = incident.photos
+      ? incident.photos.split(',').filter(Boolean)
+      : [];
     const photos = [...existing, url].join(',');
 
     await this.prisma.incident.update({ where: { id }, data: { photos } });

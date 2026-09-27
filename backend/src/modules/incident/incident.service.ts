@@ -57,14 +57,16 @@ export class IncidentService {
     });
 
     // Trigger notification (fire-and-forget, don't block response)
-    this.notifications.sendIncidentAlert({
-      incidentId: incident.id,
-      type: dto.type,
-      severity: dto.severity,
-      siteId: dto.siteId,
-      siteName: site.name,
-      description: dto.description,
-    }).catch((err) => this.logger.warn('Notification failed:', err.message));
+    this.notifications
+      .sendIncidentAlert({
+        incidentId: incident.id,
+        type: dto.type,
+        severity: dto.severity,
+        siteId: dto.siteId,
+        siteName: site.name,
+        description: dto.description,
+      })
+      .catch((err) => this.logger.warn('Notification failed:', err.message));
 
     // Real-time push to the command center
     this.realtime.publish(user.organizationId, 'incident:created', {
@@ -79,17 +81,19 @@ export class IncidentService {
     });
 
     // Write audit log (fire-and-forget)
-    this.prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'INCIDENT_CREATED',
-        entity: 'Incident',
-        entityId: incident.id,
-        newValues: JSON.stringify({ type: dto.type, severity: dto.severity }),
-        ipAddress: '',
-        userAgent: '',
-      },
-    }).catch((err) => this.logger.warn('Audit log failed:', err.message));
+    this.prisma.auditLog
+      .create({
+        data: {
+          userId: user.id,
+          action: 'INCIDENT_CREATED',
+          entity: 'Incident',
+          entityId: incident.id,
+          newValues: JSON.stringify({ type: dto.type, severity: dto.severity }),
+          ipAddress: '',
+          userAgent: '',
+        },
+      })
+      .catch((err) => this.logger.warn('Audit log failed:', err.message));
 
     return incident;
   }
@@ -130,10 +134,12 @@ export class IncidentService {
       data.status = dto.status;
       data.investigationStatus = dto.status;
     }
-    if (dto.resolutionNotes !== undefined) data.resolutionNotes = dto.resolutionNotes;
+    if (dto.resolutionNotes !== undefined)
+      data.resolutionNotes = dto.resolutionNotes;
     if (dto.actionsTaken !== undefined) data.actionsTaken = dto.actionsTaken;
     if (dto.mediaUrls) data.photos = JSON.stringify(dto.mediaUrls);
-    if (dto.involvedParties) data.guardsInvolved = JSON.stringify(dto.involvedParties);
+    if (dto.involvedParties)
+      data.guardsInvolved = JSON.stringify(dto.involvedParties);
 
     return this.prisma.incident.update({ where: { id }, data });
   }

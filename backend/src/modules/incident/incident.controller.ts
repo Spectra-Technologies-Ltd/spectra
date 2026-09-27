@@ -20,7 +20,10 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthenticatedUser,
+} from '../auth/decorators/current-user.decorator';
 
 @Controller('incidents')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -32,7 +35,7 @@ export class IncidentController {
   @HttpCode(HttpStatus.CREATED)
   async reportIncident(
     @Body() dto: ReportIncidentDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.incidentService.reportIncident(dto, user);
   }
@@ -42,7 +45,7 @@ export class IncidentController {
   async updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateIncidentStatusDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.incidentService.updateStatus(id, dto, user.organizationId);
   }
@@ -52,7 +55,7 @@ export class IncidentController {
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateIncidentDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
     return this.incidentService.update(id, dto, user.organizationId);
   }
@@ -60,7 +63,7 @@ export class IncidentController {
   @Get()
   @Roles('ADMIN', 'EMPLOYEE')
   async findAll(
-    @CurrentUser() user: any,
+    @CurrentUser() user: AuthenticatedUser,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('siteId') siteId?: string,
@@ -82,7 +85,10 @@ export class IncidentController {
   @Delete(':id')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: string, @CurrentUser() user: any) {
+  async remove(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
     await this.incidentService.remove(id, user.organizationId);
   }
 

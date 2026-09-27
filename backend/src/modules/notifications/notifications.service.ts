@@ -44,13 +44,21 @@ export class NotificationsService {
 
     // Fire web push (best effort, never blocks)
     if (type !== 'IN_APP') {
-      this.sendPush(userId, organizationId, title, message, url).catch(() => {});
+      this.sendPush(userId, organizationId, title, message, url).catch(
+        () => {},
+      );
     }
 
     return notification;
   }
 
-  async sendPush(userId: string, organizationId: string, title: string, message: string, url?: string) {
+  async sendPush(
+    userId: string,
+    organizationId: string,
+    title: string,
+    message: string,
+    url?: string,
+  ) {
     const subs = await this.prisma.pushSubscription.findMany({
       where: { userId },
       select: { endpoint: true, p256dh: true, auth: true, id: true },
@@ -60,7 +68,9 @@ export class NotificationsService {
     for (const sub of subs) {
       const status = await this.push.send(sub, title, message, url);
       if (status === 404 || status === 410) {
-        await this.prisma.pushSubscription.delete({ where: { id: sub.id } }).catch(() => {});
+        await this.prisma.pushSubscription
+          .delete({ where: { id: sub.id } })
+          .catch(() => {});
       }
     }
     this.logger.debug(`Push sent to ${subs.length} device(s)`);
@@ -78,7 +88,8 @@ export class NotificationsService {
     try {
       const staff = await this.prisma.user.findMany({
         where: {
-          organizationId: incidentData.organizationId ?? incidentData.site?.organizationId,
+          organizationId:
+            incidentData.organizationId ?? incidentData.site?.organizationId,
           role: { in: ['CEO', 'OPERATIONS_MANAGER', 'HR', 'SUPERVISOR'] },
           isActive: true,
         },
@@ -92,17 +103,27 @@ export class NotificationsService {
           `Incident: ${incidentData.title ?? incidentData.type ?? 'New incident'}`,
           `${incidentData.severity ?? ''} ${incidentData.type ?? 'ALERT'} at ${incidentData.siteName ?? 'site'}${incidentData.description ? ` — ${String(incidentData.description).slice(0, 120)}` : ''}`,
           'ALERT',
-          incidentData.incidentId ? `/incidents/${incidentData.incidentId}` : '/incidents',
-        ).catch((err) => this.logger.warn(`Incident notification failed: ${err.message}`));
+          incidentData.incidentId
+            ? `/incidents/${incidentData.incidentId}`
+            : '/incidents',
+        ).catch((err) =>
+          this.logger.warn(`Incident notification failed: ${err.message}`),
+        );
       }
     } catch (err) {
-      this.logger.warn(`Incident alert fan-out failed: ${(err as Error).message}`);
+      this.logger.warn(
+        `Incident alert fan-out failed: ${(err as Error).message}`,
+      );
     }
   }
 
   async sendAttendanceReport(siteId: string) {
-    await this.notificationsQueue.add('attendance-report', { siteId }, {
-      attempts: 2,
-    });
+    await this.notificationsQueue.add(
+      'attendance-report',
+      { siteId },
+      {
+        attempts: 2,
+      },
+    );
   }
 }
