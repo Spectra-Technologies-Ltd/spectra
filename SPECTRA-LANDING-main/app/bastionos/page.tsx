@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import type { Metadata } from 'next'
 import { ArrowUpRight } from '@/components/icon'
 import SiteHeader from '@/components/site-header'
@@ -14,15 +13,6 @@ export const metadata: Metadata = pageMetadata({
     'BastionOS is Spectra\u2019s modular Security Operations Platform — the operational command center for private security companies.',
   path: '/bastionos',
 })
-
-const capabilities = [
-  ['01', 'Guard Operations', 'Personnel, assignments and coverage managed in one real-time view. No spreadsheets, no radio noise.'],
-  ['02', 'Patrols', 'Patrol planning, live tracking and automatic verification — routes that actually get walked, and proof that they did.'],
-  ['03', 'Attendance', 'Digital clock-in and attendance tracking tied to shifts, sites and payroll-ready records.'],
-  ['04', 'Incidents', 'Incident logging, classification and escalation with a full audit trail from report to resolution.'],
-  ['05', 'Reporting', 'Operational reports generated automatically — daily, weekly and per-client, straight from live data.'],
-  ['06', 'Analytics', 'Predictive insights and decision support powered by Napoleon, Spectra\u2019s machine intelligence layer.'],
-] as const
 
 const specs = [
   ['Platform', 'Modular Security Operations Platform'],
@@ -61,53 +51,11 @@ export default function BastionOSPage() {
         </div>
       </section>
 
-      {/* The system — a single real-time operational picture */}
-      <section id="system" className="capabilities-section page-section-tight">
-        <div className="section-kicker"><span>02</span><span>THE SYSTEM</span></div>
-        <div className="capabilities-layout">
-          <div className="capability-sticky">
-            <div className="capability-detail">
-              <div className="fade-swap">
-                <p className="body-copy">Personnel, clients, sites, assets and incidents — unified, automated and live. One real-time picture of the entire operation.</p>
-              </div>
-              <div className="cap-stat"><strong>1</strong><span>real-time view</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Full-bleed mission card — the landing page architecture-card concept */}
-      <section id="capabilities" className="missions-section page-section-tight">
-        <div className="section-kicker"><span>03</span><span>CORE CAPABILITIES</span></div>
-        <div className="mission-card mission-card-framed">
-          <Image
-            src="/images/spectra-bastion-layer.jpg"
-            alt="The BastionOS application layer"
-            fill
-            sizes="(max-width: 800px) 100vw, 86vw"
-            className="mission-image"
-          />
-          <div className="mission-shade" />
-          <div className="mission-number">06</div>
-        </div>
-        <div className="card-grid card-grid-spaced">
-          {capabilities.map(([index, title, copy], i) => (
-            <Reveal key={title} delay={i * 70}>
-              <div className="page-card">
-                <span className="card-index">{index}</span>
-                <h3>{title}</h3>
-                <p>{copy}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
       {/* Stack specs */}
       <section id="stack" className="page-section">
         <div className="page-section-head">
           <Reveal>
-            <p className="eyebrow">04 / THE STACK</p>
+            <p className="eyebrow">02 / THE STACK</p>
             <h2 className="section-heading">BastionOS + Napoleon,<br />one system.</h2>
           </Reveal>
           <Reveal><p className="body-copy">The operating foundation and the intelligence layer are built to work as a single architecture.</p></Reveal>

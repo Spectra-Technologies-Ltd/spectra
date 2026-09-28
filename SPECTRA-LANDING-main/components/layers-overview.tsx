@@ -43,7 +43,7 @@ export function LayersOverview() {
         <ScrollReveal>
           <div className="sp-overview-inner">
             <h2 className="sp-display" id="napoleon-heading">
-              Napoleon<br />Compute What <em>Comes Next</em>
+              Napoleon<br /><em>The Intelligence Layer</em>
             </h2>
             <Link href="/napoleon" className="sp-textlink">
               Explore Napoleon
