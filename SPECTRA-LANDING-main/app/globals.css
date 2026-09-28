@@ -695,6 +695,63 @@ section[id] { scroll-margin-top: 90px; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
+/* ── Mobile full-screen rhythm ────────────────────────────────────
+   The three public entry points should feel intentional on a phone:
+   one complete thought per viewport, then a natural scroll into detail.
+   svh keeps the composition stable while the browser chrome moves. */
+@media (max-width: 800px) {
+  .hero-section,
+  .home-manifesto,
+  .sp-overview,
+  .page-hero {
+    min-height: 100svh;
+  }
+
+  .hero-section {
+    min-height: 100svh;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .home-manifesto,
+  .sp-overview {
+    align-items: center;
+    display: grid;
+    padding-bottom: max(34px, env(safe-area-inset-bottom));
+    padding-top: max(88px, calc(78px + env(safe-area-inset-top)));
+  }
+
+  .home-manifesto .manifesto-meta {
+    margin-top: 34px;
+  }
+
+  .sp-overview-inner {
+    width: 100%;
+  }
+
+  .page-hero {
+    justify-content: center;
+    padding-bottom: max(66px, calc(42px + env(safe-area-inset-bottom)));
+    padding-top: max(118px, calc(88px + env(safe-area-inset-top)));
+  }
+
+  .page-hero .section-kicker {
+    margin-bottom: 22px;
+  }
+
+  .page-hero h1 {
+    margin: 0;
+    max-width: 10ch;
+  }
+
+  .page-hero-meta {
+    margin-top: 30px;
+  }
+
+  .page-hero-bottom {
+    bottom: max(18px, env(safe-area-inset-bottom));
+  }
+}
+
 /* ── Page-wide motion system ── */
 @keyframes hero-rise {
   from {

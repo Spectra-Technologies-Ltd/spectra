@@ -38,7 +38,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="manifesto-section" id="company">
+      <section className="manifesto-section home-manifesto" id="company">
         <PrintText tag="h2" lines={[{ text: 'The infrastructure' }, { text: 'for intelligence.', style: 'em' }]} />
         <div className="manifesto-meta">
           <PrintText
