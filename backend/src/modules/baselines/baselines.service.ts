@@ -44,16 +44,25 @@ export type BaselineVerdict = {
   sampleDays: number;
 };
 
-export type SurpriseVerdict = {
+export type SurpriseScore = {
   siteId: string;
   siteName: string;
   metric: BaselineMetric;
   value: number;
   days: number;
-  baseline: number | null;
-  dailyStdDev: number | null;
+  /** Baseline days that contained an observation. */
+  sampleSize: number;
+  /** Per-day mean across the baseline window. */
+  baselineMean: number;
+  /** Standard deviation of the per-day baseline values. */
+  baselineStdDev: number;
+  /** The observation expressed per day (equals `value` for a single day). */
   observedPerDay: number;
-  deviationPct: number | null;
+  deviationPct: number;
+  /** 0.3 at the baseline mean, approaching 1 further out. */
+  surprise: number;
+  /** Empirical share of baseline days at or below the observation. */
+  percentile: number;
   zScore: number | null;
   surprised: boolean;
   severity: 'LOW' | 'MEDIUM' | 'HIGH';
@@ -238,113 +247,7 @@ export class BaselinesService {
     };
   }
 
-  /**
-   * Score a single observation against a site's baseline for one metric.
-   * This is the "surprise" signal: how unexpected is this value?
-   */
-  async evaluateObservation(
-    organizationId: string,
-    siteId: string,
-    metric: BaselineMetric,
-    value: number,
-    days = DEFAULT_BASELINE_DAYS,
-  ): Promise<SurpriseVerdict> {
-    const site = await this.assertSite(organizationId, siteId);
-    const now = Date.now();
-    const spanStart = this.startOfDay(new Date(now - days * DAY_MS));
-    const dayKeys = this.dayKeys(days, now);
 
-    let baselineValues: number[] = [];
-
-    if (metric === 'LATE_COUNT') {
-      const rows = await this.prisma.attendance.findMany({
-        where: { siteId, checkInTime: { gte: spanStart } },
-        select: { checkInTime: true, isLate: true, status: true },
-      });
-      const byDay = new Map<string, number>();
-      for (const a of rows) {
-        if (!this.isLateRow(a)) continue;
-        const k = this.dayKey(a.checkInTime);
-        byDay.set(k, (byDay.get(k) ?? 0) + 1);
-      }
-      baselineValues = dayKeys.map((k) => byDay.get(k) ?? 0);
-    } else if (metric === 'INCIDENT_COUNT') {
-      const rows = await this.prisma.incident.findMany({
-        where: { siteId, reportedAt: { gte: spanStart } },
-        select: { reportedAt: true },
-      });
-      const byDay = new Map<string, number>();
-      for (const i of rows) {
-        const k = this.dayKey(i.reportedAt);
-        byDay.set(k, (byDay.get(k) ?? 0) + 1);
-      }
-      baselineValues = dayKeys.map((k) => byDay.get(k) ?? 0);
-    } else {
-      const rows = await this.prisma.patrolRecord.findMany({
-        where: { route: { siteId }, startTime: { gte: spanStart } },
-        select: { startTime: true, endTime: true },
-      });
-      const byDay = new Map<string, { total: number; n: number }>();
-      for (const p of rows) {
-        if (!p.endTime) continue;
-        const ms = p.endTime.getTime() - p.startTime.getTime();
-        if (ms <= 0) continue;
-        const k = this.dayKey(p.startTime);
-        const cur = byDay.get(k) ?? { total: 0, n: 0 };
-        byDay.set(k, { total: cur.total + ms, n: cur.n + 1 });
-      }
-      baselineValues = dayKeys
-        .map((k) => byDay.get(k))
-        .filter((v): v is { total: number; n: number } => !!v)
-        .map((v) => v.total / v.n);
-    }
-
-    const baseline = baselineValues.length > 0 ? mean(baselineValues) : null;
-    const sd = baselineValues.length > 1 ? stddev(baselineValues) : null;
-    const observedPerDay = metric === 'PATROL_DURATION_MS' ? value : value / days;
-
-    const deviationPct =
-      baseline === null || baseline === 0
-        ? value > 0
-          ? 100
-          : 0
-        : ((observedPerDay - baseline) / baseline) * 100;
-    const zScore = baseline !== null && sd ? (observedPerDay - baseline) / sd : null;
-
-    const severity: SurpriseVerdict['severity'] =
-      (zScore !== null && Math.abs(zScore) >= Z_FLAG * 1.5) || Math.abs(deviationPct) >= 100
-        ? 'HIGH'
-        : (zScore !== null && Math.abs(zScore) >= Z_FLAG) || Math.abs(deviationPct) >= PCT_FLAG
-          ? 'MEDIUM'
-          : 'LOW';
-
-    const unitLabel = metric === 'PATROL_DURATION_MS' ? 'ms' : 'per day';
-    const explanation =
-      baseline === null
-        ? `No baseline for ${metric} at ${site.name} over the last ${days} days — this is the first observation.`
-        : `${metric} at ${site.name} is ${Math.abs(deviationPct).toFixed(1)}% ${
-            observedPerDay >= baseline ? 'above' : 'below'
-          } the ${days}-day baseline (${baseline.toFixed(1)} ${unitLabel} vs ${observedPerDay.toFixed(
-            1,
-          )} ${unitLabel}).`;
-
-    return {
-      siteId: site.id,
-      siteName: site.name,
-      metric,
-      value,
-      days,
-      baseline,
-      dailyStdDev: sd,
-      observedPerDay: Math.round(observedPerDay * 100) / 100,
-      deviationPct: Math.round(deviationPct * 10) / 10,
-      zScore: zScore === null ? null : Math.round(zScore * 100) / 100,
-      surprised: severity !== 'LOW',
-      severity,
-      thresholds: { zScore: Z_FLAG, deviationPct: PCT_FLAG },
-      explanation,
-    };
-  }
 
   // ── Baseline statistics ───────────────────────────────────────────────────
 
@@ -458,16 +361,31 @@ export class BaselinesService {
     metric: BaselineMetric,
     value: number,
     days = DEFAULT_BASELINE_DAYS,
-  ) {
-    await this.assertSite(organizationId, siteId);
+  ): Promise<SurpriseScore> {
+    const site = await this.assertSite(organizationId, siteId);
     const samples = (await this.collectBaseline(organizationId, siteId, days))[metric];
 
+    // No history yet: the observation is new, not a deviation from a baseline.
     if (samples.length === 0) {
+      const first = value > 0;
       return {
-        surprise: value > 0 ? 1 : 0,
-        percentile: value > 0 ? 100 : 0,
-        zScore: null,
+        siteId: site.id,
+        siteName: site.name,
+        metric,
+        value,
+        days,
+        sampleSize: 0,
         baselineMean: 0,
+        baselineStdDev: 0,
+        observedPerDay: value,
+        deviationPct: first ? 100 : 0,
+        surprise: first ? 1 : 0,
+        percentile: first ? 100 : 0,
+        zScore: null,
+        surprised: first,
+        severity: first ? 'HIGH' : 'LOW',
+        thresholds: { zScore: Z_FLAG, deviationPct: PCT_FLAG },
+        explanation: `No baseline for ${metric} at ${site.name} over the last ${days} days — this is the first observation.`,
       };
     }
 
@@ -481,11 +399,36 @@ export class BaselinesService {
           : 0.3
         : 1 - 0.7 * Math.exp(-(zScore * zScore) / 2);
 
+    const deviationPct =
+      baselineMean === 0 ? (value > 0 ? 100 : 0) : ((value - baselineMean) / baselineMean) * 100;
+
+    const severity: SurpriseScore['severity'] =
+      (zScore !== null && Math.abs(zScore) >= Z_FLAG * 1.5) || Math.abs(deviationPct) >= 100
+        ? 'HIGH'
+        : (zScore !== null && Math.abs(zScore) >= Z_FLAG) || Math.abs(deviationPct) >= PCT_FLAG
+          ? 'MEDIUM'
+          : 'LOW';
+
     return {
+      siteId: site.id,
+      siteName: site.name,
+      metric,
+      value,
+      days,
+      sampleSize: samples.length,
+      baselineMean: round2(baselineMean),
+      baselineStdDev: round2(sd),
+      observedPerDay: round2(value),
+      deviationPct: Math.round(deviationPct * 10) / 10,
       surprise: round2(surprise),
       percentile: empiricalPercentile(samples, value) ?? 0,
       zScore: zScore === null ? null : round2(zScore),
-      baselineMean: round2(baselineMean),
+      surprised: severity !== 'LOW',
+      severity,
+      thresholds: { zScore: Z_FLAG, deviationPct: PCT_FLAG },
+      explanation: `${metric} at ${site.name} is ${Math.abs(deviationPct).toFixed(1)}% ${
+        value >= baselineMean ? 'above' : 'below'
+      } the ${days}-day baseline (${baselineMean.toFixed(1)} per day vs ${value}).`,
     };
   }
 

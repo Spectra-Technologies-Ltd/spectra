@@ -85,7 +85,7 @@ export class ReportsProcessor extends WorkerHost {
             orderBy: { reportedAt: 'desc' },
           }),
           this.prisma.attendance.findMany({
-            where: { guard: { organizationId: org.id }, createdAt: { gte: since } },
+            where: { guard: { organizationId: org.id }, checkInTime: { gte: since } },
             select: { isLate: true, isAbsent: true, status: true },
           }),
           this.prisma.guard.findMany({
@@ -93,7 +93,7 @@ export class ReportsProcessor extends WorkerHost {
             select: { fullName: true, performanceScore: true },
           }),
           this.prisma.patrolRecord.findMany({
-            where: { guard: { organizationId: org.id }, createdAt: { gte: since } },
+            where: { guard: { organizationId: org.id }, startTime: { gte: since } },
             select: { completionPercentage: true },
           }),
         ]);

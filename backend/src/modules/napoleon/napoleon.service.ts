@@ -39,7 +39,9 @@ export class NapoleonService {
     value: number,
     days: number,
   ) {
-    return this.baselines.evaluateObservation(organizationId, siteId, metric, value, days);
+    // Delegate to the baselines layer so both `surprise` endpoints return one
+    // shape computed one way.
+    return this.baselines.getSurprise(organizationId, siteId, metric, value, days);
   }
 
   private startOfWindow(days: number): Date {
@@ -69,11 +71,11 @@ export class NapoleonService {
         select: { severity: true, status: true, siteId: true, reportedAt: true },
       }),
       this.prisma.attendance.findMany({
-        where: { guard: { organizationId }, createdAt: { gte: since14 } },
+        where: { guard: { organizationId }, checkInTime: { gte: since14 } },
         select: { isLate: true, isAbsent: true, status: true },
       }),
       this.prisma.patrolRecord.findMany({
-        where: { guard: { organizationId }, createdAt: { gte: since14 } },
+        where: { guard: { organizationId }, startTime: { gte: since14 } },
         select: { completionPercentage: true },
       }),
     ]);
@@ -138,7 +140,7 @@ export class NapoleonService {
         select: { severity: true, siteId: true, reportedAt: true, status: true },
       }),
       this.prisma.attendance.findMany({
-        where: { guard: { organizationId }, createdAt: { gte: since } },
+        where: { guard: { organizationId }, checkInTime: { gte: since } },
         select: { siteId: true, isLate: true, isAbsent: true, status: true },
       }),
     ]);
@@ -150,7 +152,7 @@ export class NapoleonService {
     });
     const routeToSite = new Map(patrolRoutes.map((r) => [r.id, r.siteId]));
     const patrolRecords = await this.prisma.patrolRecord.findMany({
-      where: { guard: { organizationId }, createdAt: { gte: since } },
+      where: { guard: { organizationId }, startTime: { gte: since } },
       select: { routeId: true, completionPercentage: true },
     });
     const patrolBySite = new Map<string, number[]>();
@@ -230,8 +232,8 @@ export class NapoleonService {
         },
       }),
       this.prisma.attendance.findMany({
-        where: { guard: { organizationId }, createdAt: { gte: since } },
-        select: { guardId: true, isLate: true, isAbsent: true, status: true, createdAt: true },
+        where: { guard: { organizationId }, checkInTime: { gte: since } },
+        select: { guardId: true, isLate: true, isAbsent: true, status: true, checkInTime: true },
       }),
     ]);
 
@@ -243,7 +245,7 @@ export class NapoleonService {
     for (const a of attendance) {
       const row = byGuard.get(a.guardId);
       if (!row) continue;
-      row.days.add(a.createdAt.toISOString().slice(0, 10));
+      row.days.add(a.checkInTime.toISOString().slice(0, 10));
       if (a.isAbsent || a.status === 'ABSENT') row.absent++;
       else if (a.isLate) row.late++;
       if (a.status === 'FLAGGED') row.flagged++;
