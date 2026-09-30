@@ -60,6 +60,23 @@ export class AttendanceService {
     // 1. Verify site and guard exist
     const { guard, site } = await this.resolveGuardAndSite(dto, user);
 
+    // 1b. If an NFC badge was presented it must be registered to this guard —
+    // this is what stops a guard clocking in with someone else's card.
+    let checkInCardId: string | null = null;
+    if (dto.nfcToken) {
+      const card = await this.prisma.nfcCard.findFirst({
+        where: { token: dto.nfcToken, organizationId: user.organizationId },
+      });
+      if (!card) throw new BadRequestException('NFC card not recognised');
+      if (card.status !== 'ACTIVE') {
+        throw new BadRequestException('NFC card is not active');
+      }
+      if (card.guardId !== guard.id) {
+        throw new ForbiddenException('NFC card is not registered to this guard');
+      }
+      checkInCardId = card.id;
+    }
+
     // 2. Check if guard is already checked in today without checking out
     const now = new Date();
     const today = new Date(now);
@@ -110,7 +127,8 @@ export class AttendanceService {
         checkInLatitude: dto.latitude,
         checkInLongitude: dto.longitude,
         checkInLocation: JSON.stringify({ lat: dto.latitude, lng: dto.longitude }),
-        checkInMethod: 'GPS',
+        checkInMethod: checkInCardId ? 'NFC' : 'GPS',
+        checkInCardId,
         status,
         photoUrl: dto.photoUrl ?? '',
         verifiedStatus: isWithinGeofence,

@@ -11,6 +11,7 @@ import {
   X,
   Siren,
   BellRing,
+  Nfc,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/api";
@@ -30,6 +31,12 @@ export default function MobileDashboard() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [sosState, setSosState] = useState<"idle" | "sending" | "sent">("idle");
   const [checkInResult, setCheckInResult] = useState<string | null>(null);
+  // Optional NFC badge: when set, it is sent as `nfcToken` with check-in.
+  const [nfcToken, setNfcToken] = useState<string | null>(null);
+  const [nfcStatus, setNfcStatus] = useState<
+    "idle" | "scanning" | "scanned" | "error"
+  >("idle");
+  const [nfcError, setNfcError] = useState<string | null>(null);
   const [alertsEnabled, setAlertsEnabled] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -138,6 +145,39 @@ export default function MobileDashboard() {
     reader.readAsDataURL(file);
   };
 
+  // Reads the NDEF text record written on the badge (Web NFC cannot read a
+  // card's raw UID). Entirely optional — check-in works without it.
+  const handleScanBadge = async () => {
+    setNfcError(null);
+    if (typeof window === "undefined" || !("NDEFReader" in window)) {
+      setNfcStatus("error");
+      setNfcError(
+        "NFC scanning needs Chrome or Edge on an Android phone over HTTPS.",
+      );
+      return;
+    }
+    setNfcStatus("scanning");
+    try {
+      const reader = new (window as any).NDEFReader();
+      await reader.scan();
+      reader.onreading = (e: any) => {
+        for (const rec of e.message.records) {
+          if (rec.recordType === "text") {
+            const text = new TextDecoder(rec.encoding || "utf-8").decode(
+              rec.data,
+            );
+            setNfcToken(text.trim());
+            setNfcStatus("scanned");
+            return;
+          }
+        }
+      };
+    } catch (e: any) {
+      setNfcStatus("error");
+      setNfcError(e?.message ?? "Could not start the NFC scan.");
+    }
+  };
+
   const handleCheckIn = async () => {
     setIsProcessing(true);
     setError(null);
@@ -151,6 +191,7 @@ export default function MobileDashboard() {
             const res = await api.post("/attendance/check-in", {
               latitude,
               longitude,
+              ...(nfcToken ? { nfcToken } : {}),
             });
 
             // If photo was captured, upload it
@@ -328,6 +369,62 @@ export default function MobileDashboard() {
           </p>
         </div>
       )}
+
+      {/* Optional NFC badge step */}
+      <div className="bg-card rounded-2xl p-4 border border-border">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Nfc className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium text-foreground">
+              Badge check-in (optional)
+            </span>
+          </div>
+          {nfcStatus === "scanned" && nfcToken && (
+            <button
+              onClick={() => {
+                setNfcToken(null);
+                setNfcStatus("idle");
+                setNfcError(null);
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {nfcStatus === "scanned" && nfcToken ? (
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-success/20 bg-success/10 p-3 text-xs text-success">
+            <CheckCircle2 className="h-4 w-4 shrink-0" /> Badge scanned — it will be
+            sent with your check-in
+          </div>
+        ) : nfcStatus === "scanning" ? (
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 p-3 text-xs text-primary">
+            <Clock className="h-4 w-4 shrink-0 animate-spin" /> Hold your badge to the back
+            of the phone…
+          </div>
+        ) : (
+          <>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Tap your NFC badge instead of relying on GPS alone. Skip this to
+              check in as usual.
+            </p>
+            <button
+              onClick={handleScanBadge}
+              disabled={isProcessing}
+              className="mt-3 w-full flex items-center justify-center gap-2 rounded-xl border border-border bg-secondary p-3 text-sm font-medium text-foreground hover:border-primary/50 transition-colors disabled:opacity-50"
+            >
+              <Nfc className="h-4 w-4" /> Scan badge
+            </button>
+          </>
+        )}
+
+        {nfcError && (
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-warning/20 bg-warning/10 p-3 text-xs text-warning">
+            <AlertTriangle className="h-4 w-4 shrink-0" /> {nfcError}
+          </div>
+        )}
+      </div>
 
       {/* Action Button */}
       <div className="flex flex-col items-center justify-center py-8">

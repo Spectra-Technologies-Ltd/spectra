@@ -64,6 +64,7 @@ model Organization {
   clients   Client[]
   sites     Site[]
   alerts    Alert[]
+  nfcCards  NfcCard[]
 }
 
 model Guard {
@@ -102,6 +103,7 @@ model Guard {
   patrolLogs             PatrolLog[]
   patrolRoutes           PatrolRoute[]
   patrolRecords          PatrolRecord[]
+  nfcCards               NfcCard[]
 }
 
 model Client {
@@ -174,7 +176,9 @@ model Attendance {
   checkInLongitude       Float
   checkOutLatitude       Float?
   checkOutLongitude      Float?
-  checkInMethod          String    // "GPS", "QR", "SUPERVISOR_APPROVAL"
+  checkInMethod          String    // "GPS", "QR", "NFC", "SUPERVISOR_APPROVAL"
+  // Set when the check-in was made with a registered NFC badge.
+  checkInCardId          String?
   checkOutMethod         String?   // "GPS", "QR", "SUPERVISOR_APPROVAL"
   checkInLocation        String?
   checkOutLocation       String?
@@ -363,4 +367,25 @@ model RefreshToken {
   tokenHash String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+/// A registered NFC badge tied to a guard. Web NFC cannot read a card's UID,
+/// so the server issues an opaque `token` that the browser writes to the card
+/// as an NDEF text record; check-in replays that token for verification.
+model NfcCard {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  guardId        String?
+  guard          Guard?       @relation(fields: [guardId], references: [id])
+  token          String       @unique
+  label          String?
+  // "UNASSIGNED" | "ACTIVE" | "REVOKED"
+  status         String       @default("UNASSIGNED")
+  assignedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([guardId])
 }

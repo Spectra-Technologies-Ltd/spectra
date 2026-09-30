@@ -6,6 +6,8 @@ export class CheckInDto {
   @IsNumber() latitude: number;
   @IsNumber() longitude: number;
   @IsString() @IsOptional() photoUrl?: string;
+  /** Token read from the guard's NFC badge, when checking in by card. */
+  @IsString() @IsOptional() nfcToken?: string;
 }
 
 export class CheckOutDto {

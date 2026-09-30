@@ -21,6 +21,7 @@ import { AuditModule } from './modules/audit/audit.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { NapoleonModule } from './modules/napoleon/napoleon.module';
 import { PushModule } from './modules/push/push.module';
+import { NfcModule } from './modules/nfc/nfc.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { PushModule } from './modules/push/push.module';
     RealtimeModule,
     NapoleonModule,
     PushModule,
+    NfcModule,
   ],
   controllers: [AppController],
   providers: [AppService],
