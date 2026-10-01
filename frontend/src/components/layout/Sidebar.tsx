@@ -19,6 +19,7 @@ import {
   Settings,
   Sparkles,
   BrainCircuit,
+  Nfc,
   ChevronsLeft,
   ChevronsRight,
   LogOut,
@@ -44,6 +45,7 @@ const navSections = [
     label: 'Operations',
     items: [
       { label: 'Attendance', href: '/attendance', icon: ClipboardCheck },
+      { label: 'Badges', href: '/nfc', icon: Nfc },
       { label: 'Patrols', href: '/patrols', icon: Route },
       { label: 'Sites', href: '/sites', icon: MapPin },
       { label: 'Clients', href: '/clients', icon: Building2 },

@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Sparkles,
   BrainCircuit,
+  Nfc,
 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/api'
@@ -31,6 +32,7 @@ const items = [
   { label: 'Personnel', href: '/guards', icon: Users, hint: 'Go to' },
   { label: 'Incidents', href: '/incidents', icon: AlertTriangle, hint: 'Go to' },
   { label: 'Attendance', href: '/attendance', icon: ClipboardCheck, hint: 'Go to' },
+  { label: 'Badges', href: '/nfc', icon: Nfc, hint: 'Go to' },
   { label: 'Patrols', href: '/patrols', icon: Route, hint: 'Go to' },
   { label: 'Sites', href: '/sites', icon: MapPin, hint: 'Go to' },
   { label: 'Clients', href: '/clients', icon: Building2, hint: 'Go to' },
