@@ -14,3 +14,7 @@ SECURITY_AUDIT.md
 backend/prisma/dev.db
 /spectra-main/
 cookies.txt
+
+# Local dev TLS (generated with openssl) — never commit the private keys
+frontend/certs/
+frontend/public/spectra-ca.crt
