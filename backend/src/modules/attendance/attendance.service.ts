@@ -77,40 +77,138 @@ export class AttendanceService {
       checkInCardId = card.id;
     }
 
-    // 2. Check if guard is already checked in today without checking out
+    return this.createCheckInRecord({
+      guard,
+      site,
+      organizationId: user.organizationId,
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+      photoUrl: dto.photoUrl,
+      method: checkInCardId ? 'NFC' : 'GPS',
+      cardId: checkInCardId,
+      actorUserId: user.id,
+    });
+  }
+
+  /**
+   * Public, badge-authenticated check-in. Guards have no accounts: the token
+   * read from the card is the credential and the only thing identifying them.
+   */
+  async badgeCheckIn(dto: {
+    token: string;
+    latitude: number;
+    longitude: number;
+    photoUrl?: string;
+  }) {
+    const card = await this.prisma.nfcCard.findUnique({
+      where: { token: dto.token },
+      include: { guard: { include: { assignedSite: true } } },
+    });
+    if (!card) throw new BadRequestException('Badge not recognised');
+    if (card.status !== 'ACTIVE') throw new BadRequestException('Badge is not active');
+    if (!card.guard) throw new BadRequestException('Badge is not assigned to a guard');
+    if (!card.guard.assignedSite) {
+      throw new BadRequestException('Guard is not assigned to a site');
+    }
+
+    return this.createCheckInRecord({
+      guard: card.guard,
+      site: card.guard.assignedSite,
+      organizationId: card.organizationId,
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+      photoUrl: dto.photoUrl,
+      method: 'NFC',
+      cardId: card.id,
+      actorUserId: null,
+    });
+  }
+
+  /**
+   * Read-only badge profile: the same tap unlocks the guard's own record.
+   * Nothing is cached on the device — every view is a fresh tap + server read.
+   */
+  async badgeProfile(token: string) {
+    const card = await this.prisma.nfcCard.findUnique({
+      where: { token },
+      include: {
+        guard: { include: { assignedSite: { select: { id: true, name: true } } } },
+      },
+    });
+    if (!card) throw new BadRequestException('Badge not recognised');
+    if (card.status !== 'ACTIVE') throw new BadRequestException('Badge is not active');
+    if (!card.guard) throw new BadRequestException('Badge is not assigned to a guard');
+
+    const guard = card.guard;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [active, recent] = await Promise.all([
+      this.prisma.attendance.findFirst({
+        where: { guardId: guard.id, checkInTime: { gte: today }, checkOutTime: null },
+        select: { id: true, checkInTime: true, status: true },
+      }),
+      this.prisma.attendance.findMany({
+        where: { guardId: guard.id },
+        orderBy: { checkInTime: 'desc' },
+        take: 10,
+        select: { id: true, checkInTime: true, checkOutTime: true, status: true, isLate: true },
+      }),
+    ]);
+
+    return {
+      guard: {
+        id: guard.id,
+        fullName: guard.fullName,
+        shift: guard.currentShift,
+        site: guard.assignedSite?.name ?? null,
+        performanceScore: guard.performanceScore,
+      },
+      checkedIn: Boolean(active),
+      activeCheckIn: active
+        ? { time: active.checkInTime.toISOString(), status: active.status }
+        : null,
+      recent,
+    };
+  }
+
+  /**
+   * Shared record-creation path for session check-ins and badge check-ins, so
+   * the shift, geofence and status rules live in exactly one place.
+   */
+  private async createCheckInRecord(params: {
+    guard: { id: string; fullName: string; currentShift: string };
+    site: { id: string; name: string; latitude: number; longitude: number };
+    organizationId: string;
+    latitude: number;
+    longitude: number;
+    photoUrl?: string;
+    method: 'GPS' | 'NFC';
+    cardId: string | null;
+    actorUserId: string | null;
+  }) {
+    const { guard, site, organizationId, latitude, longitude } = params;
+
     const now = new Date();
     const today = new Date(now);
     today.setHours(0, 0, 0, 0);
 
     const existingRecord = await this.prisma.attendance.findFirst({
-      where: {
-        guardId: guard.id,
-        createdAt: { gte: today },
-        checkOutTime: null,
-      },
+      where: { guardId: guard.id, createdAt: { gte: today }, checkOutTime: null },
     });
+    if (existingRecord) throw new BadRequestException('Guard is already checked in.');
 
-    if (existingRecord) {
-      throw new BadRequestException('Guard is already checked in.');
-    }
-
-    // 3. Shift-aware validation: determine expected check-in window
     let isLate = false;
     if (guard.currentShift === 'DAY') {
-      // Day shift expected check-in: 05:00 - 08:00
-      const hour = now.getHours();
-      if (hour > 8) isLate = true;
+      if (now.getHours() > 8) isLate = true;
     } else if (guard.currentShift === 'NIGHT') {
-      // Night shift expected check-in: 17:00 - 20:00
       const hour = now.getHours();
       if (hour > 20 || hour < 5) isLate = true;
     }
 
-    // 4. Geofence Check (must be within 200 meters of the site)
-    const distance = this.getDistance(site.latitude, site.longitude, dto.latitude, dto.longitude);
-    const isWithinGeofence = distance <= 200; // 200m radius
+    const distance = this.getDistance(site.latitude, site.longitude, latitude, longitude);
+    const isWithinGeofence = distance <= 200;
 
-    // 5. Determine status
     let status = 'ON_TIME';
     if (!isWithinGeofence) {
       status = 'FLAGGED';
@@ -118,29 +216,26 @@ export class AttendanceService {
       status = 'LATE';
     }
 
-    // 6. Create attendance record
     const record = await this.prisma.attendance.create({
       data: {
         guardId: guard.id,
         siteId: site.id,
         checkInTime: now,
-        checkInLatitude: dto.latitude,
-        checkInLongitude: dto.longitude,
-        checkInLocation: JSON.stringify({ lat: dto.latitude, lng: dto.longitude }),
-        checkInMethod: checkInCardId ? 'NFC' : 'GPS',
-        checkInCardId,
+        checkInLatitude: latitude,
+        checkInLongitude: longitude,
+        checkInLocation: JSON.stringify({ lat: latitude, lng: longitude }),
+        checkInMethod: params.method,
+        checkInCardId: params.cardId,
         status,
-        photoUrl: dto.photoUrl ?? '',
+        photoUrl: params.photoUrl ?? '',
         verifiedStatus: isWithinGeofence,
         isLate,
       },
     });
 
-    // 7. Update guard performance score based on attendance rate
     await this.updateGuardPerformanceScore(guard.id);
 
-    // Real-time check-in event for the command center
-    this.realtime.publish(user.organizationId, 'attendance:checkin', {
+    this.realtime.publish(organizationId, 'attendance:checkin', {
       id: record.id,
       guardId: guard.id,
       guardName: guard.fullName,
@@ -152,24 +247,26 @@ export class AttendanceService {
       time: record.checkInTime.toISOString(),
     });
 
-    // 8. Write audit log (fire-and-forget)
-    this.prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'ATTENDANCE_CHECK_IN',
-        entity: 'Attendance',
-        entityId: record.id,
-        newValues: JSON.stringify({
-          guardId: guard.id,
-          siteId: site.id,
-          status,
-          isLate,
-          withinGeofence: isWithinGeofence,
-        }),
-        ipAddress: '',
-        userAgent: '',
-      },
-    }).catch(() => {});
+    this.prisma.auditLog
+      .create({
+        data: {
+          userId: params.actorUserId,
+          action: 'ATTENDANCE_CHECK_IN',
+          entity: 'Attendance',
+          entityId: record.id,
+          newValues: JSON.stringify({
+            guardId: guard.id,
+            siteId: site.id,
+            status,
+            isLate,
+            withinGeofence: isWithinGeofence,
+            method: params.method,
+          }),
+          ipAddress: '',
+          userAgent: '',
+        },
+      })
+      .catch(() => {});
 
     return record;
   }

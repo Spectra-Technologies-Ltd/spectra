@@ -21,6 +21,11 @@ export class SecurityMiddleware implements NestMiddleware {
   private readonly AUTH_LIMIT = 10;
   private readonly AUTH_WINDOW_MS = 15 * 60 * 1000;
 
+  // Public badge routes (no session) are limited per IP: 120 / 15 min.
+  // Generous because a shared site device may serve every guard on shift.
+  private readonly BADGE_LIMIT = 120;
+  private readonly BADGE_WINDOW_MS = 15 * 60 * 1000;
+
   use(req: Request, res: Response, next: NextFunction) {
     // ── Security headers ──────────────────────────────────────────────────
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -43,32 +48,38 @@ export class SecurityMiddleware implements NestMiddleware {
       ].join('; '),
     );
 
-    // ── Rate limiting (auth endpoints only) ──────────────────────────────
-    // Only FAILED attempts consume budget — a successful login refunds the
-    // attempt, so legit users never lock themselves out with quick retries.
+    // ── Rate limiting (auth + public badge endpoints) ────────────────────
+    // Auth: only FAILED attempts consume budget — a successful login refunds
+    // the attempt so legit users are not locked out by quick retries. Badge:
+    // the endpoints are public, so every request counts.
     const isAuthRoute = /^\/api\/v1\/auth\/(login|register|tfa)/.test(req.path);
-    if (!isAuthRoute) return next();
+    const isBadgeRoute = /^\/api\/v1\/badge\//.test(req.path);
+    if (!isAuthRoute && !isBadgeRoute) return next();
 
-    const key = `${req.ip}:${req.path}`;
+    const key = isBadgeRoute ? `${req.ip}:badge` : `${req.ip}:${req.path}`;
+    const limit = isBadgeRoute ? this.BADGE_LIMIT : this.AUTH_LIMIT;
+    const windowMs = isBadgeRoute ? this.BADGE_WINDOW_MS : this.AUTH_WINDOW_MS;
     const now = Date.now();
     const bucket = this.buckets.get(key);
 
-    res.on('finish', () => {
-      const b = this.buckets.get(key);
-      if (!b) return;
-      if (res.statusCode < 400) {
-        // Success — refund the attempt taken on entry
-        b.count = Math.max(0, b.count - 1);
-      }
-    });
+    if (isAuthRoute) {
+      res.on('finish', () => {
+        const b = this.buckets.get(key);
+        if (!b) return;
+        if (res.statusCode < 400) {
+          // Success — refund the attempt taken on entry
+          b.count = Math.max(0, b.count - 1);
+        }
+      });
+    }
 
     if (!bucket || now >= bucket.resetAt) {
-      this.buckets.set(key, { count: 1, resetAt: now + this.AUTH_WINDOW_MS });
+      this.buckets.set(key, { count: 1, resetAt: now + windowMs });
       return next();
     }
 
     bucket.count += 1;
-    if (bucket.count > this.AUTH_LIMIT) {
+    if (bucket.count > limit) {
       this.logger.warn(`Rate limit exceeded for ${key}`);
       res.status(429).json({
         statusCode: 429,

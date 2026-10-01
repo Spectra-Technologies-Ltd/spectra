@@ -32,7 +32,20 @@ export default function AuthProvider({
   const router = useRouter();
   const pathname = usePathname();
 
+  // Routes reachable without a session. /badge is the guards' tap surface —
+  // guards have no accounts and never sign in.
+  const publicPaths = ["/login", "/register", "/request-demo", "/badge"];
+  const isPublicPath = publicPaths.includes(pathname || "");
+
   useEffect(() => {
+    // Never probe /auth/me on a public route: its 401 would run the api
+    // client's refresh interceptor and redirect the visitor to /login.
+    if (isPublicPath) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     // Try to fetch current user — httpOnly cookie is sent automatically
     const fetchUser = async () => {
       try {
@@ -45,20 +58,17 @@ export default function AuthProvider({
       }
     };
     fetchUser();
-  }, []);
+  }, [isPublicPath]);
 
   useEffect(() => {
     if (isLoading) return;
-
-    const publicPaths = ["/login", "/register", "/request-demo"];
-    const isPublicPath = publicPaths.includes(pathname || "");
 
     // Only guard private routes — let authenticated users view the auth pages
     // so they can always sign in or create an account from the same place.
     if (!user && !isPublicPath) {
       router.push("/login");
     }
-  }, [user, pathname, isLoading, router]);
+  }, [user, pathname, isLoading, router, isPublicPath]);
 
   const login = (newUser: User) => {
     setUser(newUser);
