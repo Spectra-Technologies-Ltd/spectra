@@ -21,10 +21,16 @@ import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { PrismaService } from '../../database/prisma.service';
 
+// `SameSite=None` requires `Secure`, which browsers only accept over HTTPS.
+// Local development is reached over plain http (e.g. a LAN IP for phone
+// testing), where Secure cookies are silently dropped and login fails — so
+// relax both outside production. Production keeps the strict settings.
+const isProduction = process.env.NODE_ENV === 'production';
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: true,
-  sameSite: 'none' as const,
+  secure: isProduction,
+  sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
   path: '/',
 };
 
