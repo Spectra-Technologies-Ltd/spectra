@@ -222,8 +222,20 @@ export default function BadgePage() {
   const [checkIn, setCheckIn] = useState<CheckInResult | null>(null);
   const [profile, setProfile] = useState<BadgeProfile | null>(null);
 
+  const [diag, setDiag] = useState<string>("");
+
   useEffect(() => {
-    setNfcSupported(typeof window !== "undefined" && "NDEFReader" in window);
+    if (typeof window === "undefined") return;
+    const hasNdef = "NDEFReader" in window;
+    setNfcSupported(hasNdef);
+    // Surface exactly why Web NFC is missing, on the device itself, so the
+    // cause is visible without a desktop devtools connection.
+    setDiag(
+      `secure context: ${window.isSecureContext ? "yes" : "no"} · ` +
+        `NDEFReader: ${hasNdef ? "yes" : "no"} · ` +
+        `origin: ${window.location.origin} · ` +
+        String(navigator.userAgent).slice(0, 80),
+    );
   }, []);
 
   const run = async (next: Action) => {
@@ -297,7 +309,11 @@ export default function BadgePage() {
         {nfcSupported === false && (
           <div className="mb-5 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-500">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            <span>{NFC_FALLBACK}</span>
+            <span>
+              {NFC_FALLBACK}
+              <br />
+              <span className="break-all opacity-80">{diag}</span>
+            </span>
           </div>
         )}
 

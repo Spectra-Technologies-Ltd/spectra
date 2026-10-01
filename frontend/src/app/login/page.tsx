@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Suspense, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -321,6 +322,13 @@ function LoginForm() {
               )}
             </button>
           </form>
+
+          <p className="mt-5 text-center text-xs text-muted-foreground">
+            Guard without an account?{" "}
+            <Link href="/badge" className="font-semibold text-primary hover:underline">
+              Tap in with your badge
+            </Link>
+          </p>
 
           <div className="mt-7 flex items-center gap-3">
             <span className="h-px flex-1 bg-border" />
