@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsNumber,
   IsArray,
+  IsDateString,
   Min,
   Max,
 } from 'class-validator';
@@ -33,6 +34,11 @@ export class ReportIncidentDto {
   @IsNumber() @IsOptional() @Min(-180) @Max(180) longitude?: number;
   @IsArray() @IsOptional() @IsString({ each: true }) mediaUrls?: string[];
   @IsArray() @IsOptional() @IsString({ each: true }) involvedParties?: string[];
+  /** Estimated loss or damage in NGN — feeds loss-prevented ROI. */
+  @IsNumber() @IsOptional() @Min(0) lossValue?: number;
+  /** Structured root cause, distinct from the free-text description. */
+  @IsString() @IsOptional() rootCause?: string;
+  @IsDateString() @IsOptional() firstResponseAt?: string;
 }
 
 export class UpdateIncidentStatusDto {
@@ -73,4 +79,8 @@ export class UpdateIncidentDto {
   @IsString() @IsOptional() actionsTaken?: string;
   @IsArray() @IsOptional() @IsString({ each: true }) mediaUrls?: string[];
   @IsArray() @IsOptional() @IsString({ each: true }) involvedParties?: string[];
+  @IsNumber() @IsOptional() @Min(0) lossValue?: number;
+  @IsString() @IsOptional() rootCause?: string;
+  @IsDateString() @IsOptional() firstResponseAt?: string;
+  @IsDateString() @IsOptional() resolvedAt?: string;
 }

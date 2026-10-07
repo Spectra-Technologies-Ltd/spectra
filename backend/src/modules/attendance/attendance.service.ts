@@ -87,6 +87,8 @@ export class AttendanceService {
       method: checkInCardId ? 'NFC' : 'GPS',
       cardId: checkInCardId,
       actorUserId: user.id,
+      deviceId: dto.deviceId,
+      mockGpsFlag: dto.mockGpsFlag,
     });
   }
 
@@ -99,6 +101,8 @@ export class AttendanceService {
     latitude: number;
     longitude: number;
     photoUrl?: string;
+    deviceId?: string;
+    mockGpsFlag?: boolean;
   }) {
     const card = await this.prisma.nfcCard.findUnique({
       where: { token: dto.token },
@@ -121,6 +125,8 @@ export class AttendanceService {
       method: 'NFC',
       cardId: card.id,
       actorUserId: null,
+      deviceId: dto.deviceId,
+      mockGpsFlag: dto.mockGpsFlag,
     });
   }
 
@@ -186,6 +192,8 @@ export class AttendanceService {
     method: 'GPS' | 'NFC';
     cardId: string | null;
     actorUserId: string | null;
+    deviceId?: string;
+    mockGpsFlag?: boolean;
   }) {
     const { guard, site, organizationId, latitude, longitude } = params;
 
@@ -226,6 +234,8 @@ export class AttendanceService {
         checkInLocation: JSON.stringify({ lat: latitude, lng: longitude }),
         checkInMethod: params.method,
         checkInCardId: params.cardId,
+        deviceId: params.deviceId ?? null,
+        mockGpsFlag: params.mockGpsFlag ?? false,
         status,
         photoUrl: params.photoUrl ?? '',
         verifiedStatus: isWithinGeofence,

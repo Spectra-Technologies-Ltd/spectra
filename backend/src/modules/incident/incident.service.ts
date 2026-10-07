@@ -55,6 +55,9 @@ export class IncidentService {
         witnesses: '[]',
         actionsTaken: '',
         investigationStatus: 'OPEN',
+        lossValue: dto.lossValue ?? null,
+        rootCause: dto.rootCause ?? null,
+        firstResponseAt: dto.firstResponseAt ? new Date(dto.firstResponseAt) : null,
       },
     });
 
@@ -148,11 +151,21 @@ export class IncidentService {
     if (dto.status) {
       data.status = dto.status;
       data.investigationStatus = dto.status;
+      // Capture resolution time automatically the first time it closes.
+      if (['RESOLVED', 'CLOSED'].includes(dto.status) && !incident.resolvedAt) {
+        data.resolvedAt = new Date();
+      }
     }
     if (dto.resolutionNotes !== undefined) data.resolutionNotes = dto.resolutionNotes;
     if (dto.actionsTaken !== undefined) data.actionsTaken = dto.actionsTaken;
     if (dto.mediaUrls) data.photos = JSON.stringify(dto.mediaUrls);
     if (dto.involvedParties) data.guardsInvolved = JSON.stringify(dto.involvedParties);
+    if (dto.lossValue !== undefined) data.lossValue = dto.lossValue;
+    if (dto.rootCause !== undefined) data.rootCause = dto.rootCause;
+    if (dto.firstResponseAt !== undefined) {
+      data.firstResponseAt = new Date(dto.firstResponseAt);
+    }
+    if (dto.resolvedAt !== undefined) data.resolvedAt = new Date(dto.resolvedAt);
 
     return this.prisma.incident.update({ where: { id }, data });
   }
